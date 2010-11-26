@@ -21,7 +21,7 @@ package sk.boinc.androboinc.debug;
 
 
 public interface Debugging {
-	public static final boolean INSERT_DELAYS = false;
+	public static final boolean INSERT_DELAYS = true;
 	public static final boolean PERFORMANCE = false;
 	public static final boolean DATA = false;
 }
