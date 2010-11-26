@@ -21,5 +21,5 @@ package sk.boinc.androboinc.debug;
 
 
 public interface Logging {
-	public static final boolean ON = true;
+	public static final boolean ON = false;
 }
