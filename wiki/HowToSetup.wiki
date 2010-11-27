@@ -1,7 +1,5 @@
-#summary How to use AndroBOINC
+#summary How to setup AndroBOINC
 #labels Phase-Deploy
-
-_(This Wiki page is not finished yet)_
 
 = Introduction =
 
@@ -85,7 +83,7 @@ On the bottom of the file there is something like:
 BOINC_OPTS=""
 }}}
 
-What we need is actually mentioned in comment right above BOINC_OPTS setting (comments are starting with character {{{#}}}) - we need --allow_remote_gui_rpc, so the end of file will then look like:
+What we need is actually mentioned in comment right above BOINC_OPTS setting (comments are starting with character {{{#}}}); We need {{{--allow_remote_gui_rpc}}}, so the end of the file will then look like:
 {{{
 # Here you can specify additional options to pass to the BOINC core client.
 # Type 'boinc --help' or 'man boinc' for a full summary of allowed options.
@@ -124,13 +122,15 @@ sudo ufw allow 31416/tcp
 }}}
 _Note: If you use --gui_rpc_port, adjust port number accordingly_
 
+
 == BOINC setup on Mac OS X ==
 
-_This section is still missing._
+_(This section is still missing.)_
+
 
 == BOINC setup on Windows ==
 
-_This section is still missing._
+_(This section is still missing.)_
 
 
 = Accessibility from Internet =
@@ -152,4 +152,19 @@ In the worst case a small trick can be used, to find current dynamic IP-address 
 
 = AndroBOINC configuration =
 
-_(todo)_
+Once the BOINC client is set up and accessible, here comes the easier part: setting the AndroBOINC.
+
+ # Install AndroBOINC on Android device.
+ # Start AndroBOINC.
+ # Press {{{Menu}}} button, then select {{{Connect}}} from menu.
+ # After the fresh installation the list is empty, but screen gives you hint. Press {{{Menu}}} button, then select {{{Add new host}}}.
+ # Fill the form:
+  * {{{Host nickname}}} is the name which will appear in lists and titles. Any name can be used, but it must be unique.
+  * {{{Address}}} is either IP-address or domain name of the BOINC client - client must be reachable via this address.
+  * {{{Port}}} is the port number the BOINC client is using.
+  * {{{Password}}} is... well... the password. 
+ # After filling the first BOINC client, it appears in list. Another BOINC client can be added by pressing {{{Menu}}} button again and filling the address of the other host.
+ # Selecting the host from the list will initiate connection towards BOINC client.
+
+After connect the BOINC client can be controlled by AndroBOINC. The list of BOINC clients is saved in AndroBOINC's database, so next time the AndroBOINC is invoked, the BOINC client can be selected directly. In case modification of previously configured host is needed (e.g. when password is changed), or if obsolete host should be removed from list, the long touch on list item will bring context menu for selected item and it can be modified or deleted then.
+
