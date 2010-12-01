@@ -362,15 +362,25 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
 			text = (TextView)v.findViewById(R.id.dialogText);
 			text.setText(getString(R.string.aboutText, getAppName(), getVersion()));
+			String httpURL = "http://";
+			// Link to BOINC.SK page
 			Pattern boincskText = Pattern.compile("BOINC\\.SK");
-			String boincskURL = "http://";
-			TransformFilter transformer = new TransformFilter() {
+			TransformFilter boincskTransformer = new TransformFilter() {
 				@Override
 				public String transformUrl(Matcher match, String url) {
 					return url.toLowerCase() + "/";
 				}
 			};
-			Linkify.addLinks(text, boincskText, boincskURL, null, transformer);
+			Linkify.addLinks(text, boincskText, httpURL, null, boincskTransformer);
+			// Link to GPLv3 license
+			Pattern gplText = Pattern.compile("GPLv3");
+			TransformFilter gplTransformer = new TransformFilter() {
+				@Override
+				public String transformUrl(Matcher match, String url) {
+					return "www.gnu.org/licenses/gpl-3.0.txt";
+				}
+			};
+			Linkify.addLinks(text, gplText, httpURL, null, gplTransformer);
         	return new AlertDialog.Builder(this)
         		.setIcon(android.R.drawable.ic_dialog_info)
         		.setTitle(R.string.aboutTitle)
