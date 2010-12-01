@@ -66,15 +66,15 @@
 	<!-- About -->
 	<string name="aboutTitle">Basic Information</string>
 	<string name="aboutClose">Close</string>
-	<string name="aboutHomepage">BOINC Homepage</string>
-	<string name="aboutHomepageUrl">http://boinc.berkeley.edu/</string>
+	<string name="aboutHomepage">Homepage</string>
+	<string name="aboutHomepageUrl">http://code.google.com/p/androboinc/</string>
 	<string name="aboutText">
 		%1$s v%2$s is port of BOINC Manager to Android.\n
 		\nIt is only manager, NOT the client. You must have separate BOINC client accessible
 		from network.\n
 		\nThe security of this manager is the same as the security of the standard BOINC
 		Manager; Protect your hosts by passwords.
-		\nThis software comes without any warranty. Use it on your own risk.\n
+		\nThis application is released under GPLv3 license.\n
 		\nThis software is provided by author free of charge. 
 		If you still want to make a kind of \"donation\" to author, 
 		who is proud member of team BOINC.SK, just join team BOINC.SK 

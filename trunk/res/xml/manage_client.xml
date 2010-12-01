@@ -25,8 +25,7 @@
 		android:title="@string/selectHostTitle"
 		android:summary="@string/noHostConnected"
 		android:dialogTitle="@string/selectHostDialogTitle"
-		android:persistent="false"
-		android:widgetLayout="@*android:layout/preference_dialog" />
+		android:persistent="false" />
 	<PreferenceCategory android:title="@string/manageCategoryActivity">
 		<ListPreference
 			android:key="actRunMode"
@@ -72,7 +71,6 @@
 			android:summary="@string/clientShutdownSummary"
 			android:dependency="actRunMode"
 			android:shouldDisableView="true"
-			android:persistent="false"
-			android:widgetLayout="@layout/close_widget" />
+			android:persistent="false" />
 	</PreferenceCategory>
 </PreferenceScreen>
