@@ -71,7 +71,7 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 			boolean collection = sharedPreferences.getBoolean(PreferenceName.COLLECT_STATS, false);
 			if (collection == mCollection) return; // unchanged
 			// Store new value
-			if (Logging.ON) Log.d(TAG, "Collection flag changed from " + mCollection + " to " + collection);
+			if (Logging.DEBUG) Log.d(TAG, "Collection flag changed from " + mCollection + " to " + collection);
 			mCollection = collection;
 			if (mCollection) {
 				// Just turned on - clear all the data (just to be sure)
@@ -93,7 +93,7 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 			@Override
 			public void run() {
 				if (!mCollection) return;
-				if (Logging.ON) Log.d(TAG, "New connection opened");
+				if (Logging.DEBUG) Log.d(TAG, "New connection opened");
 				// For the case that new connection opens while old was not closed yet:
 				// Commit the data from old connection
 				commitPending();
@@ -108,7 +108,7 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 			public void run() {
 				if (!mCollection) return;
 				mUncommittedReceived += numBytes;
-				if (Logging.ON) Log.d(TAG, "Received " + numBytes + " bytes, uncommitted: " + mUncommittedReceived + " bytes");
+				if (Logging.DEBUG) Log.d(TAG, "Received " + numBytes + " bytes, uncommitted: " + mUncommittedReceived + " bytes");
 				checkpoint();
 			}
 		});
@@ -121,7 +121,7 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 			public void run() {
 				if (!mCollection) return;
 				mUncommittedSent += numBytes;
-				if (Logging.ON) Log.d(TAG, "Sent " + numBytes + " bytes, uncommitted: " + mUncommittedSent + " bytes");
+				if (Logging.DEBUG) Log.d(TAG, "Sent " + numBytes + " bytes, uncommitted: " + mUncommittedSent + " bytes");
 				checkpoint();
 			}
 		});
@@ -135,7 +135,7 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 				if (!mCollection) return;
 				// Commit pending counters
 				commitPending();
-				if (Logging.ON) Log.d(TAG, "Connection closed, total received: " + mTotalReceived + " bytes, sent: " + mTotalSent + " bytes");
+				if (Logging.DEBUG) Log.d(TAG, "Connection closed, total received: " + mTotalReceived + " bytes, sent: " + mTotalSent + " bytes");
 			}
 		});
 	}
@@ -158,7 +158,7 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 	private void checkpoint() {
 		if ((mUncommittedReceived + mUncommittedSent) > CHKPNT_THRES_SIZE) {
 			// Time to save statistics
-			if (Logging.ON) Log.d(TAG, "Uncommitted total: " + (mUncommittedReceived + mUncommittedSent) + ", checkpoint");
+			if (Logging.DEBUG) Log.d(TAG, "Uncommitted total: " + (mUncommittedReceived + mUncommittedSent) + ", checkpoint");
 			commitPending();
 		}
 	}

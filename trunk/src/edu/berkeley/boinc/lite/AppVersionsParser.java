@@ -55,7 +55,8 @@ public class AppVersionsParser extends DefaultHandler {
 			return parser.getAppVersions();
 		}
 		catch (SAXException e) {
-			if (Logging.ON) { Log.e(TAG, "Malformed XML:\n" + rpcResult); }
+			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
 			return null;
 		}
 	}
@@ -113,7 +114,7 @@ public class AppVersionsParser extends DefaultHandler {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.ON) { Log.e(TAG, "Exception when decoding " + localName); }
+			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mCurrentElement.setLength(0); // to be clean for next one
 	}

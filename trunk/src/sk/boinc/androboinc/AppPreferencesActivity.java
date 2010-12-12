@@ -201,7 +201,7 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		// We handle only orientation changes
-		if (Logging.ON) Log.d(TAG, "onConfigurationChanged(), newConfig=" + newConfig.toString());
+		if (Logging.DEBUG) Log.d(TAG, "onConfigurationChanged(), newConfig=" + newConfig.toString());
 		mScreenOrientation.setOrientation();
 	}
 
@@ -229,7 +229,7 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 						AlertDialog ad = (AlertDialog)dialog;
 						CheckBox optOut = (CheckBox)ad.findViewById(R.id.optOutSetting);
 						if (optOut.isChecked()) {
-							if (Logging.ON) { Log.d(TAG, "Disabling notice for future"); }
+							if (Logging.DEBUG) { Log.d(TAG, "Disabling notice for future"); }
 							SharedPreferences netStats = getSharedPreferences(NetStatsStorage.NET_STATS_FILE, MODE_PRIVATE);
 							SharedPreferences.Editor editor = netStats.edit();
 							editor.putBoolean(NetStatsStorage.NET_STATS_WARNING, true);

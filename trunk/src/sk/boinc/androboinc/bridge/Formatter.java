@@ -35,28 +35,17 @@ import android.content.res.Resources;
  * reusing of objects could prevent some garbage collection.
  */
 public class Formatter {
-//	private static final String TAG = "Formatter";
-//	private Thread mThread = null;
 	private Context mContext = null;
 	private Resources mResources = null;
 	private StringBuilder mSb = new StringBuilder();
 	private SimpleDateFormat mDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public Formatter(Context context) {
-//		if (Logging.ON) {
-//			mThread = Thread.currentThread();
-//			Log.d(TAG, "Created for " + mThread.toString());
-//		}
 		mContext = context;
 		mResources = mContext.getResources();
 	}
 
 	public void cleanup() {
-//		if (Logging.ON) {
-//			Thread currentThread = Thread.currentThread();
-//			Log.d(TAG, "cleanup() for " + mThread.toString() + ", triggered by " + currentThread.toString());
-//		}
-//		mThread = null;
 		mContext = null;
 		mResources = null;
 		mSb = null;
@@ -68,21 +57,11 @@ public class Formatter {
 	}
 
 	public final StringBuilder getStringBuilder() {
-//		if (Logging.ON) {
-//			Thread currentThread = Thread.currentThread();
-//			if (currentThread != mThread)
-//				Log.e(TAG, "Created for " + mThread.toString() + ", but used by " + currentThread.toString());
-//		}
 		mSb.setLength(0);
 		return mSb;
 	}
 
 	public final String formatDate(long time) {
-//		if (Logging.ON) {
-//			Thread currentThread = Thread.currentThread();
-//			if (currentThread != mThread)
-//				Log.e(TAG, "Created for " + mThread.toString() + ", but used by " + currentThread.toString());
-//		}
 		Date date = new Date((long)(time*1000));
 		return mDateFormatter.format(date).toString();
 	}

@@ -51,7 +51,7 @@ public class Md5 {
 			return sb.toString();
 		}
 		catch (Exception e) {
-			if (Logging.ON) { Log.e(TAG, "error when calculating MD5 hash"); }
+			if (Logging.WARNING) Log.w(TAG, "Error when calculating MD5 hash");
 			return "";
 		}
 	}

@@ -92,7 +92,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		mFormatter.cleanup();
 		mFormatter = null;
 		if (mRpcClient != null) {
-			if (Logging.ON) Log.w(TAG, "RpcClient still opened in cleanup(), closing it now");
+			if (Logging.WARNING) Log.w(TAG, "RpcClient still opened in cleanup(), closing it now");
 			closeConnection();
 		}
 		final ClientBridge.ReplyHandler moribund = mReplyHandler;
@@ -109,7 +109,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mRpcClient != null) {
 			mRpcClient.close();
 			mRpcClient = null;
-			if (Logging.ON) Log.d(TAG, "Connection closed");
+			if (Logging.DEBUG) Log.d(TAG, "Connection closed");
 		}
 	}
 
@@ -121,12 +121,12 @@ public class ClientBridgeWorkerHandler extends Handler {
 
 	public void connect(ClientId client, boolean retrieveInitialData) {
 		if (mDisconnecting) return;  // already in disconnect phase
-		if (Logging.ON) Log.d(TAG, "Opening connection to " + client.getNickname());
+		if (Logging.DEBUG) Log.d(TAG, "Opening connection to " + client.getNickname());
 		notifyProgress(ClientReplyReceiver.PROGRESS_CONNECTING);
 		mRpcClient = new RpcClient(mNetStats);
 		if (!mRpcClient.open(client.getAddress(), client.getPort())) {
 			// Connect failed
-			if (Logging.ON) Log.w(TAG, "Failed connect to " + client.getAddress() + ":" + client.getPort());
+			if (Logging.WARNING) Log.w(TAG, "Failed connect to " + client.getAddress() + ":" + client.getPort());
 			mRpcClient = null;
 			notifyDisconnected();
 			return;
@@ -139,14 +139,14 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ClientReplyReceiver.PROGRESS_AUTHORIZATION_PENDING);
 			if (!mRpcClient.authorize(password)) {
 				// Authorization failed
-				if (Logging.ON) Log.w(TAG, "Authorization failed for " + client.getAddress() + ":" + client.getPort());
+				if (Logging.WARNING) Log.w(TAG, "Authorization failed for " + client.getAddress() + ":" + client.getPort());
 				notifyDisconnected();
 				closeConnection();
 				return;
 			}
 			if (Debugging.INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
 		}
-		if (Logging.ON) Log.d(TAG, "Connected to " + client.getNickname());
+		if (Logging.DEBUG) Log.d(TAG, "Connected to " + client.getNickname());
 		edu.berkeley.boinc.lite.VersionInfo versionInfo = mRpcClient.exchangeVersions();
 		if (versionInfo != null) {
 			// Newer client, supports operation <exchange_versions>
@@ -171,7 +171,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			// tasks, no retrieval of transfers/messages...)
 			CcState ccState = mRpcClient.getState();
 			if (ccState == null) {
-				if (Logging.ON) Log.i(TAG, "RPC failed in initialStateRetrieval()");
+				if (Logging.INFO) Log.i(TAG, "RPC failed in connect()");
 				notifyDisconnected();
 				closeConnection();
 				return;
@@ -187,7 +187,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		// This is not run in the worker thread, but in UI thread
 		// Therefore we will not directly operate mRpcClient here, 
 		// as it could be just in use by worker thread
-		if (Logging.ON) Log.d(TAG, "disconnect()");
+		if (Logging.DEBUG) Log.d(TAG, "disconnect()");
 		notifyDisconnected();
 		// Now, trigger socket closing (to be done by worker thread)
 		this.post(new Runnable() {
@@ -222,14 +222,14 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.ON) Log.d(TAG, "Canceled updateClientMode(" + callback.toString() + ")");
+				if (Logging.DEBUG) Log.d(TAG, "Canceled updateClientMode(" + callback.toString() + ")");
 				return;
 			}
 		}
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
 		CcStatus ccStatus = mRpcClient.getCcStatus();
 		if (ccStatus == null) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in updateClientMode()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in updateClientMode()");
 			rpcFailed();
 			return;
 		}
@@ -244,14 +244,14 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.ON) Log.d(TAG, "Canceled updateHostInfo(" + callback.toString() + ")");
+				if (Logging.DEBUG) Log.d(TAG, "Canceled updateHostInfo(" + callback.toString() + ")");
 				return;
 			}
 		}
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
 		edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
 		if (boincHostInfo == null) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in updateHostInfo()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in updateHostInfo()");
 			rpcFailed();
 			return;
 		}
@@ -266,14 +266,14 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.ON) Log.d(TAG, "Canceled updateProjects(" + callback.toString() + ")");
+				if (Logging.DEBUG) Log.d(TAG, "Canceled updateProjects(" + callback.toString() + ")");
 				return;
 			}
 		}
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
 		Vector<Project> projects = mRpcClient.getProjectStatus();
 		if (projects == null) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in updateProjects()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in updateProjects()");
 			rpcFailed();
 			return;
 		}
@@ -287,7 +287,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.ON) Log.d(TAG, "Canceled updateTasks(" + callback.toString() + ")");
+				if (Logging.DEBUG) Log.d(TAG, "Canceled updateTasks(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -304,21 +304,21 @@ public class ClientBridgeWorkerHandler extends Handler {
 			// First try to get only results
 			results = mRpcClient.getResults();
 			if (results == null) {
-				if (Logging.ON) Log.i(TAG, "RPC failed in updateTasks()");
+				if (Logging.INFO) Log.i(TAG, "RPC failed in updateTasks()");
 				rpcFailed();
 				return;
 			}
 			updateFinished = dataUpdateTasks(results);
 		}
 //		else if (mClientVersion.versNum >= 610000) { 
-//			if (Logging.ON) Log.d(TAG, "Client version at least 6.10.0: " + mClientVersion.versNum);
+//			if (Logging.DEBUG) Log.d(TAG, "Client version at least 6.10.0: " + mClientVersion.versNum);
 //			if ( (timestamp - mFullTasksUpdateTime) < (FULL_TASKS_UPDATE_TIME * 1000000000L) ) {
 //				// It's fairly new client version and time for full update
 //				// was not reached yet
 //				// First try to get active tasks only (to make it much faster)
 //				results = mRpcClient.getActiveResults();
 //				if (results == null) {
-//					if (Logging.ON) Log.i(TAG, "RPC failed in updateTasks()");
+//					if (Logging.INFO) Log.i(TAG, "RPC failed in updateTasks()");
 //					rpcFailed();
 //					return;
 //				}
@@ -327,7 +327,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 //		}
 //		else {
 //			// Clients older than 6.10.0 cannot get active tasks only - we get all tasks
-//			if (Logging.ON) Log.d(TAG, "Client version older than 6.10.0: " + mClientVersion.versNum);
+//			if (Logging.DEBUG) Log.d(TAG, "Client version older than 6.10.0: " + mClientVersion.versNum);
 //		}
 //		if (!updateFinished) {
 //			// Either this is trigger for all tasks (not only active), 
@@ -336,7 +336,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 //			// All results must be retrieved
 //			results = mRpcClient.getResults();
 //			if (results == null) {
-//				if (Logging.ON) Log.i(TAG, "RPC failed in updateTasks()");
+//				if (Logging.INFO) Log.i(TAG, "RPC failed in updateTasks()");
 //				rpcFailed();
 //				return;
 //			}
@@ -360,7 +360,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.ON) Log.d(TAG, "Canceled updateTransfers(" + callback.toString() + ")");
+				if (Logging.DEBUG) Log.d(TAG, "Canceled updateTransfers(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -376,7 +376,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.ON) Log.d(TAG, "Canceled updateMessages(" + callback.toString() + ")");
+				if (Logging.DEBUG) Log.d(TAG, "Canceled updateMessages(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -394,7 +394,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // already in disconnect phase
 		Vector<Message> messages = mRpcClient.getMessages(reqSeqno);
 		if (messages == null) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in updateMessages()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in updateMessages()");
 			rpcFailed();
 			return;
 		}
@@ -409,7 +409,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		boolean success = mRpcClient.runBenchmarks();
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
 		if (!success) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in runBenchmarks()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in runBenchmarks()");
 			rpcFailed();
 			return;
 		}
@@ -441,13 +441,15 @@ public class ClientBridgeWorkerHandler extends Handler {
 		mRpcClient.quit();
 		// We have to check, whether we are really disconnected
 		// We will try for 5 seconds only
-		CcStatus ccStatus = null;
+		boolean connectionAlive = true;
 		try {
+			// First, give the other side a little time to close socket
+			Thread.sleep(100);
 			for (int i = 0; i < 5; ++i) {
-				ccStatus = mRpcClient.getCcStatus();
-				if (ccStatus == null) {
+				connectionAlive = mRpcClient.connectionAlive();
+				if (!connectionAlive) {
 					// The socket is already closed on the other side
-					if (Logging.ON) Log.i(TAG, "shutdownCore(), socket closed after " + i + " retries since trigger");
+					if (Logging.DEBUG) Log.d(TAG, "shutdownCore(), socket closed after " + i + " retries since trigger");
 					break;
 				}
 				Thread.sleep(1000);
@@ -455,11 +457,11 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 		catch (InterruptedException e) {
 			// Interrupted while sleep, we better close socket now
-			if (Logging.ON) Log.w(TAG, "interrupted sleep in shutdownCore()");
-			ccStatus = null;
+			if (Logging.INFO) Log.i(TAG, "interrupted sleep in shutdownCore()");
+			connectionAlive = false;
 		}
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
-		if (ccStatus == null) {
+		if (!connectionAlive) {
 			// Socket was closed on remote side, so connection was lost as expected
 			// We notify about lost connection
 			notifyDisconnected();
@@ -477,7 +479,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		boolean success = mRpcClient.networkAvailable();
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
 		if (!success) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in doNetworkCommunication()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in doNetworkCommunication()");
 			rpcFailed();
 			return;
 		}
@@ -613,7 +615,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // Started disconnect phase, don't bother with further data retrieval
 		CcState ccState = mRpcClient.getState();
 		if (ccState == null) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in updateCcState()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in updateCcState()");
 			rpcFailed();
 			return;
 		}
@@ -628,7 +630,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // Started disconnect phase, don't bother with further data retrieval
 		CcState ccState = mRpcClient.getState();
 		if (ccState == null) {
-			if (Logging.ON) Log.i(TAG, "RPC failed in initialStateRetrieval()");
+			if (Logging.INFO) Log.i(TAG, "RPC failed in initialStateRetrieval()");
 			rpcFailed();
 			return;
 		}
@@ -653,7 +655,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	}
 
 	private void dataSetProjects(Vector<Project> projects) {
-		if (Logging.ON) Log.d(TAG, "dataSetProjects(): Begin update");
+		if (Logging.DEBUG) Log.d(TAG, "dataSetProjects(): Begin update");
 		mProjects.clear();
 		Iterator<Project> pi;
 		// First calculate sum of all resource shares, to get base
@@ -669,7 +671,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			ProjectInfo project = ProjectInfoCreator.create(prj, totalResources, mFormatter);
 			mProjects.put(prj.master_url, project);
 		}
-		if (Logging.ON) Log.d(TAG, "dataSetProjects(): End update");
+		if (Logging.DEBUG) Log.d(TAG, "dataSetProjects(): End update");
 	}
 
 	private void dataSetApps(Vector<App> apps) {
@@ -682,7 +684,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	}
 
 	private void dataSetTasks(Vector<Workunit> workunits, Vector<Result> results) {
-		if (Logging.ON) Log.d(TAG, "dataSetTasks(): Begin update");
+		if (Logging.DEBUG) Log.d(TAG, "dataSetTasks(): Begin update");
 		mTasks.clear();
 		mActiveTasks.clear();
 		// First, parse workunits, to create auxiliary map of workunits
@@ -698,17 +700,17 @@ public class ClientBridgeWorkerHandler extends Handler {
 			Result result = ri.next();
 			ProjectInfo pi = mProjects.get(result.project_url);
 			if (pi == null) {
-				if (Logging.ON) Log.e(TAG, "No project info for WU=" + result.name + " (project_url: " + result.project_url + "), skipping WU");
+				if (Logging.WARNING) Log.w(TAG, "No project info for WU=" + result.name + " (project_url: " + result.project_url + "), skipping WU");
 				continue;
 			}
 			Workunit workunit = mWorkunits.get(result.wu_name);
 			if (workunit == null) {
-				if (Logging.ON) Log.e(TAG, "No workunit info for WU=" + result.name + " (wu_name: " + result.wu_name + "), skipping WU");
+				if (Logging.WARNING) Log.w(TAG, "No workunit info for WU=" + result.name + " (wu_name: " + result.wu_name + "), skipping WU");
 				continue;
 			}
 			App app = mApps.get(workunit.app_name);
 			if (app == null) {
-				if (Logging.ON) Log.e(TAG, "No application info for WU=" + result.name + " (app_name: " + workunit.app_name + "), skipping WU");
+				if (Logging.WARNING) Log.w(TAG, "No application info for WU=" + result.name + " (app_name: " + workunit.app_name + "), skipping WU");
 				continue;
 			}
 			TaskInfo task = TaskInfoCreator.create(result, workunit, pi, app, mFormatter);
@@ -719,32 +721,32 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 //		mFullTasksUpdateTime = System.nanoTime();
-		if (Logging.ON) Log.d(TAG, "dataSetTasks(): End update");
+		if (Logging.DEBUG) Log.d(TAG, "dataSetTasks(): End update");
 	}
 
 	private void dataSetTransfers(Vector<Transfer> transfers) {
-		if (Logging.ON) Log.d(TAG, "dataSetTransfers(): Begin update");
+		if (Logging.DEBUG) Log.d(TAG, "dataSetTransfers(): Begin update");
 		mTransfers.clear();
 		Iterator<Transfer> ti = transfers.iterator();
 		while (ti.hasNext()) {
 			Transfer transfer = ti.next();
 			ProjectInfo proj = mProjects.get(transfer.project_url);
 			if (proj == null) {
-				if (Logging.ON) Log.e(TAG, "No project for WU=" + transfer.name + " (project_url: " + transfer.project_url + "), setting dummy");
+				if (Logging.WARNING) Log.w(TAG, "No project for WU=" + transfer.name + " (project_url: " + transfer.project_url + "), setting dummy");
 				proj = new ProjectInfo();
 				proj.project = "???";
 			}
 			TransferInfo transferInfo = TransferInfoCreator.create(transfer, proj.project, mFormatter);
 			mTransfers.add(transferInfo);
 		}
-		if (Logging.ON) Log.d(TAG, "dataSetTransfers(): End update");
+		if (Logging.DEBUG) Log.d(TAG, "dataSetTransfers(): End update");
 	}
 
 //	private boolean dataUpdateActiveTasks(Vector<Result> activeResults) {
-//		if (Logging.ON) Log.d(TAG, "dataUpdateActiveTasks(): Begin update");
+//		if (Logging.DEBUG) Log.d(TAG, "dataUpdateActiveTasks(): Begin update");
 //		if (activeResults.size() != mActiveTasks.size()) {
 //			// The number of active tasks changed - we cannot do simple partial update
-//			if (Logging.ON) Log.d(TAG, "Changed number of active tasks detected in dataUpdateActiveTasks() - needs updateResults() update");
+//			if (Logging.DEBUG) Log.d(TAG, "Changed number of active tasks detected in dataUpdateActiveTasks() - needs updateResults() update");
 //			return false;
 //		}
 //		// The number of last recorded active tasks is the same as current number of active tasks
@@ -755,7 +757,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 //			if (!mActiveTasks.contains(newActiveResult.name)) {
 //				// The active result to be updated is not in the list of stored active results
 //				// The active tasks changed - we cannot do simple partial update
-//				if (Logging.ON) Log.d(TAG, "Changed active task detected in dataUpdateActiveTasks() - needs dataUpdateTasks() update");
+//				if (Logging.DEBUG) Log.d(TAG, "Changed active task detected in dataUpdateActiveTasks() - needs dataUpdateTasks() update");
 //				return false;
 //			}
 //		}
@@ -764,24 +766,24 @@ public class ClientBridgeWorkerHandler extends Handler {
 //		// as the names of current active tasks.
 //		// So we assume that only the values of active tasks changed (e.g. elapsed time).
 //		// So let's do the simple partial update
-//		if (Logging.ON) Log.d(TAG, "dataUpdateActiveTasks(): Starting partial update (only active tasks)");
+//		if (Logging.DEBUG) Log.d(TAG, "dataUpdateActiveTasks(): Starting partial update (only active tasks)");
 //		ri = activeResults.iterator();
 //		while (ri.hasNext()) {
 //			Result activeResult = ri.next();
 //			TaskInfo task = (TaskInfo)mTasks.get(activeResult.name);
 //			if (task == null) {
 //				// not expected, as checks should be already done in calling method
-//				if (Logging.ON) Log.w(TAG, "Task not found while trying dataUpdateActiveTasks()");
+//				if (Logging.WARNING) Log.w(TAG, "Task not found while trying dataUpdateActiveTasks()");
 //				return false;
 //			}
 //			TaskInfoCreator.update(task, activeResult, mFormatter);
 //		}
-//		if (Logging.ON) Log.d(TAG, "dataUpdateActiveTasks(): End update");
+//		if (Logging.DEBUG) Log.d(TAG, "dataUpdateActiveTasks(): End update");
 //		return true;
 //	}
 
 	private boolean dataUpdateTasks(Vector<Result> results) {
-		if (Logging.ON) Log.d(TAG, "dataUpdateTasks(): Begin update");
+		if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): Begin update");
 		// Auxiliary set, to know which tasks were updated and which not
 		Set<String> oldTaskNames = new HashSet<String>(mTasks.keySet());
 		mActiveTasks.clear(); // We will build new record of active tasks
@@ -793,7 +795,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			if (task == null) {
 				// Maybe new workunit wad downloaded meanwhile, so we have
 				// its result part, but not workunit part
-				if (Logging.ON) Log.d(TAG, "Task not found while trying dataUpdateTasks() - needs full updateCcState() update");
+				if (Logging.DEBUG) Log.d(TAG, "Task not found while trying dataUpdateTasks() - needs full updateCcState() update");
 				return false;
 			}
 			TaskInfoCreator.update(task, result, mFormatter);
@@ -809,28 +811,28 @@ public class ClientBridgeWorkerHandler extends Handler {
 		// e.g. those uploaded and reported successfully
 		// We should remove them now
 		if (oldTaskNames.size() > 0) {
-			if (Logging.ON) Log.d(TAG, "dataUpdateTasks(): " + oldTaskNames.size() + " obsolete tasks detected");
+			if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): " + oldTaskNames.size() + " obsolete tasks detected");
 			Iterator<String> it = oldTaskNames.iterator();
 			while (it.hasNext()) {
 				String obsoleteName = it.next();
 				mTasks.remove(obsoleteName);
-				if (Logging.ON) Log.d(TAG, "dataUpdateTasks(): removed " + obsoleteName);
+				if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): removed " + obsoleteName);
 			}
 		}
-		if (Logging.ON) Log.d(TAG, "dataUpdateTasks(): End update");
+		if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): End update");
 		return true;
 	}
 
 	private void dataUpdateMessages(Vector<Message> messages) {
 		if (messages == null) return;
-		if (Logging.ON) Log.d(TAG, "dataUpdateMessages(): Begin update");
+		if (Logging.DEBUG) Log.d(TAG, "dataUpdateMessages(): Begin update");
 		Iterator<Message> mi = messages.iterator();
 		while (mi.hasNext()) {
 			edu.berkeley.boinc.lite.Message msg = mi.next();
 			MessageInfo message = MessageInfoCreator.create(msg, mFormatter);
 			mMessages.put(msg.seqno, message);
 		}
-		if (Logging.ON) Log.d(TAG, "dataUpdateMessages(): End update");
+		if (Logging.DEBUG) Log.d(TAG, "dataUpdateMessages(): End update");
 	}
 
 	private final Vector<ProjectInfo> getProjects() {
