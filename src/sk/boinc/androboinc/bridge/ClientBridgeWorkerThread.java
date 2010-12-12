@@ -52,7 +52,7 @@ public class ClientBridgeWorkerThread extends Thread {
 
 	@Override
 	public void run() {
-		if (Logging.ON) Log.d(TAG, "run() - Started " + Thread.currentThread().toString());
+		if (Logging.DEBUG) Log.d(TAG, "run() - Started " + Thread.currentThread().toString());
 
 		// Prepare Looper in this thread, to receive messages
 		// "forever"
@@ -84,7 +84,7 @@ public class ClientBridgeWorkerThread extends Thread {
 
 		mHandler.cleanup();
 		mHandler = null;
-		if (Logging.ON) Log.d(TAG, "run() - Finished " + Thread.currentThread().toString());
+		if (Logging.DEBUG) Log.d(TAG, "run() - Finished " + Thread.currentThread().toString());
 	}
 
 	public void stopThread(ConditionVariable lock) {
@@ -92,7 +92,7 @@ public class ClientBridgeWorkerThread extends Thread {
 		mHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				if (Logging.ON) Log.d(TAG, "Quit message received, stopping " + Thread.currentThread().toString());
+				if (Logging.DEBUG) Log.d(TAG, "Quit message received, stopping " + Thread.currentThread().toString());
 				Looper.myLooper().quit();
 			}
 		});

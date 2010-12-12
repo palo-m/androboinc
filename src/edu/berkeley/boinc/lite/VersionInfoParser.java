@@ -46,7 +46,8 @@ public class VersionInfoParser extends BaseParser {
 			return parser.getVersionInfo();
 		}
 		catch (SAXException e) {
-			if (Logging.ON) { Log.e(TAG, "Malformed XML:\n" + rpcResult); }
+			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
 			return null;
 		}		
 	}
@@ -55,10 +56,10 @@ public class VersionInfoParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("server_version")) {
-			if (Logging.ON) { 
+			if (Logging.INFO) { 
 				if (mVersionInfo != null) {
 					// previous <server_version> not closed - dropping it!
-					Log.e(TAG, "Dropping unfinished <server_version> data");
+					Log.i(TAG, "Dropping unfinished <server_version> data");
 				}
 			}
 			mVersionInfo = new VersionInfo();
@@ -101,7 +102,7 @@ public class VersionInfoParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.ON) { Log.e(TAG, "Exception when decoding " + localName); }
+			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false; // to be clean for next one
 	}

@@ -48,13 +48,13 @@ public class ScreenOrientationHandler implements OnSharedPreferenceChangeListene
 			String orientation = sharedPreferences.getString(PreferenceName.SCREEN_ORIENTATION, "-1");
 			int newOrientation = Integer.parseInt(orientation);
 			if (newOrientation == mScreenOrientation) return; // unchanged
-			if (Logging.ON) Log.d(TAG, "Orientation setting changed from " + mScreenOrientation + " to " + newOrientation);
+			if (Logging.DEBUG) Log.d(TAG, "Orientation setting changed from " + mScreenOrientation + " to " + newOrientation);
 			mScreenOrientation = newOrientation;
 		}
 	}
 
 	public void setOrientation() {
-		if (Logging.ON) Log.d(TAG, "setOrientation() for " + mActivity.toString());
+		if (Logging.DEBUG) Log.d(TAG, "setOrientation() for " + mActivity.toString());
 		// TODO: Proper orientation handling based on settings and current rotation of device
 		switch (mScreenOrientation) {
 		case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:

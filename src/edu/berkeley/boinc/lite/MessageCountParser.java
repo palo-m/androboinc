@@ -50,7 +50,8 @@ public class MessageCountParser extends DefaultHandler {
 			return parser.seqno();
 		}
 		catch (SAXException e) {
-			if (Logging.ON) { Log.e(TAG, "Malformed XML:\n" + reply); }
+			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + reply);
+			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
 			return -1;
 		}		
 
@@ -99,7 +100,7 @@ public class MessageCountParser extends DefaultHandler {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.ON) { Log.e(TAG, "Exception when decoding " + localName); }
+			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mCurrentElement.setLength(0);
 	}

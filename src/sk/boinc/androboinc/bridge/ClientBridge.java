@@ -59,7 +59,7 @@ public class ClientBridge implements ClientRequestHandler {
 			// processed already, or waiting in queue to be processed
 			// We can start clearing of worker thread (will be also done as post,
 			// so it will be executed afterwards)
-			if (Logging.ON) Log.d(TAG, "disconnecting(), stopping ClientBridgeWorkerThread");
+			if (Logging.DEBUG) Log.d(TAG, "disconnecting(), stopping ClientBridgeWorkerThread");
 			mWorker.stopThread(null);
 			// Clean up periodic updater as well, because no more periodic updates will be needed
 			mAutoRefresh.cleanup();
@@ -67,7 +67,7 @@ public class ClientBridge implements ClientRequestHandler {
 		}
 
 		public void disconnected() {
-			if (Logging.ON) Log.d(TAG, "disconnected()");
+			if (Logging.DEBUG) Log.d(TAG, "disconnected()");
 			// The worker thread was cleared completely 
 			mWorker = null;
 			if (mCallback != null) {
@@ -104,7 +104,7 @@ public class ClientBridge implements ClientRequestHandler {
 			while (it.hasNext()) {
 				ClientReplyReceiver observer = it.next();
 				observer.clientDisconnected();
-				if (Logging.ON) Log.d(TAG, "Detached observer: " + observer.toString()); // see below clearing of all observers
+				if (Logging.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString()); // see below clearing of all observers
 			}
 			mObservers.clear();
 		}
@@ -244,7 +244,7 @@ public class ClientBridge implements ClientRequestHandler {
 	 */
 	public ClientBridge(ClientBridgeCallback callback, NetStats netStats) throws RuntimeException {
 		mCallback = callback;
-		if (Logging.ON) Log.d(TAG, "Starting ClientBridgeWorkerThread");
+		if (Logging.DEBUG) Log.d(TAG, "Starting ClientBridgeWorkerThread");
 		ConditionVariable lock = new ConditionVariable(false);
 		Context context = (Context)callback;
 		mAutoRefresh = new AutoRefresh(context, this);
@@ -253,17 +253,17 @@ public class ClientBridge implements ClientRequestHandler {
 		boolean runningOk = lock.block(2000); // Locking until new thread fully runs
 		if (!runningOk) {
 			// Too long time waiting for worker thread to be on-line - cancel it
-			if (Logging.ON) Log.e(TAG, "ClientBridgeWorkerThread did not start in 1 second");
+			if (Logging.ERROR) Log.e(TAG, "ClientBridgeWorkerThread did not start in 1 second");
 			throw new RuntimeException("Worker thread cannot start");
 		}
-		if (Logging.ON) Log.d(TAG, "ClientClientBridgeWorkerThread started successfully");
+		if (Logging.DEBUG) Log.d(TAG, "ClientClientBridgeWorkerThread started successfully");
 	}
 
 	@Override
 	public void registerStatusObserver(ClientReplyReceiver observer) {
 		// Another observer wants to be notified - add him into collection of observers
 		mObservers.add(observer);
-		if (Logging.ON) Log.d(TAG, "Attached new observer: " + observer.toString());
+		if (Logging.DEBUG) Log.d(TAG, "Attached new observer: " + observer.toString());
 		if (mConnected) {
 			// New observer is attached while we are already connected
 			// Notify new observer that we are connected, so it can fetch data
@@ -280,14 +280,14 @@ public class ClientBridge implements ClientRequestHandler {
 			// Remove it now
 			mAutoRefresh.unscheduleAutomaticRefresh(observer);
 		}
-		if (Logging.ON) Log.d(TAG, "Detached observer: " + observer.toString());
+		if (Logging.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString());
 	}
 
 	@Override
 	public void connect(final ClientId remoteClient, final boolean retrieveInitialData) {
 		if (mRemoteClient != null) {
 			// already connected
-			if (Logging.ON) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " while already connected to: " + mRemoteClient.getNickname());
+			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " while already connected to: " + mRemoteClient.getNickname());
 			return;
 		}
 		mRemoteClient = remoteClient;

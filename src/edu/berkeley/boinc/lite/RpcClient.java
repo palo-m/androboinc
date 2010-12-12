@@ -162,7 +162,7 @@ public class RpcClient {
 	public boolean open(String address, int port) {
 		if (isConnected()) {
 			// Already connected
-			if (Logging.ON) { Log.e(TAG, "Attempt to connect when already connected"); }
+			if (Logging.ERROR) Log.e(TAG, "Attempt to connect when already connected");
 			// We better close current connection and reconnect (address/port could be different)
 			close();
 		}
@@ -174,24 +174,24 @@ public class RpcClient {
 			mOutput = new OutputStreamWriter(mSocket.getOutputStream(), "ISO8859_1");
 		}
 		catch (UnknownHostException e) {
-			if (Logging.ON) { Log.e(TAG, "connect failure: unknown host \"" + address + "\""); }
+			if (Logging.WARNING) Log.w(TAG, "connect failure: unknown host \"" + address + "\"", e);
 			mSocket = null;
 			return false;
 		}
 		catch (IllegalArgumentException e) {
-			if (Logging.ON) { Log.e(TAG, "connect failure: illegal argument \"" + e + "\""); }
+			if (Logging.ERROR) Log.e(TAG, "connect failure: illegal argument", e);
 			mSocket = null;
 			return false;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "connect failure: \"" + e + "\""); }
+			if (Logging.WARNING) Log.w(TAG, "connect failure", e);
 			mSocket = null;
 			return false;
 		}
 		if (mNetStats != null) {
 			mNetStats.connectionOpened();
 		}
-		if (Logging.ON) { Log.d(TAG, "open(" + address + ", " + port + ") - Connected successfully"); }
+		if (Logging.DEBUG) Log.d(TAG, "open(" + address + ", " + port + ") - Connected successfully");
 		return true;
 	}
 
@@ -207,20 +207,20 @@ public class RpcClient {
 			mInput.close();
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "input close failure: \"" + e + "\""); }
+			if (Logging.WARNING) Log.w(TAG, "input close failure", e);
 		}
 		try {
 			mOutput.close();
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "output close failure: \"" + e + "\""); }
+			if (Logging.WARNING) Log.w(TAG, "output close failure", e);
 		}
 		try {
 			mSocket.close();
-			if (Logging.ON) { Log.d(TAG, "close() - Socket closed"); }
+			if (Logging.DEBUG) Log.d(TAG, "close() - Socket closed");
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "socket close failure: \"" + e + "\""); }
+			if (Logging.WARNING) Log.w(TAG, "socket close failure", e);
 		}
 		if (mNetStats != null) {
 			mNetStats.connectionClosed();
@@ -258,19 +258,19 @@ public class RpcClient {
 			mRequest.setLength(0);
 			Xml.parse(auth2Rsp, new Auth2Parser(mRequest));
 			if (!mRequest.toString().equals("authorized")) {
-				if (Logging.ON) { Log.d(TAG, "authorize() - Failure"); }
+				if (Logging.DEBUG) { Log.d(TAG, "authorize() - Failure"); }
 				return false;
 			}
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in authorize() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in authorize()", e);
 			return false;
 		}
 		catch (SAXException e) {
-			if (Logging.ON) { Log.e(TAG, "Malformed XML"); }
+			if (Logging.INFO) Log.i(TAG, "Malformed XML received in authorize()");
 			return false;
 		}
-		if (Logging.ON) { Log.d(TAG, "authorize() - Successful"); }
+		if (Logging.DEBUG) Log.d(TAG, "authorize() - Successful");
 		return true;
 	}
 
@@ -280,6 +280,31 @@ public class RpcClient {
 	 */
 	public final boolean isConnected() {
 		return (mSocket != null) ? mSocket.isConnected() : false;
+	}
+
+	/**
+	 * Checks whether current connection can be used (data can be sent and received)
+	 * This is achieved by sending the empty BOINC command - so in case there is
+	 * socket still opened, but other side already closed connection, it will be detected.
+	 * @return true if other side responds, false if data cannot be sent or received
+	 */
+	public boolean connectionAlive() {
+		if (!isConnected()) return false;
+		try {
+			// We just get the status via socket and do not parse reply
+			sendRequest("<get_cc_status/>\n");
+			String result = receiveReply();
+			if (result.length() == 0) {
+				// End of stream reached and no data were received in reply
+				// We assume that socket is closed on the other side,
+				// most probably client shut down
+				return false;
+			}
+			return true;
+		}
+		catch (IOException e) {
+			return false;
+		}
 	}
 
 	/*
@@ -379,7 +404,7 @@ public class RpcClient {
 			return versionInfo;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in exchangeVersions() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in exchangeVersions()", e);
 			return null;
 		}
 	}
@@ -395,7 +420,7 @@ public class RpcClient {
 			return ccStatus;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getCcStatus() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getCcStatus()", e);
 			return null;
 		}
 	}
@@ -411,7 +436,7 @@ public class RpcClient {
 			return transfers;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getFileTransfers() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getFileTransfers()", e);
 			return null;
 		}
 	}
@@ -428,7 +453,7 @@ public class RpcClient {
 			return hostInfo;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getHostInfo() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getHostInfo()", e);
 			return null;
 		}
 	}
@@ -444,7 +469,7 @@ public class RpcClient {
 			return MessageCountParser.getSeqno(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getMessageCount() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getMessageCount()", e);
 			return -1;
 		}
 	}
@@ -472,7 +497,7 @@ public class RpcClient {
 			return messages;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getMessages() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getMessages()", e);
 			return null;
 		}
 	}
@@ -489,7 +514,7 @@ public class RpcClient {
 			return projects;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getProjectStatus() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getProjectStatus()", e);
 			return null;
 		}
 	}
@@ -510,7 +535,7 @@ public class RpcClient {
 			return results;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getActiveResults() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getActiveResults()", e);
 			return null;
 		}
 	}
@@ -527,7 +552,7 @@ public class RpcClient {
 			return results;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getResults() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getResults()", e);
 			return null;
 		}
 	}
@@ -544,7 +569,7 @@ public class RpcClient {
 			return result;
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in getState() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in getState()", e);
 			return null;
 		}
 	}
@@ -560,7 +585,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in networkAvailable() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in networkAvailable()", e);
 			return false;
 		}
 	}
@@ -591,7 +616,7 @@ public class RpcClient {
 				opTag = "project_allowmorework";
 				break;
 			default:
-				if (Logging.ON) { Log.e(TAG, "projectOp() - unsupported operation: " + operation); }
+				if (Logging.ERROR) Log.e(TAG, "projectOp() - unsupported operation: " + operation);
 				return false;
 			}
 			String request =
@@ -603,7 +628,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in projectOp() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in projectOp()", e);
 			return false;
 		}
 	}
@@ -629,7 +654,7 @@ public class RpcClient {
 				opTag = "abort_result";
 				break;
 			default:
-				if (Logging.ON) { Log.e(TAG, "resultOp() - unsupported operation: " + operation); }
+				if (Logging.ERROR) Log.e(TAG, "resultOp() - unsupported operation: " + operation);
 				return false;
 			}
 			mRequest.setLength(0);
@@ -647,7 +672,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in resultOp() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in resultOp()", e);
 			return false;
 		}
 	}
@@ -662,7 +687,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in quit() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in quit()", e);
 			return false;
 		}
 	}
@@ -677,7 +702,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in runBenchmarks() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in runBenchmarks()", e);
 			return false;
 		}
 	}
@@ -700,7 +725,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in setNetworkMode() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in setNetworkMode()", e);
 			return false;
 		}
 	}
@@ -723,7 +748,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in setRunMode() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in setRunMode()", e);
 			return false;
 		}
 	}
@@ -746,7 +771,7 @@ public class RpcClient {
 				opTag = "abort_file_transfer";
 				break;
 			default:
-				if (Logging.ON) { Log.e(TAG, "transferOp() - unsupported operation: " + operation); }
+				if (Logging.ERROR) Log.e(TAG, "transferOp() - unsupported operation: " + operation);
 				return false;
 			}
 			mRequest.setLength(0);
@@ -763,7 +788,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.ON) { Log.e(TAG, "error in resultOp() : " + e); }
+			if (Logging.WARNING) Log.w(TAG, "error in transferOp()", e);
 			return false;
 		}
 	}

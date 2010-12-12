@@ -54,7 +54,8 @@ public class ProjectsParser extends BaseParser {
 			return parser.getProjects();
 		}
 		catch (SAXException e) {
-			if (Logging.ON) { Log.e(TAG, "Malformed XML:\n" + rpcResult); }
+			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
 			return null;
 		}
 	}
@@ -63,19 +64,19 @@ public class ProjectsParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("project")) {
-			if (Logging.ON) {
+			if (Logging.INFO) {
 				if (mProject != null) {
 					// previous <project> not closed - dropping it!
-					Log.e(TAG, "Dropping unfinished <project> data");
+					Log.i(TAG, "Dropping unfinished <project> data");
 				}
 			}
 			mProject = new Project();
 		}
 		else if (localName.equalsIgnoreCase("gui_url")) {
-			if (Logging.ON) {
+			if (Logging.INFO) {
 				if (mGuiUrl != null) {
 					// previous <gui_url> not closed - dropping it!
-					Log.e(TAG, "Dropping unfinished <gui_url> data");
+					Log.i(TAG, "Dropping unfinished <gui_url> data");
 				}
 			}
 			mGuiUrl = new GuiUrl();
@@ -274,7 +275,7 @@ public class ProjectsParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.ON) { Log.e(TAG, "Exception when decoding " + localName); }
+			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}

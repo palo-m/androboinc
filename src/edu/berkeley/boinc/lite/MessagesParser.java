@@ -51,26 +51,15 @@ public class MessagesParser extends BaseParser {
 	 * @return vector of application version
 	 */
 	public static Vector<Message> parse(String rpcResult) {
-//		BufferedReader dbr = new BufferedReader(new StringReader(rpcResult));
-//		String dl;
-//		int ln = 0;
-//		try {
-//			while ((dl = dbr.readLine()) != null) {
-//				++ln;
-//				if (Logging.ON) { Log.d("Messages XML", "line " + ln + ": " + dl); }
-//			}
-//		}
-//		catch (IOException ioe) {
-//		}
 		MessagesParser parser = new MessagesParser();
 		try {
 			Xml.parse(rpcResult, parser);
 			return parser.getMessages();
 		}
 		catch (SAXException e) {
-			if (Logging.ON) {
+			if (Logging.DEBUG) {
 				SAXParseException details = (SAXParseException)e;
-				Log.e(TAG, "Malformed XML: sytemId=" + details.getSystemId() + 
+				Log.d(TAG, "Malformed XML: sytemId=" + details.getSystemId() + 
 						", publicId=" + details.getPublicId() + 
 						", lineNumber=" + details.getLineNumber() + 
 						", columnNumber=" + details.getColumnNumber()
@@ -89,8 +78,9 @@ public class MessagesParser extends BaseParser {
 				}
 				catch (IOException ioe) {
 				}
-				Log.e(TAG, "Decoded " + parser.getMessages().size() + " messages");
+				Log.d(TAG, "Decoded " + parser.getMessages().size() + " messages");
 			}
+			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
 			return null;
 		}
 	}
@@ -150,23 +140,8 @@ public class MessagesParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.ON) { Log.e(TAG, "Exception when decoding " + localName); }
+			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}
-
-//	@Override
-//	public void fatalError(SAXParseException exception) {
-//		if (Logging.ON) { Log.e(TAG, "fatal error: " + exception ); }
-//	}
-//
-//	@Override
-//	public void error(SAXParseException exception) {
-//		if (Logging.ON) { Log.e(TAG, "error: " + exception ); }
-//	}
-//
-//	@Override
-//	public void warning(SAXParseException exception) {
-//		if (Logging.ON) { Log.e(TAG, "warning: " + exception ); }
-//	}
 }
