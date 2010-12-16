@@ -121,6 +121,11 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
 			if (Logging.DEBUG) Log.d(TAG, "onServiceConnected()");
 			mConnectionManager.registerStatusObserver(BoincManagerActivity.this);
+			if (mSelectedClient != null) {
+				// Some client was selected at the time when service was not bound yet
+				// Now the service is available, so connection can proceed
+				connectOrReconnect();
+			}
 		}
 
 		@Override
@@ -129,6 +134,9 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			// This should not happen normally, because it's local service 
 			// running in the same process...
 			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
+			// We also reset client reference to prevent mess
+			mConnectedClient = null;
+			mSelectedClient = null;
 		}
 	};
 
@@ -141,6 +149,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	private void doUnbindService() {
 		if (Logging.DEBUG) Log.d(TAG, "doUnbindService()");
 		unbindService(mServiceConnection);
+		mConnectionManager = null;
 	}
 
 	@Override
@@ -226,24 +235,14 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		mProgressDialogAllowed = true;
 		if (mSelectedClient != null) {
 			// We just returned from activity which selected client to connect to
-			if (mConnectedClient == null) {
-				// No client connected now, we can safely connect to new one
-				boincConnect();
+			if (mConnectionManager != null) {
+				// Service is bound, we can use it
+				connectOrReconnect();
 			}
 			else {
-				// We are currently connected and some client was selected to connect
-				// We must check whether it is not the same
-				// TODO: base it on ID instead
-				if (mSelectedClient.getNickname().equals(mConnectedClient.getNickname())) {
-					// The same client was selected, as the one already connected
-					// We will not change connection - reset mSelectedClient
-					if (Logging.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");
-					mSelectedClient = null;
-				}
-				else {
-					if (Logging.DEBUG) Log.d(TAG, "Selected new client: " + mSelectedClient.getNickname() + ", while already connected to: " + mConnectedClient.getNickname() + ", disconnecting it first");
-					boincDisconnect();
-				}
+				// Service not bound at the moment (too slow start? or disconnected itself?)
+				if (Logging.INFO) Log.i(TAG, "onResume() - Client selected, but service not yet available => binding again");
+				doBindService();
 			}
 		}
 		else if (mInitialDataRetrievalStarted) {
@@ -674,6 +673,29 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 
 	private void boincDisconnect() {
 		mConnectionManager.disconnect();
+	}
+
+	private void connectOrReconnect() {
+		if (mConnectedClient == null) {
+			// No client connected now, we can safely connect to new one
+			boincConnect();
+		}
+		else {
+			// We are currently connected and some client was selected to connect
+			// We must check whether it is not the same
+			// TODO: base it on ID instead
+			if (mSelectedClient.getNickname().equals(mConnectedClient.getNickname())) {
+				// The same client was selected, as the one already connected
+				// We will not change connection - reset mSelectedClient
+				if (Logging.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");
+				mSelectedClient = null;
+			}
+			else {
+				if (Logging.DEBUG) Log.d(TAG, "Selected new client: " + mSelectedClient.getNickname() + ", while already connected to: " + mConnectedClient.getNickname() + ", disconnecting it first");
+				boincDisconnect();
+				// The boincConnect() will be triggered after the clientDisconnected() notification
+			}
+		}
 	}
 
 	private void retrieveInitialData() {
