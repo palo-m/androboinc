@@ -62,7 +62,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		if (Logging.ON) Log.d(TAG, "onBind()");
+		if (Logging.DEBUG) Log.d(TAG, "onBind()");
 		// Just make sure the service is running:
 		startService(new Intent(this, ConnectionManagerService.class));
 		return mBinder;
@@ -75,11 +75,11 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 			// We cancel that request now
 			mHandler.removeCallbacks(mTerminateRunnable);
 			mTerminateRunnable = null;
-			if (Logging.ON) Log.d(TAG, "onRebind() - canceled stopping of the service");
+			if (Logging.DEBUG) Log.d(TAG, "onRebind() - canceled stopping of the service");
 		}
 		else {
 			// This is not expected
-			if (Logging.ON) Log.w(TAG, "onRebind() - mTerminateRunnable empty");
+			if (Logging.ERROR) Log.e(TAG, "onRebind() - mTerminateRunnable empty");
 			// We just make sure the service is running
 			// If service is still running, it's kept running anyway
 			startService(new Intent(this, ConnectionManagerService.class));
@@ -90,7 +90,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 	public boolean onUnbind(Intent intent) {
 		// The observers should be empty at this time (all are unbound from us)
 		if (!mObservers.isEmpty()) {
-			if (Logging.ON) Log.w(TAG, "onUnbind(), but mObservers is not empty");
+			if (Logging.WARNING) Log.w(TAG, "onUnbind(), but mObservers is not empty");
 			mObservers.clear();
 		}
 		// Create runnable which will stop service after grace period
@@ -106,18 +106,18 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 				}
 				// Stop service
 				stopSelf();
-				if (Logging.ON) Log.d(TAG, "Stopped service");
+				if (Logging.DEBUG) Log.d(TAG, "Stopped service");
 			}
 		};
 		// Post the runnable to self - delayed by grace period
 		mHandler.postDelayed(mTerminateRunnable, TERMINATE_GRACE_PERIOD * 1000);
-		if (Logging.ON) Log.d(TAG, "onUnbind() - Started grace period to terminate self");
+		if (Logging.DEBUG) Log.d(TAG, "onUnbind() - Started grace period to terminate self");
 		return true;
 	}
 
 	@Override
 	public void onCreate() {
-		if (Logging.ON) Log.d(TAG, "onCreate()");
+		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
 		// Add connectivity monitoring (to be notified when connection is down)
 		mConnectivityStatus = new ConnectivityStatus(this, this);
 		// Create network statistics handler
@@ -126,7 +126,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 
 	@Override
 	public void onDestroy() {
-		if (Logging.ON) Log.d(TAG, "onDestroy()");
+		if (Logging.DEBUG) Log.d(TAG, "onDestroy()");
 		// Clean-up connectivity monitoring
 		mConnectivityStatus.cleanup();
 		mConnectivityStatus = null;
@@ -139,7 +139,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 	public void onConnectivityLost() {
 		if (mClientBridge != null) {
 			// We are interested in this event only when connected
-			if (Logging.ON) Log.d(TAG, "onConnectivityLost() while connected to host " + mClientBridge.getClientId().getNickname());
+			if (Logging.DEBUG) Log.d(TAG, "onConnectivityLost() while connected to host " + mClientBridge.getClientId().getNickname());
 			// TODO Handle connectivity loss
 		}
 	}
@@ -148,7 +148,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 	public void onConnectivityRestored(int connectivityType) {
 		if (mClientBridge != null) {
 			// We are interested in this event only when connected
-			if (Logging.ON) Log.d(TAG, "onConnectivityRestored() while connected to host " + mClientBridge.getClientId().getNickname() + ", connectivity type: " + connectivityType);
+			if (Logging.DEBUG) Log.d(TAG, "onConnectivityRestored() while connected to host " + mClientBridge.getClientId().getNickname() + ", connectivity type: " + connectivityType);
 			// TODO Handle connectivity restoration
 		}
 	}
@@ -157,7 +157,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 	public void onConnectivityChangedType(int connectivityType) {
 		if (mClientBridge != null) {
 			// We are interested in this event only when connected
-			if (Logging.ON) Log.d(TAG, "onConnectivityChangedType() while connected to host " + mClientBridge.getClientId().getNickname() + ", new connectivity type: " + connectivityType);
+			if (Logging.DEBUG) Log.d(TAG, "onConnectivityChangedType() while connected to host " + mClientBridge.getClientId().getNickname() + ", new connectivity type: " + connectivityType);
 			// TODO Handle connectivity type change
 		}
 	}
@@ -168,18 +168,18 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 		if (mClientBridge == clientBridge) {
 			// The currently connected bridge was disconnected.
 			// This is unsolicited disconnect
-			if (Logging.ON) Log.i(TAG, "Unsolicited disconnect of ClientBridge");
+			if (Logging.INFO) Log.i(TAG, "Unsolicited disconnect of ClientBridge");
 			mClientBridge = null;
 		}
 		else {
 			if (mDyingBridges.contains(clientBridge)) {
 				// This is the bridge disconnected by us
-				if (Logging.ON) Log.d(TAG, "ClientBridge finished disconnect");
+				if (Logging.DEBUG) Log.d(TAG, "ClientBridge finished disconnect");
 				mDyingBridges.remove(clientBridge);
 			}
 			else {
 				// This is not expected
-				if (Logging.ON) Log.w(TAG, "Unknown ClientBridge disconnected");
+				if (Logging.WARNING) Log.w(TAG, "Unknown ClientBridge disconnected");
 			}
 		}
 	}
@@ -199,7 +199,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 		if (mClientBridge != null) {
 			mClientBridge.registerStatusObserver(observer);
 		}
-		if (Logging.ON) Log.d(TAG, "Attached new observer: " + observer.toString());
+		if (Logging.DEBUG) Log.d(TAG, "Attached new observer: " + observer.toString());
 	}
 
 	/**
@@ -214,12 +214,12 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 		if (mClientBridge != null) {
 			mClientBridge.unregisterStatusObserver(observer);
 		}
-		if (Logging.ON) Log.d(TAG, "Detached observer: " + observer.toString());
+		if (Logging.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString());
 	}
 
 	@Override
 	public void connect(ClientId host, boolean retrieveInitialData) throws NoConnectivityException {
-		if (Logging.ON) Log.d(TAG, "connect() to host " + host.getNickname());
+		if (Logging.DEBUG) Log.d(TAG, "connect() to host " + host.getNickname());
 		if (mClientBridge != null) {
 			// Connected to some client - disconnect it first
 			disconnect();
@@ -244,13 +244,13 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 	@Override
 	public void disconnect() {
 		if (mClientBridge != null) {
-			if (Logging.ON) Log.d(TAG, "disconnect() - started towards " + mClientBridge.getClientId().getNickname());
+			if (Logging.DEBUG) Log.d(TAG, "disconnect() - started towards " + mClientBridge.getClientId().getNickname());
 			mDyingBridges.add(mClientBridge);
 			mClientBridge.disconnect();
 			mClientBridge = null;
 		}
 		else {
-			if (Logging.ON) Log.d(TAG, "disconnect() - not connected already ");
+			if (Logging.DEBUG) Log.d(TAG, "disconnect() - not connected already ");
 		}
 	}
 

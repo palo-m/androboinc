@@ -184,7 +184,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
-			if (Logging.ON) { Log.d(TAG, "onServiceConnected()"); }
+			if (Logging.DEBUG) { Log.d(TAG, "onServiceConnected()"); }
 			mConnectionManager.registerStatusObserver(TransfersActivity.this);
 		}
 
@@ -193,18 +193,18 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 			mConnectionManager = null;
 			// This should not happen normally, because it's local service 
 			// running in the same process...
-			if (Logging.ON) { Log.e(TAG, "onServiceDisconnected()"); }
+			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
 		}
 	};
 
 	private void doBindService() {
-		if (Logging.ON) { Log.d(TAG, "doBindService()"); }
+		if (Logging.DEBUG) { Log.d(TAG, "doBindService()"); }
 		getApplicationContext().bindService(new Intent(TransfersActivity.this, ConnectionManagerService.class),
 				mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private void doUnbindService() {
-		if (Logging.ON) { Log.d(TAG, "doUnbindService()"); }
+		if (Logging.DEBUG) { Log.d(TAG, "doUnbindService()"); }
 		getApplicationContext().unbindService(mServiceConnection);
 	}
 
@@ -224,7 +224,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		mRequestUpdates = true;
 		if (mConnectedClient != null) {
 			// We are connected right now, request fresh data
-			if (Logging.ON) Log.d(TAG, "onResume() - Starting refresh of data");
+			if (Logging.DEBUG) Log.d(TAG, "onResume() - Starting refresh of data");
 			mConnectionManager.updateTransfers(this);
 		}
 		mViewUpdatesAllowed = true;
@@ -234,7 +234,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 			sortTransfers();
 			((BaseAdapter)getListAdapter()).notifyDataSetChanged();
 			mViewDirty = false;
-			if (Logging.ON) Log.d(TAG, "Delayed refresh of view was done now");
+			if (Logging.DEBUG) Log.d(TAG, "Delayed refresh of view was done now");
 		}
 	}
 
@@ -384,7 +384,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		mConnectedClient = mConnectionManager.getClientId();
 		if (mConnectedClient != null) {
 			// Connected client is retrieved
-			if (Logging.ON) Log.d(TAG, "Client is connected");
+			if (Logging.DEBUG) Log.d(TAG, "Client is connected");
 			if (mRequestUpdates) {
 				// Request fresh data
 				mConnectionManager.updateTransfers(this);
@@ -394,7 +394,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 
 	@Override
 	public void clientDisconnected() {
-		if (Logging.ON) Log.d(TAG, "Client is disconnected");
+		if (Logging.DEBUG) Log.d(TAG, "Client is disconnected");
 		mConnectedClient = null;
 		mTransfers.clear();
 		((BaseAdapter)getListAdapter()).notifyDataSetChanged();
@@ -430,13 +430,13 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		mTransfers = transfers;
 		if (mViewUpdatesAllowed) {
 			// We are visible, update the view with fresh data
-			if (Logging.ON) Log.d(TAG, "Transfers are updated, refreshing view");
+			if (Logging.DEBUG) Log.d(TAG, "Transfers are updated, refreshing view");
 			sortTransfers();
 			((BaseAdapter)getListAdapter()).notifyDataSetChanged();
 		}
 		else {
 			// We are not visible, do not perform costly tasks now
-			if (Logging.ON) Log.d(TAG, "Transfers are updated, but view refresh is delayed");
+			if (Logging.DEBUG) Log.d(TAG, "Transfers are updated, but view refresh is delayed");
 			mViewDirty = true;
 		}
 		return mRequestUpdates;

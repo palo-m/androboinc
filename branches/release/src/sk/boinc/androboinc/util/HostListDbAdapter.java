@@ -58,13 +58,13 @@ public class HostListDbAdapter {
 		}
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			if (Logging.ON) Log.i(TAG, "Creating database, version " + DATABASE_VERSION);
+			if (Logging.INFO) Log.i(TAG, "Creating database, version " + DATABASE_VERSION);
 			db.execSQL(DATABASE_CREATE);
 		}
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			// No upgrade needed yet, default stuff used here:
-			if (Logging.ON) Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", destroying all old data");
+			if (Logging.WARNING) Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", destroying all old data");
 			db.execSQL(DATABASE_CLEAN);
 			onCreate(db);
 		}
@@ -95,7 +95,7 @@ public class HostListDbAdapter {
 	 * @throws SQLException if the database could be neither opened or created
 	 */
 	public HostListDbAdapter open() throws SQLException {
-		if (Logging.ON) Log.d(String.valueOf(this), "open()");
+		if (Logging.DEBUG) Log.d(String.valueOf(this), "open()");
 		mDbHelper = new DatabaseHelper(mCtx);
 		mDb = mDbHelper.getWritableDatabase();
 		return this;
@@ -105,7 +105,7 @@ public class HostListDbAdapter {
 	 * Close the database
 	 */
 	public void close() {
-		if (Logging.ON) Log.d(String.valueOf(this), "close()");
+		if (Logging.DEBUG) Log.d(String.valueOf(this), "close()");
 		if (mDbHelper != null) {
 			mDbHelper.close();
 			mDbHelper = null;

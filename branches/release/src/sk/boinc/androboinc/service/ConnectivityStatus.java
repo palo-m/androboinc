@@ -49,12 +49,12 @@ public class ConnectivityStatus extends BroadcastReceiver {
 			mConnected = ni.isConnected();
 			mConnectivityType = ni.getType();
 		}
-		if (Logging.ON) Log.d(TAG, "Created, registered as receiver, connected=" + mConnected);
+		if (Logging.DEBUG) Log.d(TAG, "Created, registered as receiver, connected=" + mConnected);
 	}
 
 	public void cleanup() {
 		mContext.unregisterReceiver(this);
-		if (Logging.ON) Log.d(TAG, "cleanup(), unregistered receiver");
+		if (Logging.DEBUG) Log.d(TAG, "cleanup(), unregistered receiver");
 	}
 
 	@Override
@@ -72,30 +72,30 @@ public class ConnectivityStatus extends BroadcastReceiver {
 			else {
 				// NetworkInfo not available - We are not connected then...
 				mConnected = false;
-				if (Logging.ON) Log.d(TAG, "onReceive() - NOT connected (no NetworkInfo)");
+				if (Logging.DEBUG) Log.d(TAG, "onReceive() - NOT connected (no NetworkInfo)");
 			}
 			if (previouslyConnected && !mConnected) {
 				// Lost connection right now
-				if (Logging.ON) Log.d(TAG, "Connectivity lost");
+				if (Logging.DEBUG) Log.d(TAG, "Connectivity lost");
 				mConnectivityListener.onConnectivityLost();
 			}
 			else if (!previouslyConnected && mConnected) {
 				// Connection available now
-				if (Logging.ON) Log.d(TAG, "Connectivity restored, type " + mConnectivityType);
+				if (Logging.DEBUG) Log.d(TAG, "Connectivity restored, type " + mConnectivityType);
 				mConnectivityListener.onConnectivityRestored(mConnectivityType);
 			}
 			else if (previouslyConnected && mConnected) {
 				// It was connected before and it is connected now
 				// Maybe just connectivity type changed
 				if (previousType != mConnectivityType) {
-					if (Logging.ON) Log.d(TAG, "Connectivity type changed from " + previousType + " to " + mConnectivityType);
+					if (Logging.DEBUG) Log.d(TAG, "Connectivity type changed from " + previousType + " to " + mConnectivityType);
 					mConnectivityListener.onConnectivityChangedType(mConnectivityType);
 				}
 			}
 		}
 		else {
 			// Incorrect action received - unexpected (we registered only to connectivity changes)
-			if (Logging.ON) Log.w(TAG, "Unexpected action received: " + action);
+			if (Logging.ERROR) Log.e(TAG, "Unexpected action received: " + action);
 			return;
 		}
 	}

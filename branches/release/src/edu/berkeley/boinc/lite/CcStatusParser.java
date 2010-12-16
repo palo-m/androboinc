@@ -44,7 +44,8 @@ public class CcStatusParser extends BaseParser {
 			return parser.getCcStatus();
 		}
 		catch (SAXException e) {
-			if (Logging.ON) { Log.e(TAG, "Malformed XML:\n" + rpcResult); }
+			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
 			return null;
 		}
 	}
@@ -53,10 +54,10 @@ public class CcStatusParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("cc_status")) {
-			if (Logging.ON) { 
+			if (Logging.INFO) { 
 				if (mCcStatus != null) {
 					// previous <cc_status> not closed - dropping it!
-					Log.e(TAG, "Dropping unfinished <cc_status> data");
+					Log.i(TAG, "Dropping unfinished <cc_status> data");
 				}
 			}
 			mCcStatus = new CcStatus();
@@ -149,7 +150,7 @@ public class CcStatusParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.ON) { Log.e(TAG, "Exception when decoding " + localName); }
+			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}
