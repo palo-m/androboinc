@@ -366,6 +366,11 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
 		Vector<Transfer> transfers = mRpcClient.getFileTransfers();
+		if (transfers == null) {
+			if (Logging.INFO) Log.i(TAG, "RPC failed in updateTransfers()");
+			rpcFailed();
+			return;
+		}
 		dataSetTransfers(transfers);
 		updatedTransfers(callback, getTransfers());
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
