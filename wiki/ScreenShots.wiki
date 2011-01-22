@@ -1,4 +1,5 @@
 #summary Screenshots of AndroBOINC
+#sidebar TableOfContents
 #labels Featured
 
 ==== Example of 4 tabs: ====
@@ -31,3 +32,4 @@ http://androboinc.googlecode.com/svn/www/landscape_projects.png
 http://androboinc.googlecode.com/svn/www/landscape_tasks.png
 
 http://androboinc.googlecode.com/svn/www/landscape_messages_menu.png
+

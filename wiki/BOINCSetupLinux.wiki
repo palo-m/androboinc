@@ -1,4 +1,5 @@
 #summary BOINC setup on Linux
+#sidebar TableOfContents
 #labels Phase-Deploy
 
 This example works for Debian or Ubuntu. The exact procedure may slightly differ for other Linux distributions.

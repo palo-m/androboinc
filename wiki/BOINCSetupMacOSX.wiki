@@ -1,4 +1,5 @@
 #summary BOINC setup on Mac OS-X
+#sidebar TableOfContents
 #labels Phase-Deploy
 
 == 1. Install BOINC ==
