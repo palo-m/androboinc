@@ -1,5 +1,4 @@
 #summary How to setup AndroBOINC
-#sidebar TableOfContents
 #labels Phase-Deploy
 
 = Introduction =
@@ -22,11 +21,13 @@ AndroBOINC is remote control for BOINC core client. The BOINC core client must b
 
 == BOINC setup ==
 
-[BOINCSetupLinux BOINC setup on Linux]
+Instructions differ depending on platform which is used to run BOINC:
 
-[BOINCSetupMacOSX BOINC setup on Mac OS X]
+ * [BOINCSetupLinux BOINC setup on Linux]
 
-[BOINCSetupWindows BOINC setup on Windows]
+ * [BOINCSetupMacOSX BOINC setup on Mac OS X]
+
+ * [BOINCSetupWindows BOINC setup on Windows]
 
 
 = Accessibility from Internet =

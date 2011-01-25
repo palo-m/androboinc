@@ -1,5 +1,4 @@
 #summary Screenshots of AndroBOINC
-#sidebar TableOfContents
 #labels Featured
 
 ==== Example of 4 tabs: ====
