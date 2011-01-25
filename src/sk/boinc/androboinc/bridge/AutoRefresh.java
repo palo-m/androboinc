@@ -49,6 +49,8 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 
 	private final static int RUN_UPDATE = 1;
 
+	private final static int NO_CONNECTIVITY = -1;
+
 	private class UpdateRequest {
 		public final ClientReplyReceiver callback;
 		public final int requestType;
@@ -117,18 +119,22 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		globalPrefs.registerOnSharedPreferenceChangeListener(this);
 		final ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		final NetworkInfo ni = cm.getActiveNetworkInfo();
-		int connectivityType = ni.getType();
-		if (connectivityType == ConnectivityManager.TYPE_WIFI) {
+		final NetworkInfo ni = (cm == null) ? null : cm.getActiveNetworkInfo();
+		mConnectionType = (ni == null) ? NO_CONNECTIVITY : ni.getType();
+		if (mConnectionType == ConnectivityManager.TYPE_WIFI) {
 			// The current connection type is WiFi
-			mConnectionType = ConnectivityManager.TYPE_WIFI;
 			mAutoRefresh = Integer.parseInt(globalPrefs.getString(PreferenceName.AUTO_UPDATE_WIFI, "0"));
 			if (Logging.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (WiFi)");
 		}
-		else if (connectivityType == ConnectivityManager.TYPE_MOBILE) {
-			mConnectionType = ConnectivityManager.TYPE_MOBILE;
+		else if (mConnectionType == ConnectivityManager.TYPE_MOBILE) {
 			mAutoRefresh = Integer.parseInt(globalPrefs.getString(PreferenceName.AUTO_UPDATE_MOBILE, "0"));
 			if (Logging.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (Mobile)");
+		}
+		else if (mConnectionType == NO_CONNECTIVITY) {
+			// This is the case when ni == null or cm == null
+			mAutoRefresh = 0;      // auto-refresh is disabled
+			// mConnectionType = -1 means no further change on preferences update
+			if (Logging.INFO) Log.i(TAG, "Networking not active, disabled auto-refresh");
 		}
 		else {
 			mConnectionType = ConnectivityManager.TYPE_MOBILE;
