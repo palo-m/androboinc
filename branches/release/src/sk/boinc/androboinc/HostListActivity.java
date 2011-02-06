@@ -128,26 +128,6 @@ public class HostListActivity extends ListActivity {
 		case R.id.menuAddHost:
 			addHost();
 			return true;
-//		case R.id.menuEditHost:
-//			ArrayList<String> hostnames = new ArrayList<String>();
-//			Cursor c = mHostCursor;
-//			for (c.moveToFirst(); c.moveToNext(); c.isAfterLast()) {
-//				hostnames.add(c.getString(c.getColumnIndexOrThrow(HostListDbAdapter.FIELD_HOST_ADDRESS)));
-//			}
-//			String[] hosts = new String[hostnames.size()];
-//			hosts = hostnames.toArray(hosts);
-//			new AlertDialog.Builder(HostListActivity.this)
-//				.setTitle(R.string.hostEdit)
-//				.setItems(hosts, new DialogInterface.OnClickListener() {
-//					public void onClick(DialogInterface dialog, int which) {
-//						/* User clicked on item */
-//						modifyHost(which, 0);
-//                    }
-//                })
-//                .create();
-//			return true;
-//		case R.id.menuDeleteHost:
-//			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

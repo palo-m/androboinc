@@ -22,8 +22,6 @@ package sk.boinc.androboinc;
 import hal.android.workarounds.FixedProgressDialog;
 
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.HostInfo;
@@ -37,6 +35,7 @@ import sk.boinc.androboinc.clientconnection.VersionInfo;
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ClientId;
+import sk.boinc.androboinc.util.HostListDbAdapter;
 import sk.boinc.androboinc.util.PreferenceName;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.AlertDialog;
@@ -50,7 +49,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -58,9 +56,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
-import android.text.util.Linkify;
-import android.text.util.Linkify.TransformFilter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,21 +66,28 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class BoincManagerActivity extends TabActivity implements ClientReplyReceiver {
 	private static final String TAG = "BoincManagerActivity";
 
-	private static final int DIALOG_ABOUT = 0;
 	private static final int DIALOG_CONNECT_PROGRESS = 1;
-	private static final int DIALOG_NETWORK_DOWN = 2;
+	private static final int DIALOG_NETWORK_DOWN     = 2;
+	private static final int DIALOG_ABOUT            = 3;
+	private static final int DIALOG_LICENSE          = 4;
+	private static final int DIALOG_UPGRADE_INFO        = 5;
 
-	private static final int ACTIVITY_SELECT_HOST = 1;
+	private static final int ACTIVITY_SELECT_HOST   = 1;
 	private static final int ACTIVITY_MANAGE_CLIENT = 2;
 
+	private BoincManagerApplication mApp;
 	private ScreenOrientationHandler mScreenOrientation;
 	private WakeLock mWakeLock;
 	private boolean mScreenAlwaysOn = false;
+	private boolean mBackPressedRecently = false;
+	private int mRecentTab = -1;
+	private boolean mJustUpgraded = false;
 
 	private StringBuilder mSb = new StringBuilder();
 	private int mConnectProgressIndicator = -1;
@@ -121,6 +125,8 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
 			if (Logging.DEBUG) Log.d(TAG, "onServiceConnected()");
 			mConnectionManager.registerStatusObserver(BoincManagerActivity.this);
+			// If service is already connected to client, it will call back the clientConnected()
+			// So the mConnectedClient will be set now.
 			if (mSelectedClient != null) {
 				// Some client was selected at the time when service was not bound yet
 				// Now the service is available, so connection can proceed
@@ -156,6 +162,9 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
+
+		mApp = (BoincManagerApplication)getApplication();
+		mJustUpgraded = mApp.getJustUpgradedStatus();
 
 		// Create handler for screen orientation
 		mScreenOrientation = new ScreenOrientationHandler(this);
@@ -195,10 +204,13 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		// Set all tabs one by one, to start all activities now
 		// It is better to receive early updates of data
 		tabHost.setCurrentTabByTag("tab_messages");
+		tabHost.setCurrentTabByTag("tab_tasks");
 		tabHost.setCurrentTabByTag("tab_transfers");
 		tabHost.setCurrentTabByTag("tab_projects");
-		// Set tab Tasks as current
-		tabHost.setCurrentTabByTag("tab_tasks");
+		// Set saved tab (the last selected on previous run) as current
+		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		int lastActiveTab = globalPrefs.getInt(PreferenceName.LAST_ACTIVE_TAB, 1);
+		tabHost.setCurrentTab(lastActiveTab);
 
 		// Restore state on configuration change (if applicable)
 		final SavedState savedState = (SavedState)getLastNonConfigurationInstance();
@@ -206,12 +218,25 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			// Yes, we have the saved state, this is activity re-creation after configuration change
 			savedState.restoreState(this);
 		}
+		else {
+			// Just normal start
+			String autoConnectHost = globalPrefs.getString(PreferenceName.AUTO_CONNECT_HOST, null);
+			if ((autoConnectHost != null) && globalPrefs.getBoolean(PreferenceName.AUTO_CONNECT, false)) {
+				// We should auto-connect to recently connected host
+				HostListDbAdapter dbHelper = new HostListDbAdapter(this);
+				dbHelper.open();
+				mSelectedClient = dbHelper.fetchHost(autoConnectHost);
+				if (Logging.DEBUG) Log.d(TAG, "Will auto-connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
+				dbHelper.close();
+			}
+		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		if (Logging.DEBUG) Log.d(TAG, "onResume()");
+		mBackPressedRecently = false;
 		mScreenOrientation.setOrientation();
 		// We are either starting up or returning from sub-activity, which
 		// could be the AppPreferencesActivity - we must check the wake-lock now
@@ -231,8 +256,20 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		}
 		// Update name of connected client (or show "not connected")
 		updateTitle();
-		// Progress dialog is allowed since now
-		mProgressDialogAllowed = true;
+		// Show Information about upgrade, if applicable
+		if (mJustUpgraded) {
+			mJustUpgraded = false; // Do not show again
+			mProgressDialogAllowed = false;
+			// Now show the dialog about upgrade
+			showDialog(DIALOG_UPGRADE_INFO);
+		}
+		else {
+			// Progress dialog is allowed since now
+			mProgressDialogAllowed = true;
+		}
+		// If applicable (e.g scheduled), connect to the host
+		// Even in case that ChangeLog is being shown on upgrade, connect will still be done,
+		// but progress dialog is suppressed (will be enabled on dismiss of ChangeLog dialog)
 		if (mSelectedClient != null) {
 			// We just returned from activity which selected client to connect to
 			if (mConnectionManager != null) {
@@ -241,7 +278,8 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			}
 			else {
 				// Service not bound at the moment (too slow start? or disconnected itself?)
-				if (Logging.INFO) Log.i(TAG, "onResume() - Client selected, but service not yet available => binding again");
+				// We trigger re-bind again (does not hurt if it's duplicate)
+				if (Logging.DEBUG) Log.d(TAG, "onResume() - Client selected, but service not yet available => binding again");
 				doBindService();
 			}
 		}
@@ -265,11 +303,26 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	protected void onStop() {
 		super.onStop();
 		if (Logging.DEBUG) Log.d(TAG, "onStop()");
-		if (Logging.DEBUG) {
-			if (isFinishing()) {
-				// Activity is not only invisible, but someone requested it to finish
-				Log.d(TAG, "Activity is finishing NOW");
+		if (isFinishing()) {
+			// Activity is not only invisible, but someone requested it to finish
+			if (Logging.DEBUG) Log.d(TAG, "Activity is finishing NOW");
+			// Save currently selected tab, so it can be restored on next run
+			SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+			SharedPreferences.Editor editor = globalPrefs.edit();
+			if (globalPrefs.getBoolean(PreferenceName.AUTO_CONNECT, false) &&
+					(mConnectedClient != null)) {
+				// Automatic connect is enabled and we are still connected;
+				// We save currently connected client's ID, so next time
+				// We can connect automatically
+				editor.putString(PreferenceName.AUTO_CONNECT_HOST, mConnectedClient.getNickname());
 			}
+			else {
+				// Automatic connect disabled or we are not connected;
+				// Remove previously saved client's ID
+				editor.remove(PreferenceName.AUTO_CONNECT_HOST);
+			}
+			editor.putInt(PreferenceName.LAST_ACTIVE_TAB, getTabHost().getCurrentTab());
+			editor.commit();
 		}
 	}
 
@@ -292,18 +345,34 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		mScreenOrientation = null;
 	}
 
-//	@Override
-//	public void onConfigurationChanged(Configuration newConfig) {
-//		super.onConfigurationChanged(newConfig);
-//		// We handle only orientation changes
-//		if (Logging.DEBUG) Log.d(TAG, "onConfigurationChanged(), newConfig=" + newConfig.toString());
-//		mScreenOrientation.setOrientation();
-//	}
-
 	@Override
 	public Object onRetainNonConfigurationInstance() {
 		final SavedState savedState = new SavedState();
 		return savedState;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (event.getRepeatCount() == 0) {
+			if (keyCode == KeyEvent.KEYCODE_BACK) {
+				// Back button pressed
+				int currentTab = getTabHost().getCurrentTab();
+				if (!mBackPressedRecently || (mRecentTab != currentTab)) {
+					// Back button was not pressed previously
+					// or it was pressed while in other tab
+					mBackPressedRecently = true;
+					mRecentTab = currentTab;
+					Toast.makeText(this, getString(R.string.closeWarning), Toast.LENGTH_SHORT).show();
+					// Return true, so default handling of Back button is suppressed
+					return true;
+				}
+			}
+			else if (mBackPressedRecently) {
+				// Pressed other than Back button (after previous press of Back)
+				mBackPressedRecently = false;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -318,8 +387,6 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		MenuItem item;
-//		item = menu.findItem(R.id.menuConnect);
-//		item.setVisible(mConnectedClient == null);
 		item = menu.findItem(R.id.menuDisconnect);
 		item.setVisible(mConnectedClient != null);
 		return true;
@@ -357,62 +424,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		View v;
 		TextView text;
 		switch (id) {
-		case DIALOG_ABOUT:
-			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
-			text = (TextView)v.findViewById(R.id.dialogText);
-			text.setText(getString(R.string.aboutText, getAppName(), getVersion()));
-			String httpURL = "http://";
-			// Link to BOINC.SK page
-			Pattern boincskText = Pattern.compile("BOINC\\.SK");
-			TransformFilter boincskTransformer = new TransformFilter() {
-				@Override
-				public String transformUrl(Matcher match, String url) {
-					return url.toLowerCase() + "/";
-				}
-			};
-			Linkify.addLinks(text, boincskText, httpURL, null, boincskTransformer);
-			// Link to GPLv3 license
-			Pattern gplText = Pattern.compile("GPLv3");
-			TransformFilter gplTransformer = new TransformFilter() {
-				@Override
-				public String transformUrl(Matcher match, String url) {
-					return "www.gnu.org/licenses/gpl-3.0.txt";
-				}
-			};
-			Linkify.addLinks(text, gplText, httpURL, null, gplTransformer);
-        	return new AlertDialog.Builder(this)
-        		.setIcon(android.R.drawable.ic_dialog_info)
-        		.setTitle(R.string.aboutTitle)
-        		.setView(v)
-        		.setPositiveButton(R.string.aboutHomepage,
-        			new DialogInterface.OnClickListener() {
-        				public void onClick(DialogInterface dialog, int whichButton) {
-        					Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
-        					startActivity(new Intent(Intent.ACTION_VIEW, uri));
-        				}
-        			})
-        		.setNegativeButton(R.string.aboutClose, null)
-        		.create();
 		case DIALOG_CONNECT_PROGRESS:
-//			if ( (mConnectionManager == null) || (mConnectProgressIndicator == -1) || !mProgressDialogAllowed ) {
-//				// Re-creation of dialog in case of activity restart should not happen
-//				// There is a danger that final indicator (which should dismiss dialog) would be missed
-//				// because activity is restarting.
-//				// The problem would happen in following sequence:
-//				// 1. Progress indication received in old activity, showDialog() called
-//				// 2. onCreateDialog()/onPrepareDialog() in old activity
-//				// 3. onPause() in old activity because orientation change, dismissDialog() called
-//				// 4. Background connecting finishes (failure), but since new activity is not created/attached yet,
-//				//    the progress indication about successful connect is not sent to it
-//				// 5. onCreate() in new activity, attach to service starts
-//				// 6. onCreateDialog() in new activity
-//				// 7. onResume() in new activity
-//				// 8. onServiceConnected() in new activity, new activity can receive progress indications since now.
-//				// In scenario above we cannot re-create dialog in point 6, as we will receive indications only after point 8
-//				// and there could be no indications anymore, which would leave progress dialog hanging forever
-//				if (Logging.DEBUG) Log.d(TAG, "onCreateDialog(DIALOG_CONNECT_PROGRESS) - no progress dialog created, because activity is re-starting");
-//				return null;
-//			}
 			if (Logging.DEBUG) Log.d(TAG, "onCreateDialog(DIALOG_CONNECT_PROGRESS)");
 			ProgressDialog dialog = new FixedProgressDialog(this);
             dialog.setIndeterminate(true);
@@ -435,7 +447,72 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
         		.setIcon(android.R.drawable.ic_dialog_alert)
         		.setTitle(R.string.error)
         		.setView(v)
-        		.setNegativeButton(R.string.aboutClose, null)
+        		.setNegativeButton(R.string.close, null)
+        		.create();
+		case DIALOG_ABOUT:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setAboutText(text);
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.aboutTitle)
+				.setView(v)
+				.setPositiveButton(R.string.homepage,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							startActivity(new Intent(Intent.ACTION_VIEW, uri));
+						}
+					})
+				.setNeutralButton(R.string.license,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							showDialog(DIALOG_LICENSE);
+						}
+					})
+        		.setNegativeButton(R.string.dismiss, null)
+        		.create();
+		case DIALOG_LICENSE:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setLicenseText(text);
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.license)
+				.setView(v)
+				.setPositiveButton(R.string.sources, 
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							startActivity(new Intent(Intent.ACTION_VIEW, uri));
+						}
+					})
+        		.setNegativeButton(R.string.dismiss, null)
+        		.create();
+		case DIALOG_UPGRADE_INFO:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setChangelogText(text);
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(getString(R.string.upgradedTo) + " " + mApp.getApplicationVersion())
+				.setView(v)
+				.setNegativeButton(R.string.dismiss, 
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// Progress dialog is allowed since now
+							mProgressDialogAllowed = true;
+							if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+						}					
+					})
+				.setOnCancelListener(new OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						// Progress dialog is allowed since now
+						mProgressDialogAllowed = true;
+						if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+					}
+				})
         		.create();
 		}
 		return null;
@@ -445,13 +522,6 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		switch (id) {
 		case DIALOG_CONNECT_PROGRESS:
-//			if (mConnectProgressIndicator == -1) {
-//				// This can happen when activity restarts by rotating the screen
-//				// while progress dialog is shown (connecting)
-//				// We will receive connected notification when connect succeeds 
-//				if (Logging.DEBUG) Log.d(TAG, "mConnectProgressIndicator=-1: restarting the activity");
-//				mConnectProgressIndicator = PROGRESS_INITIAL_DATA;
-//			}
 			ProgressDialog pd = (ProgressDialog)dialog;
 			switch (mConnectProgressIndicator) {
 			case PROGRESS_CONNECTING:
@@ -538,6 +608,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			// Connected client is retrieved
 			if (Logging.DEBUG) Log.d(TAG, "Client " + mConnectedClient.getNickname() + " is connected");
 			updateTitle();
+			mSelectedClient = null; // For case of auto-connect on startup while service is already connected
 		}
 		else {
 			// Received connected notification, but client is unknown!
@@ -605,21 +676,6 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	}
 
 
-	/* Name of the application. */
-	private final String getAppName() {
-		return getString(R.string.app_name);
-	}
-
-	/* Version of the application. */
-	private final String getVersion() {
-		try {
-			return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-		} catch (NameNotFoundException e) {
-			// Ignore.
-		}
-		return "";
-	}
-
 	private void updateTitle() {
 		if (mConnectedClient != null) {
 			// We are connected to host - update title to host nickname
@@ -683,8 +739,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		else {
 			// We are currently connected and some client was selected to connect
 			// We must check whether it is not the same
-			// TODO: base it on ID instead
-			if (mSelectedClient.getNickname().equals(mConnectedClient.getNickname())) {
+			if (mSelectedClient.equals(mConnectedClient)) {
 				// The same client was selected, as the one already connected
 				// We will not change connection - reset mSelectedClient
 				if (Logging.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");

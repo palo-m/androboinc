@@ -101,7 +101,6 @@ public class EditHostActivity extends Activity {
 		});
 
 		mConfirmButton = (Button)findViewById(R.id.editHostOk);
-//		mConfirmButton.setEnabled((mNickname.getText().length() > 0) && (mAddress.getText().length() > 0));
 		setConfirmButtonState();
 		mConfirmButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {

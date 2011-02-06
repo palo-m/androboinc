@@ -35,15 +35,13 @@
 			android:summaryOn="@string/prefKeepScreenOnEnabled"
 			android:defaultValue="false"
 			android:persistent="true" />
-<!-- TODO: Automatic reconnect to last connected client
 		<CheckBoxPreference
-			android:key="autoReconnect"
-			android:title="@string/prefAutoReconnect"
-			android:summaryOff="@string/prefAutoReconnectDisabled"
-			android:summaryOn="@string/prefAutoReconnectEnabled"
-			android:defaultValue="true"
+			android:key="autoConnect"
+			android:title="@string/prefAutoConnectTitle"
+			android:summaryOff="@string/prefAutoConnectDisabled"
+			android:summaryOn="@string/prefAutoConnectEnabled"
+			android:defaultValue="false"
 			android:persistent="true" />
--->
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/prefCategoryNetworkBW">
 		<ListPreference
@@ -63,11 +61,34 @@
 			android:defaultValue="0"
 			android:persistent="true" />
 		<CheckBoxPreference
+			android:key="limitMessages"
+			android:title="@string/prefLimitMessagesTitle"
+			android:summaryOff="@string/prefLimitMessagesDisabled"
+			android:summaryOn="@string/prefLimitMessagesEnabled"
+			android:defaultValue="true"
+			android:persistent="true" />
+		<CheckBoxPreference
 			android:key="trackNetworkUsage"
 			android:title="@string/prefNetworkUsageStats"
 			android:summaryOff="@string/prefNetworkUsageDisabled"
 			android:summaryOn="@string/prefNetworkUsageNull"
 			android:defaultValue="false"
 			android:persistent="true" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/prefCategoryAbout">
+		<Preference
+			android:key="aboutMe"
+			android:title="@string/prefAboutTitle"
+			android:persistent="false" />
+		<Preference
+			android:key="changeLog"
+			android:title="@string/changelog"
+			android:summary="@string/prefChangelogSummary"
+			android:persistent="false" />
+		<Preference
+			android:key="license"
+			android:title="@string/license"
+			android:summary="@string/prefLicenseSummary"
+			android:persistent="false" />
 	</PreferenceCategory>
 </PreferenceScreen>

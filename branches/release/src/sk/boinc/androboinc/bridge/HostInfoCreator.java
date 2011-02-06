@@ -19,7 +19,9 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.R;
 import sk.boinc.androboinc.clientconnection.HostInfo;
+import android.content.res.Resources;
 
 
 public class HostInfoCreator {
@@ -27,49 +29,31 @@ public class HostInfoCreator {
 		HostInfo hi = new HostInfo();
 		hi.hostCpId = hostInfo.host_cpid;
 		StringBuilder sb = formatter.getStringBuilder();
-		// TODO: Use Resources for strings
-		sb.append("<b>Domain name:</b> ");
-		sb.append(hostInfo.domain_name);
-		sb.append("<br /><b>IP-address:</b> ");
-		sb.append(hostInfo.ip_addr);
-		sb.append("<br /><b>Cross-project ID:</b> ");
-		sb.append(hostInfo.host_cpid);
-		sb.append("<br /><b>OS name:</b> ");
-		sb.append(hostInfo.os_name);
-		sb.append("<br /><b>OS version:</b> ");
-		sb.append(hostInfo.os_version);
-		sb.append("<br /><b>#CPUs:</b> ");
-		sb.append(hostInfo.p_ncpus);
-		sb.append("<br /><b>Vendor:</b> ");
-		sb.append(hostInfo.p_vendor);
-		sb.append("<br /><b>Model:</b> ");
-		sb.append(hostInfo.p_model);
-		sb.append("<br /><b>Features:</b> ");
-		sb.append(hostInfo.p_features);
-		sb.append("<br /><b>MFLOPS:</b> ");
-		sb.append(String.format("%.2f", hostInfo.p_fpops/1000000));
-		sb.append("<br /><b>MIPS:</b> ");
-		sb.append(String.format("%.2f", hostInfo.p_iops/1000000));
-		sb.append("<br /><b>Memory Bandwidth:</b> ");
-		sb.append(String.format("%.2f", hostInfo.p_membw/1000000));
-		sb.append("<br /><b>Benchmarks calculated:</b> ");
-		sb.append(formatter.formatDate(hostInfo.p_calculated));
-		sb.append("<br /><b>Memory size:</b> ");
-		sb.append(String.format("%.0f", hostInfo.m_nbytes/1024/1024));
-		sb.append("MiB");
-		sb.append("<br /><b>Cache size:</b> ");
-		sb.append(String.format("%.0f", hostInfo.m_cache/1024));
-		sb.append("KiB");
-		sb.append("<br /><b>Swap size:</b> ");
-		sb.append(String.format("%.0f", hostInfo.m_swap/1024/1024));
-		sb.append("MiB");
-		sb.append("<br /><b>Disk size:</b> ");
-		sb.append(String.format("%.1f", hostInfo.d_total/1000000000));
-		sb.append("GB");
-		sb.append("<br /><b>Disk free:</b> ");
-		sb.append(String.format("%.1f", hostInfo.d_free/1000000000));
-		sb.append("GB");
-		sb.append("<br /><br />");
+		Resources resources = formatter.getResources();
+		sb.append(
+				resources.getString(R.string.hostInfoPart1,
+						hostInfo.domain_name,
+						hostInfo.ip_addr,
+						hostInfo.host_cpid,
+						hostInfo.os_name,
+						hostInfo.os_version,
+						hostInfo.p_ncpus,
+						hostInfo.p_vendor,
+						hostInfo.p_model,
+						hostInfo.p_features)
+				);
+		sb.append(
+				resources.getString(R.string.hostInfoPart2,
+						String.format("%.2f", hostInfo.p_fpops/1000000),
+						String.format("%.2f", hostInfo.p_iops/1000000),
+						String.format("%.2f", hostInfo.p_membw/1000000),
+						formatter.formatDate(hostInfo.p_calculated),
+						String.format("%.0f %s", hostInfo.m_nbytes/1024/1024, resources.getString(R.string.unitMiB)),
+						String.format("%.0f %s", hostInfo.m_cache/1024, resources.getString(R.string.unitKiB)),
+						String.format("%.0f %s", hostInfo.m_swap/1024/1024, resources.getString(R.string.unitMiB)),
+						String.format("%.1f %s", hostInfo.d_total/1000000000, resources.getString(R.string.unitGB)),
+						String.format("%.1f %s", hostInfo.d_free/1000000000, resources.getString(R.string.unitGB)))
+				);
 		hi.htmlText = sb.toString();
 		return hi;
 	}

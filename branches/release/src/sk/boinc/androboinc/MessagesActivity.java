@@ -35,6 +35,7 @@ import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -43,6 +44,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,6 +66,19 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 
 	private Vector<MessageInfo> mMessages = new Vector<MessageInfo>();
 
+
+	private class SavedState {
+		private final Vector<MessageInfo> messages;
+
+		public SavedState() {
+			messages = mMessages;
+			if (Logging.DEBUG) Log.d(TAG, "saved: messages.size()=" + messages.size());
+		}
+		public void restoreState(MessagesActivity activity) {
+			activity.mMessages = messages;
+			if (Logging.DEBUG) Log.d(TAG, "restored: mMessages.size()=" + activity.mMessages.size());
+		}
+	}
 
 	private class MessageListAdapter extends BaseAdapter {
 		private Context mContext;
@@ -163,6 +178,16 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 		setListAdapter(new MessageListAdapter(this));
 		mScreenOrientation = new ScreenOrientationHandler(this);
 		doBindService();
+		// Restore state on configuration change (if applicable)
+		final SavedState savedState = (SavedState)getLastNonConfigurationInstance();
+		if (savedState != null) {
+			// Yes, we have the saved state, this is activity re-creation after configuration change
+			savedState.restoreState(this);
+			if (!mMessages.isEmpty()) {
+				// We restored messages - view will be updated on resume (before we will get refresh)
+				mViewDirty = true;
+			}
+		}
 	}
 
 	@Override
@@ -207,6 +232,21 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 		}
 		doUnbindService();
 		mScreenOrientation = null;
+	}
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		final SavedState savedState = new SavedState();
+		return savedState;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Activity parent = getParent();
+		if (parent != null) {
+			return parent.onKeyDown(keyCode, event);
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override

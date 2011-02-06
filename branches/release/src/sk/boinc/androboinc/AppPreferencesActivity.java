@@ -26,15 +26,18 @@ import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,15 +47,20 @@ import android.widget.TextView;
 public class AppPreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	private static final String TAG = "AppPreferencesActivity";
 
-	private static final int DIALOG_NETSTATS_DISCLAIMER = 0;
+	private static final int DIALOG_NETSTATS_DISCLAIMER = 1;
+	private static final int DIALOG_ABOUT               = 2;
+	private static final int DIALOG_LICENSE             = 3;
+	private static final int DIALOG_CHANGELOG           = 4;
 
+	private BoincManagerApplication mApp;
 	private ScreenOrientationHandler mScreenOrientation;
-
 	private StringBuilder mAuxString = new StringBuilder();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		mApp = (BoincManagerApplication)getApplication();
 
 		// Screen orientation handler
 		mScreenOrientation = new ScreenOrientationHandler(this);
@@ -62,6 +70,7 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 
 		ListPreference listPref;
 		CheckBoxPreference cbPref;
+		Preference pref;
 
 		// Screen Rotation
 		listPref = (ListPreference)findPreference(PreferenceName.SCREEN_ORIENTATION);
@@ -74,6 +83,14 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 				return true;
 			}
 		});
+
+		// Keep screen on:
+		// This preference does not need special handling here.
+		// Data in XML file will manage all needed handling.
+
+		// Automatic reconnect to recently connected host:
+		// This preference does not need special handling here.
+		// Data in XML file will manage all needed handling.
 
 		// Automatic refresh interval for WiFi
 		listPref = (ListPreference)findPreference(PreferenceName.AUTO_UPDATE_WIFI);
@@ -111,6 +128,11 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 			}
 		});
 
+		// Limit/No-limit initially retrieved messages:
+		// This preference does not need special handling here.
+		// Data in XML file will manage all needed handling.
+
+		// Data statistics collection
 		cbPref = (CheckBoxPreference)findPreference(PreferenceName.COLLECT_STATS);
 		cbPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
@@ -137,6 +159,37 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 						return false;
 					}
 				}
+			}
+		});
+
+		// Display About the application
+		pref = findPreference("aboutMe");
+		pref.setSummary(mApp.getApplicationVersion());
+		pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				showDialog(DIALOG_ABOUT);
+				return true;
+			}
+		});
+
+		// Display Changelog
+		pref = findPreference("changeLog");
+		pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				showDialog(DIALOG_CHANGELOG);
+				return true;
+			}
+		});
+
+		// Display License
+		pref = findPreference("license");
+		pref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				showDialog(DIALOG_LICENSE);
+				return true;
 			}
 		});
 	}
@@ -238,6 +291,50 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 					}
 				})
 				.create();
+		case DIALOG_ABOUT:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setAboutText(text);
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.aboutTitle)
+				.setView(v)
+				.setPositiveButton(R.string.homepage,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							startActivity(new Intent(Intent.ACTION_VIEW, uri));
+						}
+					})
+        		.setNegativeButton(R.string.dismiss, null)
+        		.create();
+		case DIALOG_LICENSE:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setLicenseText(text);
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.license)
+				.setView(v)
+				.setPositiveButton(R.string.sources,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							startActivity(new Intent(Intent.ACTION_VIEW, uri));
+						}
+					})
+        		.setNegativeButton(R.string.dismiss, null)
+        		.create();
+		case DIALOG_CHANGELOG:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setChangelogText(text);
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.changelog)
+				.setView(v)
+				.setNegativeButton(R.string.dismiss, null)
+        		.create();
 		}
 		return null;
 	}
@@ -273,33 +370,33 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 		if (totalRcvd/1000000 > 0) {
 			// More than 1M
 			double mRcvd = totalRcvd/1000000.0d;
-			mAuxString.append(String.format("%.1fMB, ", mRcvd));
+			mAuxString.append(String.format("%.1f%s, ", mRcvd, getString(R.string.unitMB)));
 		}
 		else if (totalRcvd/1000 > 0) {
 			// More than 1K
 			double kRcvd = totalRcvd/1000.0d;
-			mAuxString.append(String.format("%.1fKB, ", kRcvd));
+			mAuxString.append(String.format("%.1f%s, ", kRcvd, getString(R.string.unitKB)));
 		}
 		else {
 			// Just bytes
 			mAuxString.append(totalRcvd);
-			mAuxString.append("B, ");
+			mAuxString.append(String.format("%s, ", getString(R.string.unitB)));
 		}
 		mAuxString.append(getString(R.string.sent));
 		mAuxString.append(": ");
 		if (totalSent/1000000 > 0) {
 			// More than 1M
 			double mSent = totalSent/1000000.0d;
-			mAuxString.append(String.format("%.1fMB", mSent));
+			mAuxString.append(String.format("%.1f%s", mSent, getString(R.string.unitMB)));
 		}
 		else if (totalSent/1000 > 0) {
 			// More than 1K
 			double kSent = totalSent/1000.0d;
-			mAuxString.append(String.format("%.1fKB", kSent));
+			mAuxString.append(String.format("%.1f%s", kSent, getString(R.string.unitKB)));
 		}
 		else {
 			mAuxString.append(totalSent);
-			mAuxString.append("B");
+			mAuxString.append(String.format("%s", getString(R.string.unitB)));
 		}
 
 		CheckBoxPreference pref = (CheckBoxPreference)findPreference(PreferenceName.COLLECT_STATS);

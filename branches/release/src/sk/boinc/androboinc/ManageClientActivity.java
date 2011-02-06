@@ -527,9 +527,6 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		if (mHostInfo != null) {
 			showDialog(DIALOG_HOST_INFO);
 		}
-		else {
-			// TODO: Empty HostInfo received
-		}
 		return false;
 	}
 
@@ -681,8 +678,7 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		else {
 			// We are currently connected and some client was selected to connect
 			// We must check whether it is not the same
-			// TODO: base it on ID instead
-			if (mSelectedClient.getNickname().equals(mConnectedClient.getNickname())) {
+			if (mSelectedClient.equals(mConnectedClient)) {
 				// The same client was selected, as the one already connected
 				// We will not change connection - reset mSelectedClient
 				if (Logging.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");
