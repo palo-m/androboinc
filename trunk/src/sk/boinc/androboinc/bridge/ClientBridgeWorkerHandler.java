@@ -40,8 +40,11 @@ import sk.boinc.androboinc.debug.Debugging;
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.debug.NetStats;
 import sk.boinc.androboinc.util.ClientId;
+import sk.boinc.androboinc.util.PreferenceName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import edu.berkeley.boinc.lite.App;
 import edu.berkeley.boinc.lite.CcState;
@@ -57,7 +60,7 @@ import edu.berkeley.boinc.lite.Workunit;
 public class ClientBridgeWorkerHandler extends Handler {
 	private static final String TAG = "ClientBridgeWorkerHandler";
 
-//	private static final long FULL_TASKS_UPDATE_TIME = 60; // 1 minute
+	private static final int MESSAGE_INITIAL_LIMIT = 50;
 
 	private ClientBridge.ReplyHandler mReplyHandler = null; // write in UI thread only
 	private Context mContext = null;
@@ -78,7 +81,6 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private Vector<TransferInfo> mTransfers = new Vector<TransferInfo>();
 	private SortedMap<Integer, MessageInfo> mMessages = new TreeMap<Integer, MessageInfo>();
 	private boolean mInitialStateRetrieved = false;
-//	private long mFullTasksUpdateTime = 0;
 
 
 	public ClientBridgeWorkerHandler(ClientBridge.ReplyHandler replyHandler, final Context context, final NetStats netStats) {
@@ -292,7 +294,6 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
-//		long timestamp = System.nanoTime();
 		boolean updateFinished = false;
 		Vector<Result> results;
 		if (!mInitialStateRetrieved) {
@@ -310,38 +311,6 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 			updateFinished = dataUpdateTasks(results);
 		}
-//		else if (mClientVersion.versNum >= 610000) { 
-//			if (Logging.DEBUG) Log.d(TAG, "Client version at least 6.10.0: " + mClientVersion.versNum);
-//			if ( (timestamp - mFullTasksUpdateTime) < (FULL_TASKS_UPDATE_TIME * 1000000000L) ) {
-//				// It's fairly new client version and time for full update
-//				// was not reached yet
-//				// First try to get active tasks only (to make it much faster)
-//				results = mRpcClient.getActiveResults();
-//				if (results == null) {
-//					if (Logging.INFO) Log.i(TAG, "RPC failed in updateTasks()");
-//					rpcFailed();
-//					return;
-//				}
-//				updateFinished = dataUpdateActiveTasks(results);
-//			}
-//		}
-//		else {
-//			// Clients older than 6.10.0 cannot get active tasks only - we get all tasks
-//			if (Logging.DEBUG) Log.d(TAG, "Client version older than 6.10.0: " + mClientVersion.versNum);
-//		}
-//		if (!updateFinished) {
-//			// Either this is trigger for all tasks (not only active), 
-//			// or the trigger is only for active tasks, but it returned false
-//			// (i.e. active tasks changed)
-//			// All results must be retrieved
-//			results = mRpcClient.getResults();
-//			if (results == null) {
-//				if (Logging.INFO) Log.i(TAG, "RPC failed in updateTasks()");
-//				rpcFailed();
-//				return;
-//			}
-//			updateFinished = dataUpdateTasks(results);
-//		}
 		if (!updateFinished) {
 			// Update still not finished :-(
 			// This is normal in case new work-unit arrived, because we have
@@ -389,11 +358,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 		int reqSeqno = (mMessages.isEmpty()) ? 0 : mMessages.lastKey();
 		if (reqSeqno == 0) {
 			// No messages stored yet
-			int lastSeqno = mRpcClient.getMessageCount();
-			if (lastSeqno > 0) {
-				// Retrieval of message count is supported operation - get only last 50 messages
-				reqSeqno = lastSeqno - 50;
-				if (reqSeqno < 1) reqSeqno = 0; // get all if less than 50 messages are available
+			SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+			boolean recentMessagesOnly = globalPrefs.getBoolean(PreferenceName.LIMIT_MESSAGES, true);
+			if (recentMessagesOnly) {
+				// Preference: Initially retrieve only 50 (MESSAGE_INITIAL_LIMIT) recent messages
+				int lastSeqno = mRpcClient.getMessageCount();
+				if (lastSeqno > 0) {
+					// Retrieval of message count is supported operation - get only last 50 messages
+					reqSeqno = lastSeqno - MESSAGE_INITIAL_LIMIT;
+					if (reqSeqno < 1) reqSeqno = 0; // get all if less than 50 messages are available
+				}
 			}
 		}
 		if (mDisconnecting) return;  // already in disconnect phase
@@ -725,7 +699,6 @@ public class ClientBridgeWorkerHandler extends Handler {
 				mActiveTasks.add(result.name);
 			}
 		}
-//		mFullTasksUpdateTime = System.nanoTime();
 		if (Logging.DEBUG) Log.d(TAG, "dataSetTasks(): End update");
 	}
 
@@ -746,46 +719,6 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 		if (Logging.DEBUG) Log.d(TAG, "dataSetTransfers(): End update");
 	}
-
-//	private boolean dataUpdateActiveTasks(Vector<Result> activeResults) {
-//		if (Logging.DEBUG) Log.d(TAG, "dataUpdateActiveTasks(): Begin update");
-//		if (activeResults.size() != mActiveTasks.size()) {
-//			// The number of active tasks changed - we cannot do simple partial update
-//			if (Logging.DEBUG) Log.d(TAG, "Changed number of active tasks detected in dataUpdateActiveTasks() - needs updateResults() update");
-//			return false;
-//		}
-//		// The number of last recorded active tasks is the same as current number of active tasks
-//		// Parse newest active results to see, whether also tasks are the same
-//		Iterator<Result> ri = activeResults.iterator();
-//		while (ri.hasNext()) {
-//			Result newActiveResult = ri.next();
-//			if (!mActiveTasks.contains(newActiveResult.name)) {
-//				// The active result to be updated is not in the list of stored active results
-//				// The active tasks changed - we cannot do simple partial update
-//				if (Logging.DEBUG) Log.d(TAG, "Changed active task detected in dataUpdateActiveTasks() - needs dataUpdateTasks() update");
-//				return false;
-//			}
-//		}
-//		// Now, we are sure that the number of stored active tasks is the same as the current
-//		// number of active tasks and that all the stored task (result) names are the same
-//		// as the names of current active tasks.
-//		// So we assume that only the values of active tasks changed (e.g. elapsed time).
-//		// So let's do the simple partial update
-//		if (Logging.DEBUG) Log.d(TAG, "dataUpdateActiveTasks(): Starting partial update (only active tasks)");
-//		ri = activeResults.iterator();
-//		while (ri.hasNext()) {
-//			Result activeResult = ri.next();
-//			TaskInfo task = (TaskInfo)mTasks.get(activeResult.name);
-//			if (task == null) {
-//				// not expected, as checks should be already done in calling method
-//				if (Logging.WARNING) Log.w(TAG, "Task not found while trying dataUpdateActiveTasks()");
-//				return false;
-//			}
-//			TaskInfoCreator.update(task, activeResult, mFormatter);
-//		}
-//		if (Logging.DEBUG) Log.d(TAG, "dataUpdateActiveTasks(): End update");
-//		return true;
-//	}
 
 	private boolean dataUpdateTasks(Vector<Result> results) {
 		if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): Begin update");

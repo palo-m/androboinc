@@ -166,24 +166,23 @@ public class HostListDbAdapter {
 	}
 
 	/**
-	 * Fetch single host
+	 * Fetch single host by nickname
 	 * 
-	 * @param rowId of the host to retrieve
-	 * @return Cursor over single host row
-	 * @throws SQLException if record could not be found/retrieved
+	 * @param nickname of the host to retrieve
+	 * @return ClientId class if host is successfully retrieved or null if host is not found
 	 */
-	public Cursor fetchHost(long rowId) throws SQLException {
+	public ClientId fetchHost(String nickname) {
+		ClientId clientId = null;
 		Cursor cur = mDb.query(true, TABLE_HOSTS,
 				new String[] {KEY_ROWID, FIELD_HOST_NICKNAME, FIELD_HOST_ADDRESS, FIELD_HOST_PORT, FIELD_HOST_PASSWORD},
-				KEY_ROWID + "=" + rowId, null, null, null, null, null);
+				FIELD_HOST_NICKNAME + "=\"" + nickname + "\"", null, null, null, null, null);
 		if (cur != null) {
-			boolean result = cur.moveToFirst();
-			if (!result) {
-				cur.close();
-				cur = null;
+			if (cur.moveToFirst()) {
+				clientId = new ClientId(cur);
 			}
+			cur.close();
 		}
-		return cur;
+		return clientId;
 	}
 
 	/**
