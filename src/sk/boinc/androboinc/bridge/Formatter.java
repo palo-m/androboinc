@@ -22,6 +22,7 @@ package sk.boinc.androboinc.bridge;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import sk.boinc.androboinc.R;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -74,33 +75,33 @@ public class Formatter {
 		return String.format("%02d:%02d:%02d", hours, minutes, remain);
 	}
 
-	public static final String formatSize(long size) {
+	public final String formatSize(long size) {
 		if (size > 1000000L) {
 			// Megabytes
-			return String.format("%.1f MB", ((float)size/1000000.0F));
+			return String.format("%.1f %s", ((float)size/1000000.0F), mResources.getString(R.string.unitMB));
 		}
 		else if (size > 1000) {
 			// Kilobytes
-			return String.format("%.1f KB", ((float)size/1000.0F));
+			return String.format("%.1f %s", ((float)size/1000.0F), mResources.getString(R.string.unitKB));
 		}
 		else {
 			// Bytes
-			return String.format("%d B", size);
+			return String.format("%d %s", size, mResources.getString(R.string.unitB));
 		}
 	}
 
-	public static final String formatSpeed(float speed) {
+	public final String formatSpeed(float speed) {
 		if (speed > 1000000.0F) {
 			// Megabytes per second
-			return String.format("%.1f MB/s", (speed/1000000.0F));
+			return String.format("%.1f %s", (speed/1000000.0F), mResources.getString(R.string.unitMBps));
 		}
 		else if (speed > 1000.0F) {
 			// Kilobytes per second
-			return String.format("%.1f KB/s", (speed/1000.0F));
+			return String.format("%.1f %s", (speed/1000.0F), mResources.getString(R.string.unitKBps));
 		}
 		else {
 			// Bytes
-			return String.format("%.1f B/s", speed);
+			return String.format("%.1f %s", speed, mResources.getString(R.string.unitBps));
 		}
 	}
 }

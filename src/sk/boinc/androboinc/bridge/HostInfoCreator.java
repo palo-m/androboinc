@@ -48,11 +48,11 @@ public class HostInfoCreator {
 						String.format("%.2f", hostInfo.p_iops/1000000),
 						String.format("%.2f", hostInfo.p_membw/1000000),
 						formatter.formatDate(hostInfo.p_calculated),
-						String.format("%.0f", hostInfo.m_nbytes/1024/1024)+resources.getString(R.string.unitMiB),
-						String.format("%.0f", hostInfo.m_cache/1024)+resources.getString(R.string.unitKiB),
-						String.format("%.0f", hostInfo.m_swap/1024/1024)+resources.getString(R.string.unitMiB),
-						String.format("%.1f", hostInfo.d_total/1000000000)+resources.getString(R.string.unitGB),
-						String.format("%.1f", hostInfo.d_free/1000000000)+resources.getString(R.string.unitGB))
+						String.format("%.0f %s", hostInfo.m_nbytes/1024/1024, resources.getString(R.string.unitMiB)),
+						String.format("%.0f %s", hostInfo.m_cache/1024, resources.getString(R.string.unitKiB)),
+						String.format("%.0f %s", hostInfo.m_swap/1024/1024, resources.getString(R.string.unitMiB)),
+						String.format("%.1f %s", hostInfo.d_total/1000000000, resources.getString(R.string.unitGB)),
+						String.format("%.1f %s", hostInfo.d_free/1000000000, resources.getString(R.string.unitGB)))
 				);
 		hi.htmlText = sb.toString();
 		return hi;
