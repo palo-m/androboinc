@@ -278,7 +278,8 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			}
 			else {
 				// Service not bound at the moment (too slow start? or disconnected itself?)
-				if (Logging.INFO) Log.i(TAG, "onResume() - Client selected, but service not yet available => binding again");
+				// We trigger re-bind again (does not hurt if it's duplicate)
+				if (Logging.DEBUG) Log.d(TAG, "onResume() - Client selected, but service not yet available => binding again");
 				doBindService();
 			}
 		}

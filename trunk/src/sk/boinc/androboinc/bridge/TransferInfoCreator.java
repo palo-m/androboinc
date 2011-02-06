@@ -41,12 +41,12 @@ public class TransferInfoCreator {
 		if (pctDone > 100) pctDone = 100.0F;
 		ti.progInd = (int)pctDone;
 		ti.progress = String.format("%.3f%%", pctDone);
-		sb.append(Formatter.formatSize(transfer.bytes_xferred));
+		sb.append(formatter.formatSize(transfer.bytes_xferred));
 		sb.append(" / ");
-		sb.append(Formatter.formatSize(transfer.nbytes));
+		sb.append(formatter.formatSize(transfer.nbytes));
 		ti.size = sb.toString();
 		ti.elapsed = Formatter.formatElapsedTime(transfer.time_so_far);
-		ti.speed = Formatter.formatSpeed(transfer.xfer_speed);
+		ti.speed = formatter.formatSpeed(transfer.xfer_speed);
 		ti.stateControl = 0;
 		sb.setLength(0);
 		if (transfer.next_request_time > (System.currentTimeMillis() / 1000)) {

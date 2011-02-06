@@ -47,7 +47,6 @@ public class TaskInfoCreator {
 		sb.append(".");
 		sb.append(appVersion%100);
 		ti.application = sb.toString();
-//		ti.application = appName + " " + result.version_num/100 + "." + result.version_num%100;
 		update(ti, result, formatter);
 		return ti;
 	}

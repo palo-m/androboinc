@@ -58,6 +58,9 @@
 	<string name="unitKB">KB</string>
 	<string name="unitMB">MB</string>
 	<string name="unitGB">GB</string>
+	<string name="unitBps">B/s</string>
+	<string name="unitKBps">KB/s</string>
+	<string name="unitMBps">MB/s</string>
 
 	<!-- Main Activity -->
 	<string name="temp_info">Press Menu button</string>
