@@ -36,6 +36,7 @@ import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -49,6 +50,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -273,6 +275,15 @@ public class ProjectsActivity extends ListActivity implements ClientReplyReceive
 	public Object onRetainNonConfigurationInstance() {
 		final SavedState savedState = new SavedState();
 		return savedState;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Activity parent = getParent();
+		if (parent != null) {
+			return parent.onKeyDown(keyCode, event);
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override

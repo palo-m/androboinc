@@ -25,6 +25,10 @@ import android.os.Parcelable;
 
 public class ClientId implements Parcelable {
 	public static final String TAG = "ClientId";
+	private static final int HASH_SEED = 17;
+	private static final int HASH_MULTI = 31;
+	private int mHashCode = 0; // for hashCode()/equals()
+
 	private long   mId = -1;
 	private String mNickname = null;
 	private String mAddress = null;
@@ -80,6 +84,23 @@ public class ClientId implements Parcelable {
 		mAddress  = c.getString(c.getColumnIndexOrThrow(HostListDbAdapter.FIELD_HOST_ADDRESS));
 		mPort     = c.getInt(c.getColumnIndexOrThrow(HostListDbAdapter.FIELD_HOST_PORT));
 		mPassword = c.getString(c.getColumnIndexOrThrow(HostListDbAdapter.FIELD_HOST_PASSWORD));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ClientId)) return false;
+		return (o.hashCode() == this.hashCode());
+	}
+
+	@Override
+	public int hashCode() {
+		if (mHashCode != 0) return mHashCode;
+		mHashCode = HASH_SEED;
+		mHashCode = HASH_MULTI * mHashCode + mAddress.hashCode();
+		mHashCode = HASH_MULTI * mHashCode + mPort;
+		mHashCode = HASH_MULTI * mHashCode + mPassword.hashCode();
+		return mHashCode;
 	}
 
 	public final long getId() {

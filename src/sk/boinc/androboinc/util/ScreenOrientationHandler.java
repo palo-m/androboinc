@@ -23,7 +23,6 @@ import sk.boinc.androboinc.debug.Logging;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.pm.ActivityInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -32,14 +31,14 @@ public class ScreenOrientationHandler implements OnSharedPreferenceChangeListene
 	private static final String TAG = "ScreenOrientationHandler";
 
 	private final Activity mActivity;
-	private int mScreenOrientation = -1;
+	private int mChosenOrientation = -1;
 
 	public ScreenOrientationHandler(Activity activity) {
 		mActivity = activity;
 		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
 		globalPrefs.registerOnSharedPreferenceChangeListener(this);
 		String orientation = globalPrefs.getString(PreferenceName.SCREEN_ORIENTATION, "-1");
-		mScreenOrientation = Integer.parseInt(orientation);
+		mChosenOrientation = Integer.parseInt(orientation);
 	}
 
 	@Override
@@ -47,27 +46,16 @@ public class ScreenOrientationHandler implements OnSharedPreferenceChangeListene
 		if (key.equals(PreferenceName.SCREEN_ORIENTATION)) {
 			String orientation = sharedPreferences.getString(PreferenceName.SCREEN_ORIENTATION, "-1");
 			int newOrientation = Integer.parseInt(orientation);
-			if (newOrientation == mScreenOrientation) return; // unchanged
-			if (Logging.DEBUG) Log.d(TAG, "Orientation setting changed from " + mScreenOrientation + " to " + newOrientation);
-			mScreenOrientation = newOrientation;
+			if (newOrientation == mChosenOrientation) return; // unchanged
+			if (Logging.DEBUG) Log.d(TAG, "Orientation setting changed from " + mChosenOrientation + " to " + newOrientation);
+			mChosenOrientation = newOrientation;
 		}
 	}
 
 	public void setOrientation() {
-		if (Logging.DEBUG) Log.d(TAG, "setOrientation() for " + mActivity.toString());
-		// TODO: Proper orientation handling based on settings and current rotation of device
-		switch (mScreenOrientation) {
-		case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:
-			mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-			break;
-		case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-		case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-			// Force portrait or landscape
-			mActivity.setRequestedOrientation(mScreenOrientation);
-			break;
-		case ActivityInfo.SCREEN_ORIENTATION_SENSOR:
-			mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-			break;
+		if (mChosenOrientation != mActivity.getRequestedOrientation()) {
+			if (Logging.DEBUG) Log.d(TAG, "Changing orientation for " + mActivity.toString());
+			mActivity.setRequestedOrientation(mChosenOrientation);
 		}
 	}
 }

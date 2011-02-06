@@ -34,6 +34,7 @@ import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -48,6 +49,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,6 +83,19 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	private Vector<TransferInfo> mTransfers = new Vector<TransferInfo>();
 	private int mPosition = 0;
 
+
+	private class SavedState {
+		private final Vector<TransferInfo> transfers;
+
+		public SavedState() {
+			transfers = mTransfers;
+			if (Logging.DEBUG) Log.d(TAG, "saved: transfers.size()=" + transfers.size());
+		}
+		public void restoreState(TransfersActivity activity) {
+			activity.mTransfers = transfers;
+			if (Logging.DEBUG) Log.d(TAG, "restored: mTransfers.size()=" + activity.mTransfers.size());
+		}
+	}
 
 	private class TransferListAdapter extends BaseAdapter {
 		private Context mContext;
@@ -215,6 +230,16 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		registerForContextMenu(getListView());
 		mScreenOrientation = new ScreenOrientationHandler(this);
 		doBindService();
+		// Restore state on configuration change (if applicable)
+		final SavedState savedState = (SavedState)getLastNonConfigurationInstance();
+		if (savedState != null) {
+			// Yes, we have the saved state, this is activity re-creation after configuration change
+			savedState.restoreState(this);
+			if (!mTransfers.isEmpty()) {
+				// We restored transfers - view will be updated on resume (before we will get refresh)
+				mViewDirty = true;
+			}
+		}
 	}
 
 	@Override
@@ -259,6 +284,21 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		}
 		doUnbindService();
 		mScreenOrientation = null;
+	}
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		final SavedState savedState = new SavedState();
+		return savedState;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Activity parent = getParent();
+		if (parent != null) {
+			return parent.onKeyDown(keyCode, event);
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -449,14 +489,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	}
 
 	private void sortTransfers() {
-		// No sort at the moment
-//		Comparator<TransferInfo> comparator = new Comparator<TransferInfo>() {
-//			@Override
-//			public int compare(TransferInfo object1, TransferInfo object2) {
-//				return object1.project.compareToIgnoreCase(object2.project);
-//			}
-//		};
-//		Collections.sort(mTransfers, comparator);
+		// TODO: No sort at the moment
 	}
 
 	private String prepareTransferDetails(int position) {
