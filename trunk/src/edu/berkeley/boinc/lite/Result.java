@@ -25,16 +25,15 @@ public class Result {
 	public String  project_url = "";
 	public int     version_num;
 //	public String  plan_class;
-	public boolean ready_to_report;
-	public boolean got_server_ack;
-	public double  final_cpu_time;
-	public double  final_elapsed_time;
-	public int     exit_status;
-	public int     state;
 	public long    report_deadline;
 	public long    received_time;
-	/** actually, estimated elapsed time remaining */
-	public double  estimated_cpu_time_remaining;
+//	public boolean ready_to_report;
+//	public boolean got_server_ack;
+	public double  final_cpu_time;
+	public double  final_elapsed_time;
+	public int     state;
+//	public int     scheduler_state;
+//	public int     exit_status;
 //	public int     signal;
 //	public String  stderr_out;
 	public boolean suspended_via_gui;
@@ -48,13 +47,14 @@ public class Result {
 	public int     app_version_num;
 //	public int     slot;
 //	public int     pid;
-	public int     scheduler_state;
-	public long    checkpoint_cpu_time;
-	public float   fraction_done;
+	public double  checkpoint_cpu_time;
 	public double  current_cpu_time;
+	public float   fraction_done;
 	public double  elapsed_time;
-//	public double  swap_size;
-//	public double  working_set_size_smoothed;
+	public double  swap_size;
+	public double  working_set_size_smoothed;
+	/** actually, estimated elapsed time remaining */
+	public double  estimated_cpu_time_remaining;
 //	public boolean supports_graphics;
 //	public int     graphics_mode_acked;
 //	public boolean too_large;
@@ -63,6 +63,7 @@ public class Result {
 //	public String  graphics_exec_path;
 //	/** only present if graphics_exec_path is */
 //	public String  slot_path;
-//	public String  resources;
+
+	public String  resources = null;
 
 }

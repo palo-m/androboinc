@@ -47,5 +47,10 @@ public class TaskInfo {
 	public String progress;     // Result.fraction_done converted to percentage string
 	public String toCompletion; // Result.estimated_cpu_time_remaining converted to time-string
 	public String deadline;     // Result.report_deadline converted to date-string
+	public String virtMemSize;  // Result.swap_size converted to size-string (base 2) (can be null)
+	public String workSetSize;  // Result.working_set_size_smoothed converted to size-string (base 10) (can be null)
+	public String cpuTime;      // Result.current_cpu_time converted to time-string (can be null)
+	public String chckpntTime;  // Result.checkpoint_cpu_time converted to time-string (can be null)
+	public String resources;    // Result.resources (can be null)
 	public String state;        // Result.state combined with Result.active_task_state converted to string
 }
