@@ -78,6 +78,8 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	private static final int ABORT = 3;
 	private static final int PROPERTIES = 4;
 
+	private static final int SB_INIT_CAPACITY = 256;
+
 	private ScreenOrientationHandler mScreenOrientation;
 
 	private ClientId mConnectedClient = null;
@@ -88,6 +90,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	private Vector<TaskInfo> mTasks = new Vector<TaskInfo>();
 	private int mPosition = 0;
 
+	private StringBuilder mSb = new StringBuilder(SB_INIT_CAPACITY);
 
 	private class SavedState {
 		private final Vector<TaskInfo> tasks;
@@ -567,14 +570,27 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 
 	private String prepareTaskDetails(int position) {
 		TaskInfo task = mTasks.elementAt(position);
-		return getString(R.string.taskDetailedInfo, 
+		mSb.setLength(0);
+		mSb.append(getString(R.string.taskDetailedInfoCommon, 
 				TextUtils.htmlEncode(task.taskName),
 				TextUtils.htmlEncode(task.project),
 				TextUtils.htmlEncode(task.application),
-				task.elapsed,
 				task.progress,
+				task.elapsed,
 				task.toCompletion,
-				task.deadline,
-				task.state);
+				task.deadline));
+		if (task.virtMemSize != null) {
+			mSb.append(getString(R.string.taskDetailedInfoRun, 
+					task.virtMemSize,
+					task.workSetSize,
+					task.cpuTime,
+					task.chckpntTime));
+		}
+		if (task.resources != null) {
+			mSb.append(getString(R.string.taskDetailedInfoRes, task.resources));
+		}
+		mSb.append(getString(R.string.taskDetailedInfoEnd, task.state));
+		if (Logging.DEBUG) Log.d(TAG, "mSb.length()=" + mSb.length() + ", mSb.capacity()=" + mSb.capacity());
+		return mSb.toString();
 	}
 }

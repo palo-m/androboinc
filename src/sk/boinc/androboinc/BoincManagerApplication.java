@@ -78,8 +78,8 @@ public class BoincManagerApplication extends Application {
 	public void onLowMemory() {
 		if (Logging.DEBUG) Log.d(TAG, "onLowMemory()");
 		// Let's free what we do not need essentially
-		mStringBuilder.setLength(16); // Default initial size
-		mStringBuilder.trimToSize();  // Not guaranteed to change the size
+		//mStringBuilder.setLength(16); // Default initial size
+		//mStringBuilder.trimToSize();  // Not guaranteed to change the size
 		mStringBuilder = null; // So garbage collector will free the memory
 		mReadBuffer = null;
 		super.onLowMemory();

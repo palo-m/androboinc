@@ -54,6 +54,7 @@
 	<!-- Units -->
 	<string name="unitKiB">KiB</string>
 	<string name="unitMiB">MiB</string>
+	<string name="unitGiB">GiB</string>
 	<string name="unitB">B</string>
 	<string name="unitKB">KB</string>
 	<string name="unitMB">MB</string>
@@ -207,15 +208,26 @@
 	<string name="taskAbort">Abort</string>
 	<string name="taskProperties">Properties</string>
 	<string name="warnAbortTask">Are you sure you want to abort this task (%1$s)?</string>
-	<string name="taskDetailedInfo">
+	<string name="taskDetailedInfoCommon">
 		&lt;b>Task:&lt;/b> %1$s&lt;br>\n
 		&lt;b>Project:&lt;/b> %2$s&lt;br>\n
 		&lt;b>Application:&lt;/b> %3$s&lt;br>\n
-		&lt;b>Elapsed:&lt;/b> %4$s&lt;br>\n
-		&lt;b>Progress:&lt;/b> %5$s&lt;br>\n
+		&lt;b>Progress:&lt;/b> %4$s&lt;br>\n
+		&lt;b>Elapsed time:&lt;/b> %5$s&lt;br>\n
 		&lt;b>To completion:&lt;/b> %6$s&lt;br>\n
 		&lt;b>Report deadline:&lt;/b> %7$s&lt;br>\n
-		&lt;b>Status:&lt;/b> %8$s
+	</string>
+	<string name="taskDetailedInfoRun">
+		&lt;b>Virtual memory size:&lt;/b> %1$s&lt;br>\n
+		&lt;b>Working set size:&lt;/b> %2$s&lt;br>\n
+		&lt;b>CPU time:&lt;/b> %3$s&lt;br>\n
+		&lt;b>Last checkpoint (CPU time):&lt;/b> %4$s&lt;br>\n
+	</string>
+	<string name="taskDetailedInfoRes">
+		&lt;b>Resources:&lt;/b> %1$s&lt;br>\n
+	</string>
+	<string name="taskDetailedInfoEnd">
+		&lt;b>Status:&lt;/b> %1$s
 	</string>
 
 	<!-- TransfersActivity -->
