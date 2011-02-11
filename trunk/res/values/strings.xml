@@ -69,7 +69,7 @@
 	<string name="tasks">Tasks</string>
 	<string name="transfers">Transfers</string>
 	<string name="messages">Messages</string>
-	<string name="closeWarning">Press Back again to exit</string>
+	<string name="closeWarning">Press Back again (within 5 seconds) to exit</string>
 
 	<!-- Menu items -->
 	<string name="menuAbout">About</string>

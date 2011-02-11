@@ -52,6 +52,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -81,12 +82,14 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	private static final int ACTIVITY_SELECT_HOST   = 1;
 	private static final int ACTIVITY_MANAGE_CLIENT = 2;
 
+	private static final int BACK_PRESS_PERIOD = 5;
+
 	private BoincManagerApplication mApp;
 	private ScreenOrientationHandler mScreenOrientation;
 	private WakeLock mWakeLock;
 	private boolean mScreenAlwaysOn = false;
 	private boolean mBackPressedRecently = false;
-	private int mRecentTab = -1;
+	private Handler mHandler = new Handler();
 	private boolean mJustUpgraded = false;
 
 	private StringBuilder mSb = new StringBuilder();
@@ -356,13 +359,17 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		if (event.getRepeatCount() == 0) {
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				// Back button pressed
-				int currentTab = getTabHost().getCurrentTab();
-				if (!mBackPressedRecently || (mRecentTab != currentTab)) {
-					// Back button was not pressed previously
-					// or it was pressed while in other tab
+				if (!mBackPressedRecently) {
+					// Back button was not pressed recently
 					mBackPressedRecently = true;
-					mRecentTab = currentTab;
 					Toast.makeText(this, getString(R.string.closeWarning), Toast.LENGTH_SHORT).show();
+					mHandler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							// reset flag
+							mBackPressedRecently = false;
+						}}, 
+						BACK_PRESS_PERIOD * 1000);
 					// Return true, so default handling of Back button is suppressed
 					return true;
 				}
