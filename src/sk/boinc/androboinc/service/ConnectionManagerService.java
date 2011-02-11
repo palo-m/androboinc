@@ -41,7 +41,8 @@ import android.util.Log;
 public class ConnectionManagerService extends Service implements ClientRequestHandler, ClientBridgeCallback, ConnectivityListener {
 	private static final String TAG = "ConnectionManagerService";
 
-	private static final int TERMINATE_GRACE_PERIOD = 30;
+	private static final int TERMINATE_GRACE_PERIOD_CONN = 45;
+	private static final int TERMINATE_GRACE_PERIOD_IDLE = 3;
 
 	public class LocalBinder extends Binder {
 		public ConnectionManagerService getService() {
@@ -110,7 +111,14 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 			}
 		};
 		// Post the runnable to self - delayed by grace period
-		mHandler.postDelayed(mTerminateRunnable, TERMINATE_GRACE_PERIOD * 1000);
+		long gracePeriod;
+		if (mClientBridge != null) {
+			gracePeriod = TERMINATE_GRACE_PERIOD_CONN * 1000;
+		}
+		else {
+			gracePeriod = TERMINATE_GRACE_PERIOD_IDLE * 1000;
+		}
+		mHandler.postDelayed(mTerminateRunnable, gracePeriod);
 		if (Logging.DEBUG) Log.d(TAG, "onUnbind() - Started grace period to terminate self");
 		return true;
 	}
