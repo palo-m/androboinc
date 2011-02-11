@@ -52,6 +52,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -188,6 +189,9 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 				mViewDirty = true;
 			}
 		}
+		ListView lv = getListView();
+		lv.setStackFromBottom(true);
+		lv.setTranscriptMode(ListView.TRANSCRIPT_MODE_NORMAL);
 	}
 
 	@Override
@@ -334,17 +338,22 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 
 	@Override
 	public boolean updatedMessages(Vector<MessageInfo> messages) {
-		mMessages = messages;
-		if (mViewUpdatesAllowed) {
-			// We are visible, update the view with fresh data
-			if (Logging.DEBUG) Log.d(TAG, "Messages are updated, refreshing view");
-			sortMessages();
-			((BaseAdapter)getListAdapter()).notifyDataSetChanged();
-		}
-		else {
-			// We are not visible, do not perform costly tasks now
-			if (Logging.DEBUG) Log.d(TAG, "Messages are updated, but view refresh is delayed");
-			mViewDirty = true;
+		if (mMessages.size() != messages.size()) {
+			// Number of messages has changed (increased)
+			// This is the only case when we need an update, because content of messages
+			// never changes, only fresh arrived messages are added to list
+			mMessages = messages;
+			if (mViewUpdatesAllowed) {
+				// We are visible, update the view with fresh data
+				if (Logging.DEBUG) Log.d(TAG, "Messages are updated, refreshing view");
+				sortMessages();
+				((BaseAdapter)getListAdapter()).notifyDataSetChanged();
+			}
+			else {
+				// We are not visible, do not perform costly tasks now
+				if (Logging.DEBUG) Log.d(TAG, "Messages are updated, but view refresh is delayed");
+				mViewDirty = true;
+			}
 		}
 		return mRequestUpdates;
 	}

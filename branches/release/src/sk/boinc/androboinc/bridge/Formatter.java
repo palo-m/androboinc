@@ -76,13 +76,36 @@ public class Formatter {
 	}
 
 	public final String formatSize(long size) {
-		if (size > 1000000L) {
+		if (size > 1000000000L) {
+			// Gigabytes
+			return String.format("%.1f %s", ((float)size/1000000000.0F), mResources.getString(R.string.unitGB));
+		}
+		else if (size > 1000000L) {
 			// Megabytes
 			return String.format("%.1f %s", ((float)size/1000000.0F), mResources.getString(R.string.unitMB));
 		}
 		else if (size > 1000) {
 			// Kilobytes
 			return String.format("%.1f %s", ((float)size/1000.0F), mResources.getString(R.string.unitKB));
+		}
+		else {
+			// Bytes
+			return String.format("%d %s", size, mResources.getString(R.string.unitB));
+		}
+	}
+
+	public final String formatBinSize(long size) {
+		if (size > 1073741824L) {
+			// Gibibytes
+			return String.format("%.1f %s", ((float)size/1073741824.0F), mResources.getString(R.string.unitGiB));
+		}
+		else if (size > 1048576L) {
+			// Mebibytes
+			return String.format("%.1f %s", ((float)size/1048576.0F), mResources.getString(R.string.unitMiB));
+		}
+		else if (size > 1024) {
+			// Kibibytes
+			return String.format("%.1f %s", ((float)size/1024.0F), mResources.getString(R.string.unitKiB));
 		}
 		else {
 			// Bytes

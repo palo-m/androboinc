@@ -129,6 +129,14 @@ public class TaskInfoCreator {
 		ti.toCompletion = Formatter.formatElapsedTime((long)result.estimated_cpu_time_remaining);
 		ti.deadline = formatter.formatDate(result.report_deadline);
 		ti.deadlineNum = result.report_deadline;
+		if (result.fraction_done > 0.0) {
+			// Task is running/preempted, probably using some resources
+			ti.virtMemSize = formatter.formatBinSize((long)result.swap_size);
+			ti.workSetSize = formatter.formatSize((long)result.working_set_size_smoothed);
+			ti.cpuTime = Formatter.formatElapsedTime((long)result.current_cpu_time);
+			ti.chckpntTime = Formatter.formatElapsedTime((long)result.checkpoint_cpu_time);
+		}
+		ti.resources = result.resources;
 	}
 
 	private static final String formatTaskState(int state, int activeTaskState, final Resources resources) {
