@@ -6,3 +6,5 @@ AndroBOINC is the manager for [http://boinc.berkeley.edu/ BOINC] made for Androi
 
  * [ScreenShots Screenshots]
 
+ * [FrequentlyAskedQuestions FAQ]
+

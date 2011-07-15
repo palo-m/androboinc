@@ -4,3 +4,4 @@
     * [BOINCSetupMacOSX BOINC setup on Mac OS-X]
     * [BOINCSetupWindows BOINC setup on Windows]
   * [ScreenShots Screenshots]
+  * [FrequentlyAskedQuestions FAQ]

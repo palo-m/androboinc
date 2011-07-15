@@ -40,12 +40,12 @@ http://androboinc.googlecode.com/svn/www/WinXP_Config1.png
 
 If this key does not exist, then BOINC is not installed as a service. Try to reboot the computer and if it does not help, you must unistall BOINC and install it as a service (see installation part above).
 
-There is a value "ImagePath" which should on Windows XP contain (by default, if not modified during installation phase):
+There is a value "!ImagePath" which should on Windows XP contain (by default, if not modified during installation phase):
 {{{
 "C:\Program Files\BOINC\boinc.exe" -daemon
 }}}
 
-This should be modified by appending {{{-allow_remote_gui_rpc}}}, so finally the value "ImagePath" should be:
+This should be modified by appending {{{-allow_remote_gui_rpc}}}, so finally the value "!ImagePath" should be:
 {{{
 "C:\Program Files\BOINC\boinc.exe" -daemon -allow_remote_gui_rpc
 }}}
