@@ -1,4 +1,5 @@
 #summary BOINC setup on Windows
+#labels Phase-Deploy
 
 _Note: There are several ways how BOINC client can be run on Windows computer. This section describes how to install and configure BOINC to run as a service, because connecting to computer via AndroBOINC assumes the computer is running unattended. Installation of BOINC as a service ensures that BOINC is always running, even in case nobody is logged on. Unfortunately, BOINC is not installed as a service by default. In such case the BOINC must be uninstalled first and installed again, there is no easier way to switch BOINC to service. The workunits in progress should be preserved during uninstallation and new installation of BOINC, nevertheless the backups are always recommended practice._
 
