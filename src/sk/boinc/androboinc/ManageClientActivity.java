@@ -3,16 +3,16 @@
  * Copyright (C) 2010, Pavol Michalec
  * 
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
@@ -176,6 +176,21 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 				int idx = listPref.findIndexOfValue((String)newValue);
 				listPref.setSummary(actRunDesc[idx]);
 				boincChangeRunMode(Integer.parseInt((String)newValue));
+				return true;
+			}
+		});
+
+		// GPU mode
+		listPref = (ListPreference)findPreference("actGpuMode");
+		listPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				// TODO: Handle change of GPU mode
+				ListPreference listPref = (ListPreference)preference;
+				CharSequence[] actGpuDesc = listPref.getEntries();
+				int idx = listPref.findIndexOfValue((String)newValue);
+				listPref.setSummary(actGpuDesc[idx]);
+				boincChangeGpuMode(Integer.parseInt((String)newValue));
 				return true;
 			}
 		});
@@ -563,7 +578,7 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		}
 		else {
 			// Not connected to client
-			pref.setSummary(getString(R.string.noHostConnected));
+			pref.setSummary(R.string.noHostConnected);
 		}
 	}
 
@@ -584,18 +599,37 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 			idx = listPref.findIndexOfValue(Integer.toString(mClientMode.network_mode));
 			listPref.setValueIndex(idx);
 			listPref.setSummary(runDesc[idx]);
+			// 3. The GPU mode (if applicable)
+			listPref = (ListPreference)findPreference("actGpuMode");
+			runDesc = listPref.getEntries();
+			idx = listPref.findIndexOfValue(Integer.toString(mClientMode.gpu_mode));
+			if (idx != -1) {
+				// GPU mode set
+				listPref.setValueIndex(idx);
+				listPref.setSummary(runDesc[idx]);
+				listPref.setEnabled(true);
+			}
+			else {
+				// No GPU info (i.e. client does not support GPU)
+				listPref.setEnabled(false);
+				listPref.setSummary(R.string.noGpu);
+			}
 		}
 		else {
 			// Has not not retrieved mode yet
 			// actRunMode preference
 			Preference pref = findPreference("actRunMode");
-			pref.setSummary(getString(R.string.noHostConnected));
+			pref.setSummary(R.string.noHostConnected);
 			// All operations depend on actRunMode
 			// When this one is disabled, all others are disabled as well...
 			pref.setEnabled(false);
 			// actNetworkMode preference
 			pref = findPreference("actNetworkMode");
-			pref.setSummary(getString(R.string.noHostConnected));
+			pref.setSummary(R.string.noHostConnected);
+			// actGpuMode preference
+			pref = findPreference("actGpuMode");
+			pref.setEnabled(false);
+			pref.setSummary(R.string.noHostConnected);
 		}
 	}
 
@@ -621,15 +655,30 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 			idx = listPref.findIndexOfValue(Integer.toString(mClientMode.network_mode));
 			listPref.setValueIndex(idx);
 			listPref.setSummary(runDesc[idx]);
+			// actGpuMode preference
+			listPref = (ListPreference)findPreference("actGpuMode");
+			listPref.setEnabled(false);
+			runDesc = listPref.getEntries();
+			idx = listPref.findIndexOfValue(Integer.toString(mClientMode.gpu_mode));
+			if (idx != -1) {
+				listPref.setValueIndex(idx);
+				listPref.setSummary(runDesc[idx]);
+			}
+			else {
+				listPref.setSummary(R.string.noGpu);
+			}
 		}
 		else {
 			// No info available (i.e. client never connected or disconnected)
 			// actRunMode preference
-			pref.setSummary(getString(R.string.retrievingData));
+			pref.setSummary(R.string.retrievingData);
 			// actNetworkMode preference
 			pref = findPreference("actNetworkMode");
-			pref.setSummary(getString(R.string.retrievingData));
-		
+			pref.setSummary(R.string.retrievingData);
+			// actGpuMode preference
+			pref = findPreference("actGpuMode");
+			pref.setEnabled(false);
+			pref.setSummary(R.string.retrievingData);
 		}
 	}
 
@@ -700,18 +749,22 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		mConnectionManager.setNetworkMode(this, mode);
 	}
 
+	private void boincChangeGpuMode(int mode) {
+		mConnectionManager.setGpuMode(this, mode);
+	}
+
 	private void boincRunCpuBenchmarks() {
 		mConnectionManager.runBenchmarks();
-		Toast.makeText(this, getString(R.string.clientRunBenchNotify), Toast.LENGTH_LONG).show();
+		Toast.makeText(this, R.string.clientRunBenchNotify, Toast.LENGTH_LONG).show();
 	}
 
 	private void boincDoNetworkCommunication() {
 		mConnectionManager.doNetworkCommunication();
-		Toast.makeText(this, getString(R.string.clientDoNetCommNotify), Toast.LENGTH_LONG).show();
+		Toast.makeText(this, R.string.clientDoNetCommNotify, Toast.LENGTH_LONG).show();
 	}
 
 	private void boincShutdownClient() {
 		mConnectionManager.shutdownCore();
-		Toast.makeText(this, getString(R.string.clientShutdownNotify), Toast.LENGTH_LONG).show();
+		Toast.makeText(this, R.string.clientShutdownNotify, Toast.LENGTH_LONG).show();
 	}
 }

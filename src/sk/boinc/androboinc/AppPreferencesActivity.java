@@ -3,16 +3,16 @@
  * Copyright (C) 2010, Pavol Michalec
  * 
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
@@ -50,7 +50,8 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 	private static final int DIALOG_NETSTATS_DISCLAIMER = 1;
 	private static final int DIALOG_ABOUT               = 2;
 	private static final int DIALOG_LICENSE             = 3;
-	private static final int DIALOG_CHANGELOG           = 4;
+	private static final int DIALOG_LICENSE2            = 4;
+	private static final int DIALOG_CHANGELOG           = 5;
 
 	private BoincManagerApplication mApp;
 	private ScreenOrientationHandler mScreenOrientation;
@@ -323,7 +324,37 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 							startActivity(new Intent(Intent.ACTION_VIEW, uri));
 						}
 					})
+				.setNeutralButton(R.string.license2, 
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							showDialog(DIALOG_LICENSE2);
+						}
+					})
         		.setNegativeButton(R.string.dismiss, null)
+        		.create();
+		case DIALOG_LICENSE2:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setLicenseText2(text);
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.license2)
+				.setView(v)
+				.setNegativeButton(R.string.back, 
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int whichButton) {
+							showDialog(DIALOG_LICENSE);
+						}
+					})
+				.setOnCancelListener(
+					new DialogInterface.OnCancelListener() {
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							showDialog(DIALOG_LICENSE);
+						}
+					
+					})
         		.create();
 		case DIALOG_CHANGELOG:
 			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);

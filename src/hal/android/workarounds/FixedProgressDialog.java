@@ -15,7 +15,6 @@
  */
 package hal.android.workarounds;
 
-import android.R;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -62,7 +61,7 @@ public class FixedProgressDialog extends ProgressDialog
                 super.onCreate(savedInstanceState);
                 
                 // Get a handle on our subclassed ProgressDialog's ProgressBar
-                View progressBar = findViewById(R.id.progress);
+                View progressBar = findViewById(android.R.id.progress);
                 if(progressBar instanceof ProgressBar) // this also checks for null
                         mProgress = (ProgressBar)progressBar;
         }

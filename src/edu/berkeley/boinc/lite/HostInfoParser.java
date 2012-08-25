@@ -3,16 +3,16 @@
  * Copyright (C) 2010, Pavol Michalec
  * 
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
@@ -32,6 +32,7 @@ public class HostInfoParser extends BaseParser {
 	private static final String TAG = "HostInfoParser";
 
 	private HostInfo mHostInfo = null;
+	private boolean  mInCoprocX = false;
 
 
 	public final HostInfo getHostInfo() {
@@ -68,6 +69,9 @@ public class HostInfoParser extends BaseParser {
 			}
 			mHostInfo = new HostInfo();
 		}
+		else if (localName.startsWith("coproc_")) {
+			mInCoprocX = true;
+		}
 		else {
 			// Another element, hopefully primitive and not constructor
 			// (although unknown constructor does not hurt, because there will be primitive start anyway)
@@ -89,6 +93,14 @@ public class HostInfoParser extends BaseParser {
 				// we are inside <host_info>
 				if (localName.equalsIgnoreCase("host_info")) {
 					// Closing tag of <host_info> - nothing to do at the moment
+				}
+				else if (mInCoprocX) {
+					if (localName.startsWith("coproc_")) {
+						mInCoprocX = false;
+					}
+					else if (localName.equalsIgnoreCase("count")) {
+						mHostInfo.g_ngpus += Integer.parseInt(mCurrentElement.toString());
+					}
 				}
 				else {
 					// Not the closing tag - we decode possible inner tags
