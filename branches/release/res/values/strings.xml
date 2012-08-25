@@ -5,16 +5,16 @@
  * Copyright (C) 2010, Pavol Michalec
  * 
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
@@ -26,26 +26,29 @@
 	<string name="service_desc">Maintains connection to BOINC core clients</string>
 
 	<!-- Some common, generic strings -->
-	<string name="authorization">Authorization...</string>
+	<string name="authorization">Authorization&#8230;</string>
+	<string name="back">Back</string>
 	<string name="cancel">Cancel</string>
 	<string name="changelog">ChangeLog</string>
 	<string name="close">Close</string>
-	<string name="connecting">Connecting...</string>
+	<string name="connecting">Connecting&#8230;</string>
 	<string name="disabled">Disabled</string>
 	<string name="dismiss">Dismiss</string>
 	<string name="error">Error</string>
 	<string name="homepage">Homepage</string>
 	<string name="license">License</string>
+	<string name="license2">GPLv3</string>
+	<string name="noGpu">No GPU present</string>
 	<string name="notConnected">Not connected</string>
 	<string name="notice">Notice</string>
 	<string name="ok">OK</string>
 	<string name="projectSuspendedByUser">Project suspended by user</string>
 	<string name="received">Received</string>
-	<string name="retrievingData">Retrieving data...</string>
-	<string name="retrievingInitialData">Retrieving initial data...</string>
+	<string name="retrievingData">Retrieving data&#8230;</string>
+	<string name="retrievingInitialData">Retrieving initial data&#8230;</string>
 	<string name="sent">Sent</string>
 	<string name="shutdown">Shutdown</string>
-	<string name="sources">Source Code</string>
+	<string name="sources">Sources</string>
 	<string name="taskSuspendedByUser">Task suspended by user</string>
 	<string name="unknown">unknown</string>
 	<string name="upgradedTo">Upgraded to</string>
@@ -64,7 +67,6 @@
 	<string name="unitMBps">MB/s</string>
 
 	<!-- Main Activity -->
-	<string name="temp_info">Press Menu button</string>
 	<string name="projects">Projects</string>
 	<string name="tasks">Tasks</string>
 	<string name="transfers">Transfers</string>
@@ -73,14 +75,11 @@
 
 	<!-- Menu items -->
 	<string name="menuAbout">About</string>
-	<string name="menuAddNewHost">Add new host</string>
 	<string name="menuConnect">Connect</string>
 	<string name="menuDisconnect">Disconnect</string>
-	<string name="menuHosts">Manage hosts</string>
 	<string name="menuHostInfo">Host Info</string>
 	<string name="menuManage">Manage client</string>
 	<string name="menuPreferences">Preferences</string>
-	<string name="menuReconnect">Reconnect</string>
 	<string name="menuRefresh">Refresh</string>
 
 	<!-- About -->
@@ -92,14 +91,14 @@
 		from network.\n
 		\nThe security of this manager is the same as the security of the standard BOINC
 		Manager; Protect your hosts by passwords.\n
-		\nThis software is released under terms of GPLv3 and 
+		\nThis software is released under terms of LGPLv3 and 
 		is provided by author free of charge. 
 		If you still want to make a kind of \"donation\" to author, 
 		who is proud member of team BOINC.SK, just join team BOINC.SK 
 		in your favorite project and crunch some credits for the team. 
 		Any amount of your \"donation\" to team will be appreciated.\n
-		\nAnyway... just keep crunching!\n
-		\n\nCopyright (C) 2010 Palo M.\n
+		\nAnyway&#8230; just keep crunching!\n
+		\n\nCopyright &#169; 2010 Palo M.\n
 	</string>
 
 	<!-- Preferences -->
@@ -135,17 +134,14 @@
 	<string name="networkUnavailable">Network connection unavailable.</string>
 
 	<!-- ManageClient Activity -->
-	<string name="currentHostTitle">Current Host</string>
 	<string name="noHostConnected">No host connected</string>
-	<string name="clientConnecting">Client connecting...</string>
 	<string name="selectHostTitle">Current host</string>
 	<string name="selectHostNoneAvailable">No BOINC client configured. Use menu button to add new host(s).</string>
-	<string name="selectHostDialogTitle">Select host</string>
-	<string name="clientNameNone">None</string>
-	<string name="clientIdNone">0</string>
 	<string name="manageCategoryActivity">Activity</string>
 	<string name="clientActivityRunTitle">Run mode</string>
 	<string name="clientActivityRunDialogTitle">Run mode</string>
+	<string name="clientActivityGpuTitle">GPU mode</string>
+	<string name="clientActivityGpuDialogTitle">GPU mode</string>
 	<string name="clientActivityNetworkTitle">Network activity</string>
 	<string name="clientActivityNetworkDialogTitle">Network activity</string>
 	<string name="manageCategoryAdvanced">Advanced</string>
@@ -165,10 +161,7 @@
 	<string name="hostAddNew">Add new host</string>
 	<string name="hostEdit">Edit host</string>
 	<string name="hostDelete">Delete host</string>
-	<string name="hostSetDefault">Set default host</string>
 	<string name="noHostDefined">No host defined</string>
-	<string name="hostNone">No host</string>
-	<string name="hostNoneSummary">Disconnect from current host</string>
 	<string name="hostOperation">Host operations</string>
 	
 	<!-- Host edit dialog -->
@@ -264,6 +257,7 @@
 		&lt;b>Vendor:&lt;/b> %7$s&lt;br />
 		&lt;b>Model:&lt;/b> %8$s&lt;br />
 		&lt;b>Features:&lt;/b> %9$s&lt;br />
+		&lt;b>#GPUs:&lt;/b> %10$s&lt;br />
 	</string>
 	<string name="hostInfoPart2">
 		&lt;b>MFLOPS:&lt;/b> %1$s&lt;br />
