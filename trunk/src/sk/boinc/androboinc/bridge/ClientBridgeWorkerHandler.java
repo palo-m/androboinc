@@ -3,16 +3,16 @@
  * Copyright (C) 2010, Pavol Michalec
  * 
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
@@ -81,6 +81,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private Vector<TransferInfo> mTransfers = new Vector<TransferInfo>();
 	private SortedMap<Integer, MessageInfo> mMessages = new TreeMap<Integer, MessageInfo>();
 	private boolean mInitialStateRetrieved = false;
+	private boolean mGpuPresent = false;
 
 
 	public ClientBridgeWorkerHandler(ClientBridge.ReplyHandler replyHandler, final Context context, final NetStats netStats) {
@@ -154,6 +155,13 @@ public class ClientBridgeWorkerHandler extends Handler {
 			// Newer client, supports operation <exchange_versions>
 			mClientVersion = VersionInfoCreator.create(versionInfo);
 		}
+		// We need host info to see if GPUs are present
+		// Note: The reply to <get_cc_state/> request (used in initialStateRetrieval()) 
+		//       contains <host_info> but that one is WITHOUT <coproc> info.
+		//       The reply to <get_host_info/> request contains GPU info.
+		edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
+		mGpuPresent = (boincHostInfo.g_ngpus > 0);
+		if (Logging.DEBUG) Log.d(TAG, "connect(): #GPUs=" + boincHostInfo.g_ngpus + ", mGpuPresent=" + mGpuPresent);			
 		if (retrieveInitialData) {
 			// Before we reply, we also retrieve the complete state
 			// It can be time consuming, but it is very useful in typical usage;
@@ -234,6 +242,10 @@ public class ClientBridgeWorkerHandler extends Handler {
 			if (Logging.INFO) Log.i(TAG, "RPC failed in updateClientMode()");
 			rpcFailed();
 			return;
+		}
+		if (!mGpuPresent) {
+			// We change value of GPU mode to null to simulate GPU not present
+			ccStatus.gpu_mode = -1;
 		}
 		final ModeInfo clientMode = ModeInfoCreator.create(ccStatus);
 		// Finally, send reply back to the calling thread (that is UI thread)
@@ -408,6 +420,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // already in disconnect phase
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
 		mRpcClient.setNetworkMode(mode, 0);
+		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+		// Regardless of success we run update of client mode
+		// If there is problem with socket, it will be handled there
+		updateClientMode(callback);
+	}
+
+	public void setGpuMode(final ClientReplyReceiver callback, int mode) {
+		if (mDisconnecting) return;  // already in disconnect phase
+		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+		mRpcClient.setGpuMode(mode, 0);
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
 		// Regardless of success we run update of client mode
 		// If there is problem with socket, it will be handled there
@@ -625,6 +647,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // already in disconnect phase
 		dataSetTasks(ccState.workunits, ccState.results);
 		updatedTasks(null, getTasks());
+		ccState = null;
 		// Retrieve also transfers. Most of time empty anyway, so it runs fast
 		updateTransfers(null);
 		if (mDisconnecting) return;  // already in disconnect phase
