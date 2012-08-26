@@ -19,7 +19,7 @@
 
 package sk.boinc.androboinc.service;
 
-import sk.boinc.androboinc.debug.Logging;
+import edu.berkeley.boinc.util.Logging;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

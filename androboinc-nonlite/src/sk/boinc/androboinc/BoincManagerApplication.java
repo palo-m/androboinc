@@ -25,8 +25,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import sk.boinc.androboinc.debug.Logging;
+import edu.berkeley.boinc.util.Logging;
 import sk.boinc.androboinc.util.PreferenceName;
 import android.app.Application;
 import android.content.SharedPreferences;

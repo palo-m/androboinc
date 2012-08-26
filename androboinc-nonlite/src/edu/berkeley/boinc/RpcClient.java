@@ -19,6 +19,8 @@
 
 package edu.berkeley.boinc;
 
+import edu.berkeley.boinc.util.Debugging;
+import edu.berkeley.boinc.util.Logging;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,11 +30,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Vector;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-//import sk.boinc.androboinc.debug.NetStats;
 import android.util.Log;
 import android.util.Xml;
 
@@ -71,41 +70,6 @@ public class RpcClient {
 	private byte[] mReadBuffer = new byte[READ_BUF_SIZE];
 	private StringBuilder mResult = new StringBuilder(RESULT_BUILDER_INIT_SIZE);
 	private StringBuilder mRequest = new StringBuilder(REQUEST_BUILDER_INIT_SIZE);
-
-	public interface Logging {
-		/**
-		 * Important errors, like internal code inconsistency or external events 
-		 * having serious impact on program usability.
-		 * <p>These errors should always be reported, as they can help to analyze crashes reported to Market.
-		 */
-		public static final boolean ERROR = true;
-
-		/**
-		 * Less important errors, which could affect program usability in some circumstances.
-		 * <p>These errors should always be reported.
-		 */
-		public static final boolean WARNING = true;
-
-		/**
-		 * Events which are usually based on external inputs and should have low impact on usability.
-		 * In some situations (e.g. network problems), there can happen a lot of these events, therefore
-		 * logged details must NOT be very resources-expensive.
-		 * <p>These events can be reported in release build.
-		 */
-		public static final boolean INFO = true;
-
-		/**
-		 * Logged events for debugging purpose. Any resources-expensive stuff should use this.
-		 * <p>Only turned on in debug builds, turned off at release builds.
-		 */
-		public static final boolean DEBUG = true;
-	}
-
-	public interface Debugging {
-		public static final boolean INSERT_DELAYS = true;
-		public static final boolean PERFORMANCE = false;
-		public static final boolean DATA = false;
-	}
 
 	public RpcClient() {}
 

@@ -17,7 +17,7 @@
  * 
  */
 
-package sk.boinc.androboinc.debug;
+package edu.berkeley.boinc.util;
 
 
 public interface Logging {

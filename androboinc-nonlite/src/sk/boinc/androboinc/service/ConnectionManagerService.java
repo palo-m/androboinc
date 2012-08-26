@@ -22,13 +22,12 @@ package sk.boinc.androboinc.service;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
+import edu.berkeley.boinc.util.Logging;
 import sk.boinc.androboinc.bridge.ClientBridge;
 import sk.boinc.androboinc.bridge.ClientBridgeCallback;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
 import sk.boinc.androboinc.clientconnection.NoConnectivityException;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.util.ClientId;
 import android.app.Service;
 import android.content.Intent;

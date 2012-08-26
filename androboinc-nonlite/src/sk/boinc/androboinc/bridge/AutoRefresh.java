@@ -22,10 +22,9 @@ package sk.boinc.androboinc.bridge;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
+import edu.berkeley.boinc.util.Logging;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.util.PreferenceName;
 import android.content.Context;
 import android.content.SharedPreferences;

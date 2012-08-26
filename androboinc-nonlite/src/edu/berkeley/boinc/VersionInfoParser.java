@@ -19,10 +19,9 @@
 
 package edu.berkeley.boinc;
 
+import edu.berkeley.boinc.util.Logging;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import sk.boinc.androboinc.debug.Logging;
 import android.util.Log;
 import android.util.Xml;
 
