@@ -19,7 +19,7 @@
 
 package sk.boinc.androboinc.service;
 
-import sk.boinc.androboinc.debug.Logging;
+import edu.berkeley.boinc.util.Logging;
 import sk.boinc.androboinc.debug.NetStats;
 import sk.boinc.androboinc.util.NetStatsStorage;
 import sk.boinc.androboinc.util.PreferenceName;

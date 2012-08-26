@@ -19,7 +19,7 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.debug.Logging;
+import edu.berkeley.boinc.util.Logging;
 import sk.boinc.androboinc.util.NetStatsStorage;
 import sk.boinc.androboinc.util.PreferenceName;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;

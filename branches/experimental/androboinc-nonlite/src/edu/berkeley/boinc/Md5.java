@@ -19,10 +19,8 @@
 
 package edu.berkeley.boinc;
 
+import edu.berkeley.boinc.util.Logging;
 import java.security.MessageDigest;
-
-import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 
 /**

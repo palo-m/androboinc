@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
-
+import edu.berkeley.boinc.util.Logging;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
 import sk.boinc.androboinc.clientconnection.HostInfo;
@@ -33,7 +33,6 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.debug.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;

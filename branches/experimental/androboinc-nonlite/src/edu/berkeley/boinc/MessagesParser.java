@@ -19,17 +19,14 @@
 
 package edu.berkeley.boinc;
 
+import edu.berkeley.boinc.util.Logging;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Vector;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
-import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
 

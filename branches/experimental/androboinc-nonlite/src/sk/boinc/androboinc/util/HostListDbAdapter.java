@@ -19,7 +19,7 @@
 
 package sk.boinc.androboinc.util;
 
-import sk.boinc.androboinc.debug.Logging;
+import edu.berkeley.boinc.util.Logging;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
