@@ -66,7 +66,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private Boolean mDisconnecting = false; // read by worker thread, write by both threads
 
 	private RpcClient mRpcClient = null; // read/write only by worker thread 
-	private NetStats mNetStats = null;
+//	private NetStats mNetStats = null;
 	private Formatter mFormatter = null;
 
 	private Set<ClientReplyReceiver> mUpdateCancel = new HashSet<ClientReplyReceiver>();
@@ -86,7 +86,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	public ClientBridgeWorkerHandler(ClientBridge.ReplyHandler replyHandler, final Context context, final NetStats netStats) {
 		mReplyHandler = replyHandler;
 		mContext = context;
-		mNetStats = netStats;
+//		mNetStats = netStats;
 		mFormatter = new Formatter(mContext);
 	}
 
