@@ -46,15 +46,15 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import edu.berkeley.boinc.lite.App;
-import edu.berkeley.boinc.lite.CcState;
-import edu.berkeley.boinc.lite.CcStatus;
-import edu.berkeley.boinc.lite.Message;
-import edu.berkeley.boinc.lite.Project;
-import edu.berkeley.boinc.lite.Result;
-import edu.berkeley.boinc.lite.RpcClient;
-import edu.berkeley.boinc.lite.Transfer;
-import edu.berkeley.boinc.lite.Workunit;
+import edu.berkeley.boinc.App;
+import edu.berkeley.boinc.CcState;
+import edu.berkeley.boinc.CcStatus;
+import edu.berkeley.boinc.Message;
+import edu.berkeley.boinc.Project;
+import edu.berkeley.boinc.Result;
+import edu.berkeley.boinc.RpcClient;
+import edu.berkeley.boinc.Transfer;
+import edu.berkeley.boinc.Workunit;
 
 
 public class ClientBridgeWorkerHandler extends Handler {
@@ -126,7 +126,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // already in disconnect phase
 		if (Logging.DEBUG) Log.d(TAG, "Opening connection to " + client.getNickname());
 		notifyProgress(ClientReplyReceiver.PROGRESS_CONNECTING);
-		mRpcClient = new RpcClient(mNetStats);
+		mRpcClient = new RpcClient();
 		if (!mRpcClient.open(client.getAddress(), client.getPort())) {
 			// Connect failed
 			if (Logging.WARNING) Log.w(TAG, "Failed connect to " + client.getAddress() + ":" + client.getPort());
@@ -150,7 +150,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			if (Debugging.INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
 		}
 		if (Logging.DEBUG) Log.d(TAG, "Connected to " + client.getNickname());
-		edu.berkeley.boinc.lite.VersionInfo versionInfo = mRpcClient.exchangeVersions();
+		edu.berkeley.boinc.VersionInfo versionInfo = mRpcClient.exchangeVersions();
 		if (versionInfo != null) {
 			// Newer client, supports operation <exchange_versions>
 			mClientVersion = VersionInfoCreator.create(versionInfo);
@@ -159,7 +159,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		// Note: The reply to <get_cc_state/> request (used in initialStateRetrieval()) 
 		//       contains <host_info> but that one is WITHOUT <coproc> info.
 		//       The reply to <get_host_info/> request contains GPU info.
-		edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
+		edu.berkeley.boinc.HostInfo boincHostInfo = mRpcClient.getHostInfo();
 		mGpuPresent = (boincHostInfo.g_ngpus > 0);
 		if (Logging.DEBUG) Log.d(TAG, "connect(): #GPUs=" + boincHostInfo.g_ngpus + ", mGpuPresent=" + mGpuPresent);			
 		if (retrieveInitialData) {
@@ -263,7 +263,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
-		edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
+		edu.berkeley.boinc.HostInfo boincHostInfo = mRpcClient.getHostInfo();
 		if (boincHostInfo == null) {
 			if (Logging.INFO) Log.i(TAG, "RPC failed in updateHostInfo()");
 			rpcFailed();
@@ -789,7 +789,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (Logging.DEBUG) Log.d(TAG, "dataUpdateMessages(): Begin update");
 		Iterator<Message> mi = messages.iterator();
 		while (mi.hasNext()) {
-			edu.berkeley.boinc.lite.Message msg = mi.next();
+			edu.berkeley.boinc.Message msg = mi.next();
 			MessageInfo message = MessageInfoCreator.create(msg, mFormatter);
 			mMessages.put(msg.seqno, message);
 		}

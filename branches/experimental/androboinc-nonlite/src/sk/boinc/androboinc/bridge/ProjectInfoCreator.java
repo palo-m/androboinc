@@ -22,7 +22,7 @@ package sk.boinc.androboinc.bridge;
 import android.content.res.Resources;
 import sk.boinc.androboinc.R;
 import sk.boinc.androboinc.clientconnection.ProjectInfo;
-import edu.berkeley.boinc.lite.Project;
+import edu.berkeley.boinc.Project;
 
 
 public class ProjectInfoCreator {

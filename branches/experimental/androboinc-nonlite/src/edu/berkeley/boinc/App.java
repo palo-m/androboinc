@@ -17,10 +17,13 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
-public interface Boinc {
-	public static final int MAJOR_VERSION = 6;
-	public static final int MINOR_VERSION = 10;
-	public static final int RELEASE = 58;
+public class App {
+	public String name = "";
+	public String user_friendly_name = "";
+
+	public final String getName() {
+		return user_friendly_name.equals("") ? name : user_friendly_name;
+	}
 }

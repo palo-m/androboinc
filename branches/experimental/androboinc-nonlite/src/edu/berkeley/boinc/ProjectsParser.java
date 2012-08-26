@@ -17,7 +17,7 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
 import java.util.Vector;
 

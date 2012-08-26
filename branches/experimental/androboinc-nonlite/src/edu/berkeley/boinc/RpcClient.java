@@ -17,7 +17,7 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,9 +32,7 @@ import java.util.Vector;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import sk.boinc.androboinc.debug.Debugging;
-import sk.boinc.androboinc.debug.Logging;
-import sk.boinc.androboinc.debug.NetStats;
+//import sk.boinc.androboinc.debug.NetStats;
 import android.util.Log;
 import android.util.Xml;
 
@@ -73,13 +71,43 @@ public class RpcClient {
 	private byte[] mReadBuffer = new byte[READ_BUF_SIZE];
 	private StringBuilder mResult = new StringBuilder(RESULT_BUILDER_INIT_SIZE);
 	private StringBuilder mRequest = new StringBuilder(REQUEST_BUILDER_INIT_SIZE);
-	private NetStats mNetStats = null;
+
+	public interface Logging {
+		/**
+		 * Important errors, like internal code inconsistency or external events 
+		 * having serious impact on program usability.
+		 * <p>These errors should always be reported, as they can help to analyze crashes reported to Market.
+		 */
+		public static final boolean ERROR = true;
+
+		/**
+		 * Less important errors, which could affect program usability in some circumstances.
+		 * <p>These errors should always be reported.
+		 */
+		public static final boolean WARNING = true;
+
+		/**
+		 * Events which are usually based on external inputs and should have low impact on usability.
+		 * In some situations (e.g. network problems), there can happen a lot of these events, therefore
+		 * logged details must NOT be very resources-expensive.
+		 * <p>These events can be reported in release build.
+		 */
+		public static final boolean INFO = true;
+
+		/**
+		 * Logged events for debugging purpose. Any resources-expensive stuff should use this.
+		 * <p>Only turned on in debug builds, turned off at release builds.
+		 */
+		public static final boolean DEBUG = true;
+	}
+
+	public interface Debugging {
+		public static final boolean INSERT_DELAYS = true;
+		public static final boolean PERFORMANCE = false;
+		public static final boolean DATA = false;
+	}
 
 	public RpcClient() {}
-
-	public RpcClient(NetStats netStats) {
-		mNetStats = netStats;
-	}
 
 
 	/*
@@ -188,9 +216,6 @@ public class RpcClient {
 			mSocket = null;
 			return false;
 		}
-		if (mNetStats != null) {
-			mNetStats.connectionOpened();
-		}
 		if (Logging.DEBUG) Log.d(TAG, "open(" + address + ", " + port + ") - Connected successfully");
 		return true;
 	}
@@ -221,9 +246,6 @@ public class RpcClient {
 		}
 		catch (IOException e) {
 			if (Logging.WARNING) Log.w(TAG, "socket close failure", e);
-		}
-		if (mNetStats != null) {
-			mNetStats.connectionClosed();
 		}
 		mSocket = null;
 	}
@@ -323,9 +345,6 @@ public class RpcClient {
 		mOutput.write(request);
 		mOutput.write("</boinc_gui_rpc_request>\n\003");
 		mOutput.flush();
-		if (mNetStats != null) {
-			mNetStats.bytesTransferred(50 + request.length());
-		}
 	}
 
 	/**
@@ -364,10 +383,6 @@ public class RpcClient {
 		}
 
 		if (Debugging.PERFORMANCE) Log.d(TAG, "mResult.capacity() = " + mResult.capacity());
-
-		if (mNetStats != null) {
-			mNetStats.bytesReceived(mResult.length());
-		}
 
 		if (Debugging.DATA) {
 			BufferedReader dbr = new BufferedReader(new StringReader(mResult.toString()));

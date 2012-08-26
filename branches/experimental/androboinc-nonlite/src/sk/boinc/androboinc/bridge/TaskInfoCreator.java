@@ -23,9 +23,9 @@ import sk.boinc.androboinc.R;
 import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import android.content.res.Resources;
-import edu.berkeley.boinc.lite.App;
-import edu.berkeley.boinc.lite.Result;
-import edu.berkeley.boinc.lite.Workunit;
+import edu.berkeley.boinc.App;
+import edu.berkeley.boinc.Result;
+import edu.berkeley.boinc.Workunit;
 
 
 public class TaskInfoCreator {

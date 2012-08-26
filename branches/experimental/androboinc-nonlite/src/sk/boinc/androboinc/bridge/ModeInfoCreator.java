@@ -20,7 +20,7 @@
 package sk.boinc.androboinc.bridge;
 
 import sk.boinc.androboinc.clientconnection.ModeInfo;
-import edu.berkeley.boinc.lite.CcStatus;
+import edu.berkeley.boinc.CcStatus;
 
 
 public class ModeInfoCreator {
