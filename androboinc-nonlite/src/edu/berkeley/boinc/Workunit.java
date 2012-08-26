@@ -17,10 +17,10 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
-public class GuiUrl {
-	public String name;
-	public String description;
-	public String url;
+public class Workunit {
+	public String name = "";
+	public String app_name = "";
+	public int version_num;
 }

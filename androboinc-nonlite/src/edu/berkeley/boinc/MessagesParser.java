@@ -17,7 +17,7 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -17,7 +17,7 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

@@ -17,12 +17,18 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
-public class Message {
-	public String project = "";
-	public int    priority;
-	public int    seqno;
-	public long   timestamp;
-	public String body;
+public class Transfer {
+	public String name;
+	public String project_url;
+	public boolean generated_locally;
+	public long nbytes;
+	public boolean xfer_active;
+	public int status;
+	public long next_request_time;
+    public long time_so_far;
+	public long bytes_xferred;
+    public float xfer_speed;
+	public long project_backoff;
 }

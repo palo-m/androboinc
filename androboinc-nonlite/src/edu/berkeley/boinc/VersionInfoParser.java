@@ -17,52 +17,52 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
-
-import java.util.Vector;
+package edu.berkeley.boinc;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
 
-public class WorkunitsParser extends BaseParser {
-	private static final String TAG = "WorkunitsParser";
+public class VersionInfoParser extends BaseParser {
+	private static final String TAG = "VersionInfoParser";
+	private VersionInfo mVersionInfo = null;
 
-	private Vector<Workunit> mWorkunits = new Vector<Workunit>();
-	private Workunit mWorkunit = null;
-
-
-	public final Vector<Workunit> getWorkunits() {
-		return mWorkunits;
+	public final VersionInfo getVersionInfo() {
+		return mVersionInfo;
 	}
 
 	/**
-	 * Parse the RPC result (workunit) and generate corresponding vector
+	 * Parse the RPC result (host_info) and generate vector of projects info
 	 * @param rpcResult String returned by RPC call of core client
-	 * @return vector of workunits
+	 * @return VersionInfo (of core client)
 	 */
-	public static Vector<Workunit> parse(String rpcResult) {
+	public static VersionInfo parse(String rpcResult) {
 		try {
-			WorkunitsParser parser = new WorkunitsParser();
+			VersionInfoParser parser = new VersionInfoParser();
 			Xml.parse(rpcResult, parser);
-			return parser.getWorkunits();
+			return parser.getVersionInfo();
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
 			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
 			return null;
-		}
+		}		
 	}
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
-		if (localName.equalsIgnoreCase("workunit")) {
-			mWorkunit = new Workunit();
+		if (localName.equalsIgnoreCase("server_version")) {
+			if (Logging.INFO) { 
+				if (mVersionInfo != null) {
+					// previous <server_version> not closed - dropping it!
+					Log.i(TAG, "Dropping unfinished <server_version> data");
+				}
+			}
+			mVersionInfo = new VersionInfo();
 		}
 		else {
 			// Another element, hopefully primitive and not constructor
@@ -71,7 +71,7 @@ public class WorkunitsParser extends BaseParser {
 			mCurrentElement.setLength(0);
 		}
 	}
-
+	
 	// Method characters(char[] ch, int start, int length) is implemented by BaseParser,
 	// filling mCurrentElement (including stripping of leading whitespaces)
 	//@Override
@@ -81,27 +81,22 @@ public class WorkunitsParser extends BaseParser {
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		super.endElement(uri, localName, qName);
 		try {
-			if (mWorkunit != null) {
-				// We are inside <workunit>
-				if (localName.equalsIgnoreCase("workunit")) {
-					// Closing tag of <workunit> - add to vector and be ready for next one
-					if (!mWorkunit.name.equals("")) {
-						// name is a must
-						mWorkunits.add(mWorkunit);
-					}
-					mWorkunit = null;
+			if (mVersionInfo != null) {
+				// we are inside <server_version>
+				if (localName.equalsIgnoreCase("server_version")) {
+					// Closing tag of <server_version> - nothing to do at the moment
 				}
 				else {
 					// Not the closing tag - we decode possible inner tags
 					trimEnd();
-					if (localName.equalsIgnoreCase("name")) {
-						mWorkunit.name = mCurrentElement.toString();
+					if (localName.equalsIgnoreCase("major")) {
+						mVersionInfo.major = Integer.parseInt(mCurrentElement.toString());
 					}
-					else if (localName.equalsIgnoreCase("app_name")) {
-						mWorkunit.app_name = mCurrentElement.toString();
+					else if (localName.equalsIgnoreCase("minor")) {
+						mVersionInfo.minor = Integer.parseInt(mCurrentElement.toString());
 					}
-					else if (localName.equalsIgnoreCase("version_num")) {
-						mWorkunit.version_num = Integer.parseInt(mCurrentElement.toString());
+					else if (localName.equalsIgnoreCase("release")) {
+						mVersionInfo.release = Integer.parseInt(mCurrentElement.toString());
 					}
 				}
 			}
@@ -109,6 +104,6 @@ public class WorkunitsParser extends BaseParser {
 		catch (NumberFormatException e) {
 			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
-		mElementStarted = false;
+		mElementStarted = false; // to be clean for next one
 	}
 }

@@ -25,7 +25,7 @@ import android.content.res.Resources;
 
 
 public class HostInfoCreator {
-	public static HostInfo create(final edu.berkeley.boinc.lite.HostInfo hostInfo, final Formatter formatter) {
+	public static HostInfo create(final edu.berkeley.boinc.HostInfo hostInfo, final Formatter formatter) {
 		HostInfo hi = new HostInfo();
 		hi.hostCpId = hostInfo.host_cpid;
 		StringBuilder sb = formatter.getStringBuilder();

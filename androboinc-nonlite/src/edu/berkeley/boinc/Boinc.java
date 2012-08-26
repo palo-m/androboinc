@@ -17,9 +17,10 @@
  * 
  */
 
-package edu.berkeley.boinc.lite;
+package edu.berkeley.boinc;
 
-public class AppVersion {
-	public String app_name;
-	public int version_num;
+public interface Boinc {
+	public static final int MAJOR_VERSION = 6;
+	public static final int MINOR_VERSION = 10;
+	public static final int RELEASE = 58;
 }
