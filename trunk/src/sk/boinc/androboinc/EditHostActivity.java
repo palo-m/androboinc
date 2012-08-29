@@ -21,16 +21,21 @@ package sk.boinc.androboinc;
 
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.HostListDbAdapter;
+import sk.boinc.androboinc.util.NameInputFilter;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class EditHostActivity extends Activity {
@@ -90,6 +95,12 @@ public class EditHostActivity extends Activity {
 		};
 		mNickname.addTextChangedListener(textWatcher);
 		mAddress.addTextChangedListener(textWatcher);
+		
+		// Input filter is needed to remove/replace characters 
+		// which are causing troubles during DB-access
+		List<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(mNickname.getFilters()));
+		inputFilters.add(new NameInputFilter());
+		mNickname.setFilters(inputFilters.toArray(new InputFilter[inputFilters.size()]));
 
 		Button cancelButton = (Button)findViewById(R.id.editHostCancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {
