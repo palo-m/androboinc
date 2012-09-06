@@ -31,7 +31,6 @@ import edu.berkeley.boinc.lite.Workunit;
 public class TaskInfoCreator {
 	public static TaskInfo create(final Result result, final Workunit workunit, final ProjectInfo pi, final App app, final Formatter formatter) {
 		TaskInfo ti = new TaskInfo();
-		StringBuilder sb = formatter.getStringBuilder();
 		ti.taskName = result.name;
 		ti.projectUrl = result.project_url;
 		ti.project = pi.project;
@@ -41,12 +40,7 @@ public class TaskInfoCreator {
 			// but it is present in Workunit
 			appVersion = workunit.version_num;
 		}
-		sb.append(app.getName());
-		sb.append(" ");
-		sb.append(appVersion/100);
-		sb.append(".");
-		sb.append(appVersion%100);
-		ti.application = sb.toString();
+		ti.application = String.format("%s %.2f", app.getName(), appVersion/100.0);
 		update(ti, result, formatter);
 		return ti;
 	}
