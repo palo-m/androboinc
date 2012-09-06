@@ -59,6 +59,7 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 	}
 
 	public void cleanup() {
+		if (mContext == null) return;
 		commitPending();
 		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 		globalPrefs.unregisterOnSharedPreferenceChangeListener(this);
@@ -141,7 +142,12 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 	}
 
 
-	private void commitPending() {
+	private synchronized void commitPending() {
+		if (mContext == null) {
+			// UI thread finished before worker thread
+			// Possibly the disconnect took too long
+			return;
+		}
 		if ( (mUncommittedReceived != 0) || (mUncommittedSent != 0) ) {
 			mTotalReceived += mUncommittedReceived;
 			mTotalSent += mUncommittedSent;
@@ -163,7 +169,12 @@ public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceCha
 		}
 	}
 
-	private void clearStats() {
+	private synchronized void clearStats() {
+		if (mContext == null) {
+			// UI thread finished before worker thread
+			// Possibly the disconnect took too long
+			return;
+		}
 		SharedPreferences netStats = mContext.getSharedPreferences(NetStatsStorage.NET_STATS_FILE, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = netStats.edit();
 		editor.putLong(NetStatsStorage.NET_STATS_TOTAL_RCVD, 0);
