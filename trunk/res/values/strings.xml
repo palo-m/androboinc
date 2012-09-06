@@ -121,8 +121,9 @@
 	<string name="prefNetworkUsageDisabled">Statistics are NOT collected</string>
 	<string name="prefNetworkUsageNull">Received: 0B, Sent: 0B</string>
 	<string name="prefNetworkUsageDisclaimer">
-		The numbers displayed in network usage here are not exact.
-		Do not rely on them.
+	    This function is experimental.
+		The numbers displayed in network usage here are not 100% accurate.
+		It is intended for temporary use only, to get rough idea about volume of transferred data.
 	</string>
 	<string name="prefOptOutText">Do not show me this notice again.</string>
 	<string name="prefCategoryAbout">About</string>
