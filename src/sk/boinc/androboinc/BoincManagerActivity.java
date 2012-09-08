@@ -69,6 +69,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static sk.boinc.androboinc.BoincManagerApplication.AppStatus;
+
 
 public class BoincManagerActivity extends TabActivity implements ClientReplyReceiver {
 	private static final String TAG = "BoincManagerActivity";
@@ -79,6 +81,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	private static final int DIALOG_LICENSE          = 4;
 	private static final int DIALOG_LICENSE2         = 5;
 	private static final int DIALOG_UPGRADE_INFO     = 6;
+	private static final int DIALOG_NEWINSTALL_INFO  = 7;
 
 	private static final int ACTIVITY_SELECT_HOST   = 1;
 	private static final int ACTIVITY_MANAGE_CLIENT = 2;
@@ -91,7 +94,6 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	private boolean mScreenAlwaysOn = false;
 	private boolean mBackPressedRecently = false;
 	private Handler mHandler = new Handler();
-	private boolean mJustUpgraded = false;
 
 	private StringBuilder mSb = new StringBuilder();
 	private int mConnectProgressIndicator = -1;
@@ -168,14 +170,13 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
 
 		mApp = (BoincManagerApplication)getApplication();
-		mJustUpgraded = mApp.getJustUpgradedStatus();
 
 		// Create handler for screen orientation
 		mScreenOrientation = new ScreenOrientationHandler(this);
 
 		// Obtain screen wake-lock
 		PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-		mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, BoincManagerApplication.GLOBAL_ID);
+		mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, getPackageName());
 
 		doBindService();
 
@@ -260,11 +261,15 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		}
 		// Update name of connected client (or show "not connected")
 		updateTitle();
-		// Show Information about upgrade, if applicable
-		if (mJustUpgraded) {
-			mJustUpgraded = false; // Do not show again
+		// Show information if applicable
+		if (mApp.getAppStatus() == AppStatus.NEW_INSTALLED) {
+			// Show information about new install
 			mProgressDialogAllowed = false;
-			// Now show the dialog about upgrade
+			showDialog(DIALOG_NEWINSTALL_INFO);
+		}
+		if (mApp.getAppStatus() == AppStatus.UPGRADED) {
+			// Show information about upgrade
+			mProgressDialogAllowed = false;
 			showDialog(DIALOG_UPGRADE_INFO);
 		}
 		else {
@@ -468,7 +473,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 				.setPositiveButton(R.string.homepage,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
-							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							Uri uri = Uri.parse(getString(R.string.homepageUrl));
 							startActivity(new Intent(Intent.ACTION_VIEW, uri));
 						}
 					})
@@ -491,7 +496,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 				.setPositiveButton(R.string.sources, 
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
-							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							Uri uri = Uri.parse(getString(R.string.sourceCodeUrl));
 							startActivity(new Intent(Intent.ACTION_VIEW, uri));
 						}
 					})
@@ -531,10 +536,44 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
 			text = (TextView)v.findViewById(R.id.dialogText);
 			mApp.setChangelogText(text);
+			mApp.upgradeInfoShown();
 			return new AlertDialog.Builder(this)
 				.setIcon(android.R.drawable.ic_dialog_info)
 				.setTitle(getString(R.string.upgradedTo) + " " + mApp.getApplicationVersion())
 				.setView(v)
+				.setNegativeButton(R.string.dismiss, 
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// Progress dialog is allowed since now
+							mProgressDialogAllowed = true;
+							if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+						}					
+					})
+				.setOnCancelListener(new OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						// Progress dialog is allowed since now
+						mProgressDialogAllowed = true;
+						if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+					}
+				})
+        		.create();
+		case DIALOG_NEWINSTALL_INFO:
+			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
+			text = (TextView)v.findViewById(R.id.dialogText);
+			mApp.setNewInstallText(text);
+			mApp.upgradeInfoShown();
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setTitle(R.string.welcome)
+				.setView(v)
+				.setPositiveButton(R.string.seeWiki, 
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							Uri uri = Uri.parse("http://" + getString(R.string.wikiHowtoAddress));
+							startActivity(new Intent(Intent.ACTION_VIEW, uri));
+						}
+					})
 				.setNegativeButton(R.string.dismiss, 
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {

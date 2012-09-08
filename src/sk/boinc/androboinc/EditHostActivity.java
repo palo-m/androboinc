@@ -26,6 +26,7 @@ import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -104,6 +105,7 @@ public class EditHostActivity extends Activity {
 
 		Button cancelButton = (Button)findViewById(R.id.editHostCancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View view) {
 				Intent intent = new Intent();
 				setResult(RESULT_CANCELED, intent);
@@ -114,6 +116,7 @@ public class EditHostActivity extends Activity {
 		mConfirmButton = (Button)findViewById(R.id.editHostOk);
 		setConfirmButtonState();
 		mConfirmButton.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View view) {
 				int port = BoincManagerApplication.DEFAULT_PORT;
 				if (mPort.getText().length() > 0) {
@@ -129,6 +132,15 @@ public class EditHostActivity extends Activity {
 				Intent intent = new Intent().putExtra(ClientId.TAG, clientId);
 				setResult(RESULT_OK, intent);
 				finish();
+			}
+		});
+		
+		Button wikiButton = (Button)findViewById(R.id.editHostWiki);
+		wikiButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Uri uri = Uri.parse("http://" + getString(R.string.wikiHowtoAddress));
+				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 			}
 		});
 	}
