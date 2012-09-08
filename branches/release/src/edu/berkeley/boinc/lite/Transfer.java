@@ -22,7 +22,7 @@ package edu.berkeley.boinc.lite;
 public class Transfer {
 	public String name;
 	public String project_url;
-	public boolean generated_locally;
+	public boolean is_upload;
 	public long nbytes;
 	public boolean xfer_active;
 	public int status;

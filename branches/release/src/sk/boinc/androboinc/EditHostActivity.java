@@ -21,16 +21,22 @@ package sk.boinc.androboinc;
 
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.HostListDbAdapter;
+import sk.boinc.androboinc.util.NameInputFilter;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class EditHostActivity extends Activity {
@@ -90,9 +96,16 @@ public class EditHostActivity extends Activity {
 		};
 		mNickname.addTextChangedListener(textWatcher);
 		mAddress.addTextChangedListener(textWatcher);
+		
+		// Input filter is needed to remove/replace characters 
+		// which are causing troubles during DB-access
+		List<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(mNickname.getFilters()));
+		inputFilters.add(new NameInputFilter());
+		mNickname.setFilters(inputFilters.toArray(new InputFilter[inputFilters.size()]));
 
 		Button cancelButton = (Button)findViewById(R.id.editHostCancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View view) {
 				Intent intent = new Intent();
 				setResult(RESULT_CANCELED, intent);
@@ -103,6 +116,7 @@ public class EditHostActivity extends Activity {
 		mConfirmButton = (Button)findViewById(R.id.editHostOk);
 		setConfirmButtonState();
 		mConfirmButton.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View view) {
 				int port = BoincManagerApplication.DEFAULT_PORT;
 				if (mPort.getText().length() > 0) {
@@ -118,6 +132,15 @@ public class EditHostActivity extends Activity {
 				Intent intent = new Intent().putExtra(ClientId.TAG, clientId);
 				setResult(RESULT_OK, intent);
 				finish();
+			}
+		});
+		
+		Button wikiButton = (Button)findViewById(R.id.editHostWiki);
+		wikiButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Uri uri = Uri.parse("http://" + getString(R.string.wikiHowtoAddress));
+				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 			}
 		});
 	}
