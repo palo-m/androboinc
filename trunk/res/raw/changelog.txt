@@ -1,3 +1,10 @@
+Version 6.10.58.rc2 (2012-09-08)
+- Added direct links to Wiki
+- Fix for rare crash with Network usage
+- Fix for nicknames containing apostrophe
+- Fix for application version display
+- Fix for compatibility with newer clients
+
 Version 6.10.58.rc1 (2012-08-25)
 - GPU modes control is available now
 - License changed to LGPLv3, the same as BOINC 
