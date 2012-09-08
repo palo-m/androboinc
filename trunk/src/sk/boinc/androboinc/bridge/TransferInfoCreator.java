@@ -67,7 +67,7 @@ public class TransferInfoCreator {
 		}
 		else if (transfer.xfer_active) {
 			// Currently transferring
-			if (transfer.generated_locally) {
+			if (transfer.is_upload) {
 				sb.append(resources.getString(R.string.uploading));
 			}
 			else {
@@ -77,7 +77,7 @@ public class TransferInfoCreator {
 		}
 		else {
 			// Not transferring
-			if (transfer.generated_locally) {
+			if (transfer.is_upload) {
 				sb.append(resources.getString(R.string.uploadPending));
 			}
 			else {
@@ -88,7 +88,7 @@ public class TransferInfoCreator {
 			sb.append(" (");
 			sb.append(resources.getString(R.string.projectBackoff));
 			sb.append(": ");
-			sb.append(Formatter.formatElapsedTime(transfer.project_backoff / 1000));
+			sb.append(Formatter.formatElapsedTime(transfer.project_backoff));
 			sb.append(")");
 		}
 		ti.state = sb.toString();
