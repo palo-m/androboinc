@@ -303,7 +303,7 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 				.setPositiveButton(R.string.homepage,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
-							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							Uri uri = Uri.parse(getString(R.string.homepageUrl));
 							startActivity(new Intent(Intent.ACTION_VIEW, uri));
 						}
 					})
@@ -320,7 +320,7 @@ public class AppPreferencesActivity extends PreferenceActivity implements OnShar
 				.setPositiveButton(R.string.sources,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
-							Uri uri = Uri.parse(getString(R.string.aboutHomepageUrl));
+							Uri uri = Uri.parse(getString(R.string.sourceCodeUrl));
 							startActivity(new Intent(Intent.ACTION_VIEW, uri));
 						}
 					})

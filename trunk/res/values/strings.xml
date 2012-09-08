@@ -46,6 +46,7 @@
 	<string name="received">Received</string>
 	<string name="retrievingData">Retrieving data&#8230;</string>
 	<string name="retrievingInitialData">Retrieving initial data&#8230;</string>
+	<string name="seeWiki">See Wiki</string>
 	<string name="sent">Sent</string>
 	<string name="shutdown">Shutdown</string>
 	<string name="sources">Sources</string>
@@ -53,7 +54,13 @@
 	<string name="unknown">unknown</string>
 	<string name="upgradedTo">Upgraded to</string>
 	<string name="warning">Warning</string>
-
+	<string name="welcome">Welcome</string>
+	
+	<!-- URLs/addresses -->
+	<string name="homepageUrl">http://code.google.com/p/androboinc/</string>
+	<string name="sourceCodeUrl">http://code.google.com/p/androboinc/source</string>
+	<string name="wikiHowtoAddress">code.google.com/p/androboinc/wiki/HowToSetup</string>
+	
 	<!-- Units -->
 	<string name="unitKiB">KiB</string>
 	<string name="unitMiB">MiB</string>
@@ -84,11 +91,10 @@
 
 	<!-- About -->
 	<string name="aboutTitle">Basic Information</string>
-	<string name="aboutHomepageUrl">http://code.google.com/p/androboinc/</string>
 	<string name="aboutText">
 		%1$s is port of BOINC Manager to Android.\n
 		\nIt is only manager, NOT the client. You must have separate BOINC client accessible
-		from network.\n
+		from network. Read the %2$s wiki if you do not know how to set it up.\n
 		\nThe security of this manager is the same as the security of the standard BOINC
 		Manager; Protect your hosts by passwords.\n
 		\nThis software is released under terms of LGPLv3 and 
@@ -99,6 +105,13 @@
 		Any amount of your \"donation\" to team will be appreciated.\n
 		\nAnyway&#8230; just keep crunching!\n
 		\n\nCopyright &#169; 2010 Palo M.\n
+	</string>
+	<string name="newInstall">
+	    Welcome to %1$s!\n
+	    \nIt appears that you just installed %1$s for the first time.
+	    If you do not know how to make it working, please check %1$s wiki.\n
+	    \nThis dialog will not be shown again, but you can get link to %1$s wiki
+	    anytime later when you press menu button and select \"%2$s\".
 	</string>
 
 	<!-- Preferences -->
@@ -170,6 +183,7 @@
 	<string name="editHostAddress">Address</string>
 	<string name="editHostPort">Port</string>
 	<string name="editHostPassword">Password</string>
+	<string name="editHostHelp">Don\'t know what to fill in this screen?</string>
 
 	<!-- ProjectsActivity -->
 	<string name="projectCtxMenuTitle">Commands</string>

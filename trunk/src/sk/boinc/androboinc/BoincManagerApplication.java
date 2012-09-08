@@ -51,14 +51,20 @@ import android.widget.TextView;
 public class BoincManagerApplication extends Application {
 	private static final String TAG = "BoincManagerApplication";
 
-	public static final String GLOBAL_ID = "sk.boinc.androboinc";
 	public static final int DEFAULT_PORT = 31416;
+
+	public static enum AppStatus {
+		NORMAL,
+		NEW_INSTALLED,
+		UPGRADED
+	}
 
 	private static final int READ_BUF_SIZE = 2048;
 	private static final int LICENSE_TEXT_SIZE = 37351;
 
 	private char[] mReadBuffer = new char[READ_BUF_SIZE];
 	private StringBuilder mStringBuilder = null;
+	private AppStatus mAppStatus = AppStatus.NORMAL;
 
 	@Override
 	public void onCreate() {
@@ -66,6 +72,7 @@ public class BoincManagerApplication extends Application {
 		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
 		PreferenceManager.setDefaultValues(this, R.xml.manage_client, false);
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		retrieveAppStatus();
 	}
 
 	@Override
@@ -83,15 +90,7 @@ public class BoincManagerApplication extends Application {
 		super.onLowMemory();
 	}
 
-	/**
-	 * Finds whether this is the application was upgraded recently.
-	 * It also marks the status in preferences, so even if first call of this
-	 * method after upgrade returns true, all subsequent calls will return false.
-	 * 
-	 * @return true if this is first call of this method after application upgrade, 
-	 *         false if this application version was already run previously
-	 */
-	public boolean getJustUpgradedStatus() {
+	private void retrieveAppStatus() {
 		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int upgradeInfoShownVersion = globalPrefs.getInt(PreferenceName.UPGRADE_INFO_SHOWN_VERSION, 0);
 		int currentVersion = 0;
@@ -100,18 +99,37 @@ public class BoincManagerApplication extends Application {
 		}
 		catch (NameNotFoundException e) {
 			if (Logging.ERROR) Log.e(TAG, "Cannot retrieve application version");
-			return false;
+			return;
 		}
 		if (Logging.DEBUG) Log.d(TAG, "currentVersion=" + currentVersion + ", upgradeInfoShownVersion=" + upgradeInfoShownVersion);
-		if (currentVersion == upgradeInfoShownVersion) {
-			// NOT upgraded, we shown info already
-			return false;
+		if (upgradeInfoShownVersion == 0) {
+			mAppStatus = AppStatus.NEW_INSTALLED;
 		}
-		// Just upgraded; mark the status in preferences
-		if (Logging.DEBUG) Log.d(TAG, "First run after upgrade: currentVersion=" + currentVersion + ", upgradeInfoShownVersion=" + upgradeInfoShownVersion);
+		else if (currentVersion > upgradeInfoShownVersion) {
+			mAppStatus = AppStatus.UPGRADED;
+		}
+		else {
+			mAppStatus = AppStatus.NORMAL;
+		}
+	}
+
+	public final AppStatus getAppStatus() {
+		return mAppStatus;
+	}
+
+	public void upgradeInfoShown() {
+		int currentVersion = 0;
+		try {
+			currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+		}
+		catch (NameNotFoundException e) {
+			if (Logging.ERROR) Log.e(TAG, "Cannot retrieve application version");
+			return;
+		}
+		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = globalPrefs.edit();
 		editor.putInt(PreferenceName.UPGRADE_INFO_SHOWN_VERSION, currentVersion).commit();
-		return true;
+		mAppStatus = AppStatus.NORMAL;
 	}
 
 	public String getApplicationVersion() {
@@ -130,8 +148,17 @@ public class BoincManagerApplication extends Application {
 	}
 
 	public void setAboutText(TextView text) {
-		text.setText(getString(R.string.aboutText, getApplicationVersion()));
+		text.setText(getString(R.string.aboutText, getApplicationVersion(), getString(R.string.app_name)));
 		String httpURL = "http://";
+		// Link to wiki
+		Pattern wikiText = Pattern.compile(getString(R.string.app_name) +" wiki");
+		TransformFilter wikiTransformer = new TransformFilter() {
+			@Override
+			public String transformUrl(Matcher match, String url) {
+				return getString(R.string.wikiHowtoAddress);
+			}
+		};
+		Linkify.addLinks(text, wikiText, httpURL, null, wikiTransformer);
 		// Link to BOINC.SK page
 		Pattern boincskText = Pattern.compile("BOINC\\.SK");
 		TransformFilter boincskTransformer = new TransformFilter() {
@@ -150,6 +177,20 @@ public class BoincManagerApplication extends Application {
 			}
 		};
 		Linkify.addLinks(text, gplText, httpURL, null, gplTransformer);
+	}
+
+	public void setNewInstallText(TextView text) {
+		text.setText(getString(R.string.newInstall, getString(R.string.app_name), getString(R.string.menuAbout)));
+		String httpURL = "http://";
+		// Link to wiki
+		Pattern wikiText = Pattern.compile(getString(R.string.app_name) +" wiki");
+		TransformFilter wikiTransformer = new TransformFilter() {
+			@Override
+			public String transformUrl(Matcher match, String url) {
+				return getString(R.string.wikiHowtoAddress);
+			}
+		};
+		Linkify.addLinks(text, wikiText, httpURL, null, wikiTransformer);
 	}
 
 	public void setLicenseText(TextView text) {

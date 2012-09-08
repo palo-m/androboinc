@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
 /* 
  * AndroBOINC - BOINC Manager for Android
  * Copyright (C) 2010, Pavol Michalec
@@ -20,89 +20,131 @@
  */
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical"
-	android:padding="10dip">
-	<LinearLayout android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" 
-			android:text="@string/editHostNickname"
-			android:paddingRight="5dip" />
-		<EditText
-			android:id="@+id/editHostNickname" 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:background="@android:drawable/editbox_background"
-			android:inputType="textNoSuggestions|textUri" />
-	</LinearLayout>
-	<LinearLayout android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" 
-			android:text="@string/editHostAddress"
-			android:paddingRight="5dip" />
-		<EditText
-			android:id="@+id/editHostAddress" 
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:background="@android:drawable/editbox_background"
-			android:inputType="textNoSuggestions|textUri" />
-	</LinearLayout>
-	<LinearLayout android:orientation="horizontal"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="right">
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" 
-			android:text="@string/editHostPort"
-			android:paddingRight="5dip" />
-		<EditText
-			android:id="@+id/editHostPort" 
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:background="@android:drawable/editbox_background"
-			android:inputType="number"
-			android:digits="0123456789"
-			android:maxLength="5"
-			android:lines="1"
-			android:width="70sp" />
-	</LinearLayout>
-	<LinearLayout android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" 
-			android:text="@string/editHostPassword"
-			android:paddingRight="5dip" />
-		<EditText
-			android:id="@+id/editHostPassword"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:background="@android:drawable/editbox_background"
-			android:inputType="textPassword" />
-	</LinearLayout>
-	<LinearLayout android:orientation="horizontal"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="right">
-		<Button
-			android:id="@+id/editHostCancel" 
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/cancel" />
-		<Button
-			android:id="@+id/editHostOk" 
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="10dip"
-			android:text="@string/ok" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dip" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="5dip"
+            android:text="@string/editHostNickname" />
+
+        <EditText
+            android:id="@+id/editHostNickname"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/editbox_background"
+            android:inputType="textNoSuggestions|textUri" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="5dip"
+            android:text="@string/editHostAddress" />
+
+        <EditText
+            android:id="@+id/editHostAddress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/editbox_background"
+            android:inputType="textNoSuggestions|textUri" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="5dip"
+            android:text="@string/editHostPort" />
+
+        <EditText
+            android:id="@+id/editHostPort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/editbox_background"
+            android:digits="0123456789"
+            android:inputType="number"
+            android:lines="1"
+            android:maxLength="5"
+            android:width="70sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="5dip"
+            android:text="@string/editHostPassword" />
+
+        <EditText
+            android:id="@+id/editHostPassword"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/editbox_background"
+            android:inputType="textPassword" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/editHostCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/editHostOk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:text="@string/ok" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_gravity="bottom"
+        android:layout_weight="1.0"
+        android:orientation="vertical" >
+    </TextView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dip"
+        android:paddingLeft="5dip"
+        android:text="@string/editHostHelp" />
+
+    <Button
+        android:id="@+id/editHostWiki"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/seeWiki" />
+
 </LinearLayout>
