@@ -1,0 +1,26 @@
+Version 6.10.58.rc2 (2012-09-08)
+- Added direct links to Wiki
+- Fix for rare crash with Network usage
+- Fix for nicknames containing apostrophe
+- Fix for application version display
+- Fix for compatibility with newer clients
+
+Version 6.10.58.rc1 (2012-08-25)
+- GPU modes control is available now
+- License changed to LGPLv3, the same as BOINC 
+
+Version 6.10.17.beta3 (2011-02-11)
+- Fix for crash on low memory system event
+- Minor updates of user interface
+
+Version 6.10.17.beta2 (2011-02-06)
+- Fix for crashes reported by Market
+- Added new preferences
+- Updates of user interface
+
+Version 6.10.17.beta (2010-12-01)
+- Fix for Motorola Milestone crash
+- Source code available on project homepage under GPLv3
+
+Version 6.10.17.alpha (2010-11-20)
+- Initial release
