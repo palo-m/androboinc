@@ -118,8 +118,12 @@ public class TransfersParser extends BaseParser {
 					else if (localName.equalsIgnoreCase("name")) {
 						mTransfer.name = mCurrentElement.toString();
 					}
+					else if (localName.equalsIgnoreCase("is_upload")) {
+						mTransfer.is_upload = !mCurrentElement.toString().equals("0");
+					}
 					else if (localName.equalsIgnoreCase("generated_locally")) {
-						mTransfer.generated_locally = !mCurrentElement.toString().equals("0");
+						// The <generated_locally> is deprecated legacy tag
+						mTransfer.is_upload = !mCurrentElement.toString().equals("0");
 					}
 					else if (localName.equalsIgnoreCase("nbytes")) {
 						mTransfer.nbytes = (long)Double.parseDouble(mCurrentElement.toString());
