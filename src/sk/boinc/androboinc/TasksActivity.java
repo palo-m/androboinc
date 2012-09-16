@@ -19,11 +19,6 @@
 
 package sk.boinc.androboinc;
 
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Vector;
-
 import sk.boinc.androboinc.clientconnection.ClientOp;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.HostInfo;
@@ -65,6 +60,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Vector;
 
 
 public class TasksActivity extends ListActivity implements ClientReplyReceiver {
@@ -451,7 +449,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 
 
 	@Override
-	public void clientConnectionProgress(int progress) {
+	public void clientConnectionProgress(ProgressInd progress) {
 		// We don't care about progress indicator in this activity, just ignore this
 	}
 
@@ -469,7 +467,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	}
 
 	@Override
-	public void clientDisconnected() {
+	public void clientDisconnected(DisconnectCause cause) {
 		if (Logging.DEBUG) Log.d(TAG, "Client is disconnected");
 		mConnectedClient = null;
 		mTasks.clear();

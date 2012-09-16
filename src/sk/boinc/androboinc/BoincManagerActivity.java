@@ -19,10 +19,7 @@
 
 package sk.boinc.androboinc;
 
-import hal.android.workarounds.FixedProgressDialog;
-
-import java.util.Vector;
-
+import sk.boinc.androboinc.BoincManagerApplication.AppStatus;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
@@ -38,6 +35,7 @@ import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.HostListDbAdapter;
 import sk.boinc.androboinc.util.PreferenceName;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
+import hal.android.workarounds.FixedProgressDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -68,8 +66,7 @@ import android.view.Window;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import static sk.boinc.androboinc.BoincManagerApplication.AppStatus;
+import java.util.Vector;
 
 
 public class BoincManagerActivity extends TabActivity implements ClientReplyReceiver {
@@ -82,6 +79,10 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	private static final int DIALOG_LICENSE2         = 5;
 	private static final int DIALOG_UPGRADE_INFO     = 6;
 	private static final int DIALOG_NEWINSTALL_INFO  = 7;
+	private static final int DIALOG_CONNECT_FAILED   = 8;
+	private static final int DIALOG_AUTHFAIL_NO_PWD  = 9;
+	private static final int DIALOG_AUTHFAIL_BAD_PWD = 10;
+	private static final int DIALOG_CONNECTION_DROP  = 11;
 
 	private static final int ACTIVITY_SELECT_HOST   = 1;
 	private static final int ACTIVITY_MANAGE_CLIENT = 2;
@@ -96,30 +97,31 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	private Handler mHandler = new Handler();
 
 	private StringBuilder mSb = new StringBuilder();
-	private int mConnectProgressIndicator = -1;
-	private boolean mProgressDialogAllowed = false;
+	private ProgressInd mConnectProgressIndicator = ProgressInd.NONE;
+	private boolean mDialogsAllowed = false;
 
 	private ClientId mConnectedClient = null;
 	private VersionInfo mConnectedClientVersion = null;
 	private ClientId mSelectedClient = null;
+	private ClientId mLastAttemptedClient = null;
 	private boolean mInitialDataRetrievalStarted = false;
 	private boolean mInitialDataAvailable = false;
 
 	private class SavedState {
 		private final boolean initialDataAvailable;
-		private final int connectProgressIndicator;
+		private final ProgressInd connectProgressIndicator;
 
 		public SavedState() {
 			initialDataAvailable = mInitialDataAvailable;
 			if (Logging.DEBUG) Log.d(TAG, "saved: initialDataAvailable=" + initialDataAvailable);
 			connectProgressIndicator = mConnectProgressIndicator;
-			if (Logging.DEBUG) Log.d(TAG, "saved: connectProgressIndicator=" + connectProgressIndicator);
+			if (Logging.DEBUG) Log.d(TAG, "saved: connectProgressIndicator=" + connectProgressIndicator.toString());
 		}
 		public void restoreState(BoincManagerActivity activity) {
 			activity.mInitialDataAvailable = initialDataAvailable;
 			if (Logging.DEBUG) Log.d(TAG, "restored: mInitialDataAvailable=" + activity.mInitialDataAvailable);
 			activity.mConnectProgressIndicator = connectProgressIndicator;
-			if (Logging.DEBUG) Log.d(TAG, "restored: mConnectProgressIndicator=" + activity.mConnectProgressIndicator);
+			if (Logging.DEBUG) Log.d(TAG, "restored: mConnectProgressIndicator=" + activity.mConnectProgressIndicator.toString());
 		}
 	}
 
@@ -264,17 +266,17 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		// Show information if applicable
 		if (mApp.getAppStatus() == AppStatus.NEW_INSTALLED) {
 			// Show information about new install
-			mProgressDialogAllowed = false;
+			mDialogsAllowed = false;
 			showDialog(DIALOG_NEWINSTALL_INFO);
 		}
 		if (mApp.getAppStatus() == AppStatus.UPGRADED) {
 			// Show information about upgrade
-			mProgressDialogAllowed = false;
+			mDialogsAllowed = false;
 			showDialog(DIALOG_UPGRADE_INFO);
 		}
 		else {
 			// Progress dialog is allowed since now
-			mProgressDialogAllowed = true;
+			mDialogsAllowed = true;
 		}
 		// If applicable (e.g scheduled), connect to the host
 		// Even in case that ChangeLog is being shown on upgrade, connect will still be done,
@@ -295,7 +297,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		else if (mInitialDataRetrievalStarted) {
 			// We started retrieval of important data, which will take some time
 			// We display progress dialog about it
-			showProgressDialog(PROGRESS_INITIAL_DATA);
+			showProgressDialog(ProgressInd.INITIAL_DATA);
 		}
 	}
 
@@ -303,7 +305,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	protected void onPause() {
 		super.onPause();
 		if (Logging.DEBUG) Log.d(TAG, "onPause()");
-		mProgressDialogAllowed = false;
+		mDialogsAllowed = false;
 		// If we did not perform deferred connect so far, we needn't do that anymore
 		mSelectedClient = null;
 	}
@@ -436,6 +438,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	protected Dialog onCreateDialog(int id) {
 		View v;
 		TextView text;
+		AlertDialog.Builder adBuilder;
 		switch (id) {
 		case DIALOG_CONNECT_PROGRESS:
 			if (Logging.DEBUG) Log.d(TAG, "onCreateDialog(DIALOG_CONNECT_PROGRESS)");
@@ -446,20 +449,17 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 				@Override
 				public void onCancel(DialogInterface dialog) {
 					// Connecting canceled
-					mConnectProgressIndicator = -1;
+					mConnectProgressIndicator = ProgressInd.NONE;
 					// Disconnect the client
 					boincDisconnect();
 				}
 			});
             return dialog;
 		case DIALOG_NETWORK_DOWN:
-			v = LayoutInflater.from(this).inflate(R.layout.dialog, null);
-			text = (TextView)v.findViewById(R.id.dialogText);
-			text.setText(R.string.networkUnavailable);
         	return new AlertDialog.Builder(this)
         		.setIcon(android.R.drawable.ic_dialog_alert)
         		.setTitle(R.string.error)
-        		.setView(v)
+				.setMessage(R.string.networkUnavailable)
         		.setNegativeButton(R.string.close, null)
         		.create();
 		case DIALOG_ABOUT:
@@ -545,7 +545,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// Progress dialog is allowed since now
-							mProgressDialogAllowed = true;
+							mDialogsAllowed = true;
 							if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 						}					
 					})
@@ -553,7 +553,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 					@Override
 					public void onCancel(DialogInterface dialog) {
 						// Progress dialog is allowed since now
-						mProgressDialogAllowed = true;
+						mDialogsAllowed = true;
 						if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 					}
 				})
@@ -578,7 +578,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// Progress dialog is allowed since now
-							mProgressDialogAllowed = true;
+							mDialogsAllowed = true;
 							if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 						}					
 					})
@@ -586,11 +586,55 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 					@Override
 					public void onCancel(DialogInterface dialog) {
 						// Progress dialog is allowed since now
-						mProgressDialogAllowed = true;
+						mDialogsAllowed = true;
 						if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 					}
 				})
         		.create();
+		case DIALOG_CONNECT_FAILED:
+			adBuilder = new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.error)
+				.setMessage(R.string.connectFailed)
+        		.setNegativeButton(R.string.close, null);
+			if (mLastAttemptedClient != null) {
+				adBuilder.setPositiveButton(R.string.reconnect, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						mSelectedClient = mLastAttemptedClient;
+						boincConnect();
+					}
+				});
+			}
+        	return adBuilder.create();
+		case DIALOG_AUTHFAIL_NO_PWD:
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.error)
+				.setMessage(getString(R.string.authFailedNoPwd, getString(R.string.app_name)))
+				.setNegativeButton(R.string.close, null)
+        		.create();
+		case DIALOG_AUTHFAIL_BAD_PWD:
+			return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.error)
+				.setMessage(getString(R.string.authFailedWrongPwd, getString(R.string.app_name)))
+				.setNegativeButton(R.string.close, null)
+        		.create();
+		case DIALOG_CONNECTION_DROP:
+			adBuilder = new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.error)
+				.setMessage(R.string.connectionDropped)
+        		.setNegativeButton(R.string.close, null);
+			if (mLastAttemptedClient != null) {
+				adBuilder.setPositiveButton(R.string.reconnect, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						mSelectedClient = mLastAttemptedClient;
+						boincConnect();
+					}
+				});
+			}
+        	return adBuilder.create();
 		}
 		return null;
 	}
@@ -601,23 +645,23 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		case DIALOG_CONNECT_PROGRESS:
 			ProgressDialog pd = (ProgressDialog)dialog;
 			switch (mConnectProgressIndicator) {
-			case PROGRESS_CONNECTING:
+			case CONNECTING:
 				pd.setMessage(getString(R.string.connecting));
 				break;
-			case PROGRESS_AUTHORIZATION_PENDING:
+			case AUTHORIZATION_PENDING:
 				pd.setMessage(getString(R.string.authorization));
 				break;
-			case PROGRESS_INITIAL_DATA:
+			case INITIAL_DATA:
 				pd.setMessage(getString(R.string.retrievingInitialData));				
 				break;
 			default:
 				pd.setMessage(getString(R.string.error));
-				if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + mConnectProgressIndicator);
+				if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + mConnectProgressIndicator.toString());
 			}
 			break;
 		}
 	}
-		
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (Logging.DEBUG) Log.d(TAG, "onActivityResult()");
@@ -648,9 +692,9 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 
 
 	@Override
-	public void clientConnectionProgress(int progress) {
+	public void clientConnectionProgress(ProgressInd progress) {
 		switch (progress) {
-		case PROGRESS_INITIAL_DATA:
+		case INITIAL_DATA:
 			// We are already connected, so hopefully we can display client ID in title bar
 			// as well as progress spinner
 			ClientId clientId = mConnectionManager.getClientId();
@@ -659,20 +703,20 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			}
 			setProgressBarIndeterminateVisibility(true);
 			// No break here, we drop to next case (dialog update)
-		case PROGRESS_CONNECTING:
-		case PROGRESS_AUTHORIZATION_PENDING:
+		case CONNECTING:
+		case AUTHORIZATION_PENDING:
 			// Update dialog to display corresponding status, i.e.
 			// "Connecting", "Authorization", "Retrieving"
 			showProgressDialog(progress);
 			break;
-		case PROGRESS_XFER_STARTED:
+		case XFER_STARTED:
 			setProgressBarIndeterminateVisibility(true);
 			break;
-		case PROGRESS_XFER_FINISHED:
+		case XFER_FINISHED:
 			setProgressBarIndeterminateVisibility(false);
 			break;
 		default:
-			if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + progress);
+			if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + progress.toString());
 		}
 	}
 
@@ -686,6 +730,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 			if (Logging.DEBUG) Log.d(TAG, "Client " + mConnectedClient.getNickname() + " is connected");
 			updateTitle();
 			mSelectedClient = null; // For case of auto-connect on startup while service is already connected
+			mLastAttemptedClient = mConnectedClient; // For re-connect
 		}
 		else {
 			// Received connected notification, but client is unknown!
@@ -695,7 +740,7 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 	}
 
 	@Override
-	public void clientDisconnected() {
+	public void clientDisconnected(DisconnectCause cause) {
 		if (Logging.DEBUG) Log.d(TAG, "Client " + ( (mConnectedClient != null) ? mConnectedClient.getNickname() : "<not connected>" ) + " is disconnected");
 		mConnectedClient = null;
 		mConnectedClientVersion = null;
@@ -706,6 +751,26 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		if (mSelectedClient != null) {
 			// Connection to another client is deferred, we proceed with it now
 			boincConnect();
+		}
+		else if (mDialogsAllowed) {
+			if (Logging.DEBUG) Log.d(TAG, "Received " + cause.toString());
+			switch (cause) {
+			case CONNECT_FAILURE:
+				showDialog(DIALOG_CONNECT_FAILED);
+				break;
+			case AUTH_FAIL_NO_PWD:
+				showDialog(DIALOG_AUTHFAIL_NO_PWD);
+				break;
+			case AUTH_FAIL_WRONG_PWD:
+				showDialog(DIALOG_AUTHFAIL_BAD_PWD);
+				break;
+			case CONNECTION_DROP:
+				showDialog(DIALOG_CONNECTION_DROP);
+				break;
+			default:
+				// Normal event, e.g. requested disconnect - nothing to do
+				break;
+			}
 		}
 	}
 
@@ -772,40 +837,44 @@ public class BoincManagerActivity extends TabActivity implements ClientReplyRece
 		}
 	}
 
-	private void showProgressDialog(final int progress) {
-		if (mProgressDialogAllowed) {
+	private void showProgressDialog(final ProgressInd progress) {
+		if (mDialogsAllowed) {
 			mConnectProgressIndicator = progress;
 			showDialog(DIALOG_CONNECT_PROGRESS);
 		}
-		else if (mConnectProgressIndicator != -1) {
+		else if (mConnectProgressIndicator != ProgressInd.NONE) {
 			// Not allowed to show progress dialog (i.e. activity restarting/terminating),
 			// but we are showing previous progress dialog - dismiss it
 			removeDialog(DIALOG_CONNECT_PROGRESS);
-			mConnectProgressIndicator = -1;
+			mConnectProgressIndicator = ProgressInd.NONE;
 		}
 	}
 
 	private void dismissProgressDialog() {
-		if (mConnectProgressIndicator != -1) {
+		if (mConnectProgressIndicator != ProgressInd.NONE) {
 			removeDialog(DIALOG_CONNECT_PROGRESS);
-			mConnectProgressIndicator = -1;
+			mConnectProgressIndicator = ProgressInd.NONE;
 		}
 	}
 
 	private void boincConnect() {
 		try {
 			mConnectionManager.connect(mSelectedClient, true);
+			mLastAttemptedClient = mSelectedClient;
 			mSelectedClient = null;
 			mInitialDataAvailable = true; // Not really, but data will be available on connected notification
 		}
 		catch (NoConnectivityException e) {
 			if (Logging.DEBUG) Log.d(TAG, "No connectivity - cannot connect");
-			// TODO: Show notification about connectivity
+			if (mDialogsAllowed) {
+				showDialog(DIALOG_NETWORK_DOWN);
+			}
 		}
 	}
 
 	private void boincDisconnect() {
 		mConnectionManager.disconnect();
+		mLastAttemptedClient = null;
 	}
 
 	private void connectOrReconnect() {
