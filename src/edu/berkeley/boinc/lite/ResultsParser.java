@@ -19,15 +19,13 @@
 
 package edu.berkeley.boinc.lite;
 
-import java.util.Vector;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import java.util.Vector;
+
 
 public class ResultsParser extends BaseParser {
 	private static final String TAG = "ResultsParser";
@@ -35,27 +33,29 @@ public class ResultsParser extends BaseParser {
 	private Vector<Result> mResults = new Vector<Result>();
 	private Result mResult = null;
 	private boolean mInActiveTask = false;
+	private boolean mUnauthorized = false;
 
-	public Vector<Result> getResults() {
+	public Vector<Result> getResults() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mResults;
 	}
 
 	/**
 	 * Parse the RPC result (results) and generate vector of results info
 	 * 
-	 * @param rpcResult
-	 *            String returned by RPC call of core client
+	 * @param rpcResult String returned by RPC call of core client
 	 * @return vector of results info
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static Vector<Result> parse(String rpcResult) {
+	public static Vector<Result> parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			ResultsParser parser = new ResultsParser();
 			Xml.parse(rpcResult, parser);
 			return parser.getResults();
 		} catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <results>", e);
 		}
 
 	}
@@ -193,6 +193,10 @@ public class ResultsParser extends BaseParser {
 						}
 					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// There is <unauthorized/> outside <result>
+				mUnauthorized = true;
 			}
 		} catch (NumberFormatException e) {
 			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);

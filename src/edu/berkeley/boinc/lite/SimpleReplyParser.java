@@ -19,14 +19,13 @@
 
 package edu.berkeley.boinc.lite;
 
+import sk.boinc.androboinc.debug.Logging;
+import android.util.Log;
+import android.util.Xml;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import sk.boinc.androboinc.debug.Logging;
-
-import android.util.Log;
-import android.util.Xml;
 
 public class SimpleReplyParser extends DefaultHandler {
 	private static final String TAG = "SimpleReplyParser";
@@ -34,24 +33,33 @@ public class SimpleReplyParser extends DefaultHandler {
 	private boolean mParsed = false;
 	private boolean mInReply = false;
 	private boolean mSuccess = false;
+	private boolean mUnauthorized = false;
 
 	// Disable direct instantiation of this class
 	private SimpleReplyParser() {}
 
-	public final boolean result() {
+	public final boolean result() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mSuccess;
 	}
 
-	public static boolean isSuccess(String reply) {
+	/**
+	 * Parse the RPC result of command
+	 * 
+	 * @param rpcResult String returned by RPC call of core client
+	 * @return true in case of {@code <success/>}, false in case of {@code <failure/>}
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
+	 */
+	public static boolean isSuccess(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			SimpleReplyParser parser = new SimpleReplyParser();
-			Xml.parse(reply, parser);
+			Xml.parse(rpcResult, parser);
 			return parser.result();
 		}
 		catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + reply);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return false;
+			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			throw new InvalidDataReceivedException("Malformed XML while parsing simple reply", e);
 		}		
 
 	}
@@ -67,18 +75,24 @@ public class SimpleReplyParser extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		super.endElement(uri, localName, qName);
-
-		if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
-			mInReply = false;
-		}
-		else if (mInReply && !mParsed) {
-			if (localName.equalsIgnoreCase("success")) {
-				mSuccess = true;
-				mParsed = true;
+		if (mInReply) {
+			if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
+				mInReply = false;
 			}
-			else if (localName.equalsIgnoreCase("failure")) {
-				mSuccess = false;
-				mParsed = true;
+			else if (!mParsed) {
+				if (localName.equalsIgnoreCase("success")) {
+					mSuccess = true;
+					mParsed = true;
+				}
+				else if (localName.equalsIgnoreCase("failure")) {
+					mSuccess = false;
+					mParsed = true;
+				}
+				else if (localName.equalsIgnoreCase("unauthorized")) {
+					// There is <unauthorized/> inside <boinc_gui_rpc_reply>
+					mUnauthorized = true;
+					mParsed = true;
+				}
 			}
 		}
 	}

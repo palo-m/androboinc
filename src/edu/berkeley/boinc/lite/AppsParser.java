@@ -19,15 +19,12 @@
 
 package edu.berkeley.boinc.lite;
 
-import java.util.Vector;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import java.util.Vector;
 
 
 public class AppsParser extends BaseParser {
@@ -36,17 +33,18 @@ public class AppsParser extends BaseParser {
 	private Vector<App> mApps = new Vector<App>();
 	private App mApp = null;
 
-
 	public final Vector<App> getApps() {
 		return mApps;
 	}
 
 	/**
 	 * Parse the RPC result (app) and generate vector of app
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
 	 * @return vector of app
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static Vector<App> parse(String rpcResult) {
+	public static Vector<App> parse(String rpcResult) throws InvalidDataReceivedException {
 		try {
 			AppsParser parser = new AppsParser();
 			Xml.parse(rpcResult, parser);
@@ -54,8 +52,7 @@ public class AppsParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <app>", e);
 		}
 	}
 

@@ -19,19 +19,16 @@
 
 package edu.berkeley.boinc.lite;
 
+import sk.boinc.androboinc.debug.Logging;
+import android.util.Log;
+import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Vector;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import sk.boinc.androboinc.debug.Logging;
-
-import android.util.Log;
-import android.util.Xml;
 
 
 public class MessagesParser extends BaseParser {
@@ -39,18 +36,22 @@ public class MessagesParser extends BaseParser {
 
 	private Vector<Message> mMessages = new Vector<Message>();
 	private Message mMessage = null;
+	private boolean mUnauthorized = false;
 
-
-	public final Vector<Message> getMessages() {
+	public final Vector<Message> getMessages() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mMessages;
 	}
 
 	/**
-	 * Parse the RPC result (app_version) and generate corresponding vector
+	 * Parse the RPC result (msgs) and generate corresponding vector
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
-	 * @return vector of application version
+	 * @return vector of messages
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static Vector<Message> parse(String rpcResult) {
+	public static Vector<Message> parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		MessagesParser parser = new MessagesParser();
 		try {
 			Xml.parse(rpcResult, parser);
@@ -80,8 +81,7 @@ public class MessagesParser extends BaseParser {
 				}
 				Log.d(TAG, "Decoded " + parser.getMessages().size() + " messages");
 			}
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <msgs>", e);
 		}
 	}
 
@@ -137,6 +137,10 @@ public class MessagesParser extends BaseParser {
 						mMessage.body = mCurrentElement.toString();
 					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// There is <unauthorized/> outside <msg>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

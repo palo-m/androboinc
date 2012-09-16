@@ -157,9 +157,9 @@ public class RpcClient {
 	 * Connect to BOINC core client
 	 * @param address Internet address of client (hostname or IP-address)
 	 * @param port Port of BOINC client (default port is 31416)
-	 * @return true for success, false for failure
+	 * @throws ConnectionFailedException in case connection cannot be established
 	 */
-	public boolean open(String address, int port) {
+	public void open(String address, int port) throws ConnectionFailedException {
 		if (isConnected()) {
 			// Already connected
 			if (Logging.ERROR) Log.e(TAG, "Attempt to connect when already connected");
@@ -174,32 +174,28 @@ public class RpcClient {
 			mOutput = new OutputStreamWriter(mSocket.getOutputStream(), "ISO8859_1");
 		}
 		catch (UnknownHostException e) {
-			if (Logging.WARNING) Log.w(TAG, "connect failure: unknown host \"" + address + "\"", e);
 			mSocket = null;
-			return false;
+			throw new ConnectionFailedException("Connection failed: unknown host \"" + address + "\"", e);
 		}
 		catch (IllegalArgumentException e) {
-			if (Logging.ERROR) Log.e(TAG, "connect failure: illegal argument", e);
 			mSocket = null;
-			return false;
+			throw new ConnectionFailedException("Connection failed: illegal argument", e);
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "connect failure", e);
 			mSocket = null;
-			return false;
+			throw new ConnectionFailedException("Connect failed", e);
 		}
 		if (mNetStats != null) {
 			mNetStats.connectionOpened();
 		}
 		if (Logging.DEBUG) Log.d(TAG, "open(" + address + ", " + port + ") - Connected successfully");
-		return true;
 	}
 
 	/**
 	 * Closes the currently opened connection to BOINC core client
 	 */
 	public void close() {
-		if (!isConnected()) {
+		if (mSocket == null) {
 			// Not connected - just return (can be cleanup "for sure")
 			return;
 		}
@@ -222,10 +218,14 @@ public class RpcClient {
 		catch (IOException e) {
 			if (Logging.WARNING) Log.w(TAG, "socket close failure", e);
 		}
+		finally {
+			mSocket = null;
+			mInput = null;
+			mOutput = null;
+		}
 		if (mNetStats != null) {
 			mNetStats.connectionClosed();
 		}
-		mSocket = null;
 	}
 
 	/**
@@ -233,11 +233,16 @@ public class RpcClient {
 	 * The authorization uses MD5 hash of client's password and random value. 
 	 * Clear-text password is never sent over network.
 	 * @param password Clear text password used for authorization
-	 * @return true for success, false for failure
+	 * @throws RpcClientFailedException in case authorization is fails
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case authorization is unsuccessful (i.e. wrong password)</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * </ul>
 	 */
-	public boolean authorize(String password) {
+	public void authorize(String password) throws RpcClientFailedException {
 		if (!isConnected()) {
-			return false;
+			throw new ConnectionFailedException("Not connected");
 		}
 		try {
 			// Phase 1: get nonce
@@ -258,20 +263,17 @@ public class RpcClient {
 			mRequest.setLength(0);
 			Xml.parse(auth2Rsp, new Auth2Parser(mRequest));
 			if (!mRequest.toString().equals("authorized")) {
-				if (Logging.DEBUG) { Log.d(TAG, "authorize() - Failure"); }
-				return false;
+				if (Logging.DEBUG) Log.d(TAG, "authorize() - Failure");
+				throw new AuthorizationFailedException();
 			}
+			if (Logging.DEBUG) Log.d(TAG, "authorize() - Successful");
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in authorize()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed during authorization", e);
 		}
 		catch (SAXException e) {
-			if (Logging.INFO) Log.i(TAG, "Malformed XML received in authorize()");
-			return false;
+			throw new InvalidDataReceivedException("Malformed data received during authorization", e);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "authorize() - Successful");
-		return true;
 	}
 
 	/**
@@ -286,6 +288,7 @@ public class RpcClient {
 	 * Checks whether current connection can be used (data can be sent and received)
 	 * This is achieved by sending the empty BOINC command - so in case there is
 	 * socket still opened, but other side already closed connection, it will be detected.
+	 * 
 	 * @return true if other side responds, false if data cannot be sent or received
 	 */
 	public boolean connectionAlive() {
@@ -303,6 +306,7 @@ public class RpcClient {
 			return true;
 		}
 		catch (IOException e) {
+			if (Logging.DEBUG) Log.d(TAG, "connectionAlive(): disconnected", e);
 			return false;
 		}
 	}
@@ -313,6 +317,7 @@ public class RpcClient {
 
 	/**
 	 * Send RPC request to BOINC core client (XML-formatted)
+	 * 
 	 * @param request The request itself
 	 * @throws IOException if error occurs when sending the request
 	 */
@@ -330,6 +335,7 @@ public class RpcClient {
 
 	/**
 	 * Read the reply from BOINC core client
+	 * 
 	 * @return the data read from socket
 	 * @throws IOException if error occurs when reading from socket
 	 */
@@ -355,22 +361,26 @@ public class RpcClient {
 				break;
 			}
 		} while (true);
+		if (mResult.length() == 0) {
+			// Nothing was read at all
+			// Possibly closed socket on other side
+			throw new IOException("No data received");
+		}
 
 		if (Debugging.PERFORMANCE) {
 			float duration = (System.nanoTime() - readStart)/1000000000.0F;
 			long bytesCount = mResult.length();
 			if (duration == 0) duration = 0.001F;
 			Log.d(TAG, "Reading from socket took " + duration + " seconds, " + bytesCount + " bytes read (" + (bytesCount / duration) + " bytes/second)");
+			Log.d(TAG, "mResult.capacity() = " + mResult.capacity());
 		}
-
-		if (Debugging.PERFORMANCE) Log.d(TAG, "mResult.capacity() = " + mResult.capacity());
 
 		if (mNetStats != null) {
 			mNetStats.bytesReceived(mResult.length());
 		}
 
 		if (Debugging.DATA) {
-			BufferedReader dbr = new BufferedReader(new StringReader(mResult.toString()));
+			BufferedReader dbr = new BufferedReader(new StringReader(mResult.toString()), 1024);
 			String dl;
 			int ln = 0;
 			try {
@@ -389,7 +399,19 @@ public class RpcClient {
 	 * GUI RPC calls
 	 */
 
-	public VersionInfo exchangeVersions() {
+	/**
+	 * Attempts to retrieve version of the connected client
+	 * 
+	 * @return parsed result of RPC call in case of success, 
+	 *         null if (older) client does not support the operation
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
+	 */
+	public VersionInfo exchangeVersions() throws RpcClientFailedException {
 		mRequest.setLength(0);
 		mRequest.append("<exchange_versions>\n  <major>");
 		mRequest.append(Boinc.MAJOR_VERSION);
@@ -404,82 +426,109 @@ public class RpcClient {
 			return versionInfo;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in exchangeVersions()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in exchangeVersions()", e);
 		}
 	}
 
 	/**
-	 * Performs get_cc_status RPC towards BOINC client
-	 * @return result of RPC call in case of success, null otherwise
+	 * Performs {@code <get_cc_status/>} RPC towards BOINC client
+	 * 
+	 * @return parsed result of RPC call
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public CcStatus getCcStatus() {
+	public CcStatus getCcStatus() throws RpcClientFailedException {
 		try {
 			sendRequest("<get_cc_status/>\n");
 			CcStatus ccStatus = CcStatusParser.parse(receiveReply());
 			return ccStatus;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getCcStatus()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getCcStatus()", e);
 		}
 	}
 
 	/**
-	 * Performs get_file_transfers RPC towards BOINC client
-	 * @return result of RPC call in case of success, null otherwise
+	 * Performs {@code <get_file_transfers/>} RPC towards BOINC client
+	 * 
+	 * @return parsed result of RPC call
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public Vector<Transfer> getFileTransfers() {
+	public Vector<Transfer> getFileTransfers() throws RpcClientFailedException {
 		try {
 			sendRequest("<get_file_transfers/>\n");
 			Vector<Transfer> transfers = TransfersParser.parse(receiveReply());
 			return transfers;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getFileTransfers()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getFileTransfers()", e);
 		}
 	}
 
 	/**
-	 * Performs get_host_info RPC towards BOINC client
+	 * Performs {@code <get_host_info/>} RPC towards BOINC client
 	 * 
-	 * @return result of RPC call in case of success, null otherwise
+	 * @return parsed result of RPC call
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public HostInfo getHostInfo() {
+	public HostInfo getHostInfo() throws RpcClientFailedException {
 		try {
 			sendRequest("<get_host_info/>\n");
 			HostInfo hostInfo = HostInfoParser.parse(receiveReply());
 			return hostInfo;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getHostInfo()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getHostInfo()", e);
 		}
 	}
 
 	/**
-	 * Performs get_message_count RPC towards BOINC client
+	 * Performs {@code <get_message_count/>} RPC towards BOINC client
 	 * 
-	 * @return result of RPC call in case of success, null otherwise
+	 * @return number of messages (-1 for unsupported operation on older clients)
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public int getMessageCount() {
+	public int getMessageCount() throws RpcClientFailedException {
 		try {
 			sendRequest("<get_message_count/>\n");
 			return MessageCountParser.getSeqno(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getMessageCount()", e);
-			return -1;
+			throw new ConnectionFailedException("Connection failed in getMessageCount()", e);
 		}
 	}
 
 	/**
-	 * Performs get_messages RPC towards BOINC client
+	 * Performs {@code <get_messages/>} RPC towards BOINC client
 	 * 
-	 * @return result of RPC call in case of success, null otherwise
+	 * @return parsed result of RPC call
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public Vector<Message> getMessages(int seqNo) {
+	public Vector<Message> getMessages(int seqNo) throws RpcClientFailedException {
 		try {
 			String request;
 			if (seqNo == 0) {
@@ -497,34 +546,44 @@ public class RpcClient {
 			return messages;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getMessages()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getMessages()", e);
 		}
 	}
 
 	/**
-	 * Performs get_project_status RPC towards BOINC client
+	 * Performs {@code <get_project_status/>} RPC towards BOINC client
 	 * 
-	 * @return result of RPC call in case of success, null otherwise
+	 * @return parsed result of RPC call
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public Vector<Project> getProjectStatus() {
+	public Vector<Project> getProjectStatus() throws RpcClientFailedException {
 		try {
 			sendRequest("<get_project_status/>\n");
 			Vector<Project> projects = ProjectsParser.parse(receiveReply());
 			return projects;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getProjectStatus()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getProjectStatus()", e);
 		}
 	}
 
 	/**
-	 * Performs get_results RPC towards BOINC client (only active results)
+	 * Performs {@code <get_results/>} RPC towards BOINC client (only active results)
 	 * 
-	 * @return result of RPC call in case of success, null otherwise
+	 * @return parsed result of RPC call
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public Vector<Result> getActiveResults() {
+	public Vector<Result> getActiveResults() throws RpcClientFailedException {
 		final String request =
 			"<get_results>\n" +
 			"<active_only>1</active_only>\n" +
@@ -535,68 +594,90 @@ public class RpcClient {
 			return results;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getActiveResults()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getActiveResults()", e);
 		}
 	}
 
 	/**
-	 * Performs get_results RPC towards BOINC client (all results)
+	 * Performs {@code <get_results/>} RPC towards BOINC client (all results)
 	 * 
-	 * @return result of RPC call in case of success, null otherwise
+	 * @return parsed result of RPC call
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public Vector<Result> getResults() {
+	public Vector<Result> getResults() throws RpcClientFailedException {
 		try {
 			sendRequest("<get_results/>\n");
 			Vector<Result> results = ResultsParser.parse(receiveReply());
 			return results;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getResults()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getResults()", e);
 		}
 	}
 
 	/**
 	 * Performs get_state RPC towards BOINC client
 	 * 
-	 * @return result of RPC call in case of success, null otherwise
+	 * @return parsed result of RPC call in case of success
+	 * @throws RpcClientFailedException in case of failure:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public CcState getState() {
+	public CcState getState() throws RpcClientFailedException {
 		try {
 			sendRequest("<get_state/>\n");
 			CcState result = CcStateParser.parse(receiveReply());
 			return result;
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in getState()", e);
-			return null;
+			throw new ConnectionFailedException("Connection failed in getState()", e);
 		}
 	}
 
 	/**
 	 * Tells the BOINC core client that a network connection is available,
 	 * and that it should do as much network activity as it can.
-	 * @return true for success, false for failure
+	 * 
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean networkAvailable() {
+	public boolean networkAvailable() throws RpcClientFailedException {
 		try {
 			sendRequest("<network_available/>\n");
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in networkAvailable()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in networkAvailable()", e);
 		}
 	}
 
 	/**
 	 * Triggers change of state of project in BOINC core client
+	 * 
 	 * @param operation operation to be triggered
 	 * @param projectUrl master URL of project
-	 * @return true for success, false for failure
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean projectOp(int operation, String projectUrl) {
+	public boolean projectOp(int operation, String projectUrl) throws RpcClientFailedException {
 		try {
 			String opTag;
 			switch (operation) {
@@ -616,8 +697,7 @@ public class RpcClient {
 				opTag = "project_allowmorework";
 				break;
 			default:
-				if (Logging.ERROR) Log.e(TAG, "projectOp() - unsupported operation: " + operation);
-				return false;
+				throw new UnsupportedOperationException("projectOp() - unsupported operation: " + operation);
 			}
 			String request =
 				"<" + opTag + ">\n" +
@@ -628,19 +708,25 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in projectOp()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in projectOp()", e);
 		}
 	}
 
 	/**
 	 * Triggers operation on task in BOINC core client
+	 * 
 	 * @param operation operation to be triggered
 	 * @param projectUrl master URL of project
 	 * @param taskName name of the task
-	 * @return true for success, false for failure
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean resultOp(int operation, String projectUrl, String taskName) {
+	public boolean resultOp(int operation, String projectUrl, String taskName) throws RpcClientFailedException {
 		try {
 			String opTag;
 			switch (operation) {
@@ -654,8 +740,7 @@ public class RpcClient {
 				opTag = "abort_result";
 				break;
 			default:
-				if (Logging.ERROR) Log.e(TAG, "resultOp() - unsupported operation: " + operation);
-				return false;
+				throw new UnsupportedOperationException("resultOp() - unsupported operation: " + operation);
 			}
 			mRequest.setLength(0);
 			mRequest.append("<");
@@ -672,49 +757,67 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in resultOp()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in resultOp()", e);
 		}
 	}
 
 	/**
-	 * Tells the BOINC core client to exit. 
-	 * @return true for success, false for failure
+	 * Tells the BOINC core client to exit.
+	 * 
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean quit() {
+	public boolean quit() throws RpcClientFailedException {
 		try {
 			sendRequest("<quit/>\n");
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in quit()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in quit()", e);
 		}
 	}
 
 	/**
 	 * Run the CPU benchmarks
-	 * @return true for success, false for failure
+	 * 
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean runBenchmarks() {
+	public boolean runBenchmarks() throws RpcClientFailedException {
 		try {
 			sendRequest("<run_benchmarks/>\n");
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in runBenchmarks()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in runBenchmarks()", e);
 		}
 	}
 
 	/**
 	 * Set the GPU mode
+	 * 
 	 * @param mode 1 = always, 2 = auto, 3 = never, 4 = restore
 	 * @param duration If duration is zero, mode is permanent. Otherwise revert to
 	 *        last permanent mode after duration seconds elapse.
-	 * @return true for success, false for failure
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean setGpuMode(int mode, double duration) {
+	public boolean setGpuMode(int mode, double duration) throws RpcClientFailedException {
 		final String request =
 			"<set_gpu_mode>\n" +
 			modeName(mode) + "\n" +
@@ -725,19 +828,25 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in setGpuMode()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in setGpuMode()", e);
 		}
 	}
 
 	/**
 	 * Set the network mode
+	 * 
 	 * @param mode 1 = always, 2 = auto, 3 = never, 4 = restore
 	 * @param duration If duration is zero, mode is permanent. Otherwise revert to
 	 *        last permanent mode after duration seconds elapse.
-	 * @return true for success, false for failure
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean setNetworkMode(int mode, double duration) {
+	public boolean setNetworkMode(int mode, double duration) throws RpcClientFailedException {
 		final String request =
 			"<set_network_mode>\n" +
 			modeName(mode) + "\n" +
@@ -748,19 +857,25 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in setNetworkMode()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in setNetworkMode()", e);
 		}
 	}
 
 	/**
 	 * Set the run mode
+	 * 
 	 * @param mode 1 = always, 2 = auto, 3 = never, 4 = restore
 	 * @param duration If duration is zero, mode is permanent. Otherwise revert to
 	 *        last permanent mode after duration seconds elapse.
-	 * @return true for success, false for failure
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean setRunMode(int mode, double duration) {
+	public boolean setRunMode(int mode, double duration) throws RpcClientFailedException {
 		final String request =
 			"<set_run_mode>\n" +
 			modeName(mode) + "\n" +
@@ -771,19 +886,25 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in setRunMode()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in setRunMode()", e);
 		}
 	}
 
 	/**
 	 * Triggers operation on transfer in BOINC core client
+	 * 
 	 * @param operation operation to be triggered
 	 * @param projectUrl master URL of project
 	 * @param fileName name of the file
-	 * @return true for success, false for failure
+	 * @return true for success response, false for failure response
+	 * @throws RpcClientFailedException in case of failed operation:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case of incorrect data received</li>
+	 * <li>{@link ConnectionFailedException} in case connection fails</li>
+	 * </ul>
 	 */
-	public boolean transferOp(int operation, String projectUrl, String fileName) {
+	public boolean transferOp(int operation, String projectUrl, String fileName) throws RpcClientFailedException {
 		try {
 			String opTag;
 			switch (operation) {
@@ -794,8 +915,7 @@ public class RpcClient {
 				opTag = "abort_file_transfer";
 				break;
 			default:
-				if (Logging.ERROR) Log.e(TAG, "transferOp() - unsupported operation: " + operation);
-				return false;
+				throw new UnsupportedOperationException("transferOp() - unsupported operation: " + operation);
 			}
 			mRequest.setLength(0);
 			mRequest.append("<");
@@ -811,8 +931,7 @@ public class RpcClient {
 			return SimpleReplyParser.isSuccess(receiveReply());
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "error in transferOp()", e);
-			return false;
+			throw new ConnectionFailedException("Connection failed in transferOp()", e);
 		}
 	}
 }

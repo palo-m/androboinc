@@ -19,15 +19,12 @@
 
 package edu.berkeley.boinc.lite;
 
-import java.util.Vector;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import java.util.Vector;
 
 
 public class TransfersParser extends BaseParser {
@@ -35,18 +32,22 @@ public class TransfersParser extends BaseParser {
 
 	private Vector<Transfer> mTransfers = new Vector<Transfer>();
 	private Transfer mTransfer = null;
+	private boolean mUnauthorized = false;
 
-
-	public final Vector<Transfer> getTransfers() {
+	public final Vector<Transfer> getTransfers() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mTransfers;
 	}
 
 	/**
-	 * Parse the RPC result (projects) and generate vector of projects info
+	 * Parse the RPC result (file_transfers) and generate vector of transfers info
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
 	 * @return vector of projects info
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static Vector<Transfer> parse(String rpcResult) {
+	public static Vector<Transfer> parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			TransfersParser parser = new TransfersParser();
 			Xml.parse(rpcResult, parser);
@@ -54,8 +55,7 @@ public class TransfersParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <file_transfers>", e);
 		}
 	}
 
@@ -161,6 +161,10 @@ public class TransfersParser extends BaseParser {
 						mTransfer.project_backoff = (long)Double.parseDouble(mCurrentElement.toString());
 					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// There is <unauthorized/> outside <file_transfer>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {
