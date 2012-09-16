@@ -20,6 +20,8 @@
 package sk.boinc.androboinc.bridge;
 
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
+import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.DisconnectCause;
+import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.ProgressInd;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
@@ -118,8 +120,8 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 	}
 
-	private void rpcFailed() {
-		notifyDisconnected();
+	private void rpcFailed(DisconnectCause cause) {
+		notifyDisconnected(cause);
 		closeConnection();
 	}
 
@@ -128,7 +130,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
 			if (Logging.DEBUG) Log.d(TAG, "Opening connection to " + client.getNickname());
-			notifyProgress(ClientReplyReceiver.PROGRESS_CONNECTING);
+			notifyProgress(ProgressInd.CONNECTING);
 			RpcClient rpcClient = new RpcClient(mNetStats);
 			rpcClient.open(client.getAddress(), client.getPort());
 			mRpcClient = rpcClient;
@@ -138,7 +140,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			if (!password.equals("")) {
 				// Password supplied, we need to authorize
 				if (mDisconnecting) return;  // already in disconnect phase
-				notifyProgress(ClientReplyReceiver.PROGRESS_AUTHORIZATION_PENDING);
+				notifyProgress(ProgressInd.AUTHORIZATION_PENDING);
 				mRpcClient.authorize(password);
 				if (Logging.DEBUG) Log.d(TAG, "Authorized successfully");
 				if (Debugging.INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
@@ -164,7 +166,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 				// It is not so useful in ManageClientActivity, where data could be possibly
 				// not needed - they have to be retrieved later when returning from
 				// ManageClientActivity to home BoincManagerActivity (if still connected)
-				notifyProgress(ClientReplyReceiver.PROGRESS_INITIAL_DATA);
+				notifyProgress(ProgressInd.INITIAL_DATA);
 				initialStateRetrieval();
 			}
 			else if (mClientVersion == null) {
@@ -173,32 +175,25 @@ public class ClientBridgeWorkerHandler extends Handler {
 				// But we will not do full initial state update, only version info setting so
 				// some time can be saved this way (no parsing of all projects, applications, workunits,
 				// tasks, no retrieval of transfers/messages...)
-			CcState ccState = mRpcClient.getState();
-			if (ccState == null) {
-				if (Logging.INFO) Log.i(TAG, "RPC failed in connect()");
-				notifyDisconnected();
-				closeConnection();
-				return;
-			}
+				CcState ccState = mRpcClient.getState();
 				if (mDisconnecting) return;  // already in disconnect phase
 				mClientVersion = VersionInfoCreator.create(ccState.version_info);
 			}
 			notifyConnected(mClientVersion);
 		}
 		catch (ConnectionFailedException e) {
-			// TODO: More detailed handling of RPC failure
 			if (Logging.WARNING) Log.w(TAG, "Connection failed in connect(): " + e.getMessage());
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECT_FAILURE);
 		}
 		catch (AuthorizationFailedException e) {
-			// TODO: More detailed handling of RPC failure
 			if (Logging.WARNING) Log.w(TAG, "Authorization failed in connect(): " + e.getMessage());
-			rpcFailed();
+			DisconnectCause cause = (client.getPassword().equals("")) ? 
+					DisconnectCause.AUTH_FAIL_NO_PWD : DisconnectCause.AUTH_FAIL_WRONG_PWD;
+			rpcFailed(cause);
 		}
 		catch (RpcClientFailedException e) {
-			// TODO: More detailed handling of RPC failure
 			if (Logging.WARNING) Log.w(TAG, "Error in connect(): " + e.getMessage());
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
@@ -208,7 +203,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		// Therefore we will not directly operate mRpcClient here, 
 		// as it could be just in use by worker thread
 		if (Logging.DEBUG) Log.d(TAG, "disconnect()");
-		notifyDisconnected();
+		notifyDisconnected(DisconnectCause.NORMAL);
 		// Now, trigger socket closing (to be done by worker thread)
 		this.post(new Runnable() {
 			@Override
@@ -247,7 +242,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			CcStatus ccStatus = mRpcClient.getCcStatus();
 			if (!mGpuPresent) {
 				// We change value of GPU mode to null to simulate GPU not present
@@ -256,12 +251,12 @@ public class ClientBridgeWorkerHandler extends Handler {
 			final ModeInfo clientMode = ModeInfoCreator.create(ccStatus);
 			// Finally, send reply back to the calling thread (that is UI thread)
 			updatedClientMode(callback, clientMode);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in updateClientMode(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in updateClientMode()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
@@ -275,17 +270,17 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
 			final HostInfo hostInfo = HostInfoCreator.create(boincHostInfo, mFormatter);
 			// Finally, send reply back to the calling thread (that is UI thread)
 			updatedHostInfo(callback, hostInfo);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in updateHostInfo(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in updateHostInfo()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
@@ -299,16 +294,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			Vector<Project> projects = mRpcClient.getProjectStatus();
 			dataSetProjects(projects);
 			updatedProjects(callback, getProjects());
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in updateProjects(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in updateProjects()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
@@ -322,7 +317,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			boolean updateFinished = false;
 			Vector<Result> results;
 			if (!mInitialStateRetrieved) {
@@ -345,12 +340,12 @@ public class ClientBridgeWorkerHandler extends Handler {
 				updateState();
 			}
 			updatedTasks(callback, getTasks());
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in updateTasks(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in updateTasks()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
@@ -364,16 +359,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			Vector<Transfer> transfers = mRpcClient.getFileTransfers();
 			dataSetTransfers(transfers);
 			updatedTransfers(callback, getTransfers());
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in updateTransfers(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in updateTransfers()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
@@ -387,7 +382,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			}
 		}
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			int reqSeqno = (mMessages.isEmpty()) ? 0 : mMessages.lastKey();
 			if (reqSeqno == 0) {
 				// No messages stored yet
@@ -407,35 +402,35 @@ public class ClientBridgeWorkerHandler extends Handler {
 			Vector<Message> messages = mRpcClient.getMessages(reqSeqno);
 			dataUpdateMessages(messages);
 			updatedMessages(callback, getMessages());
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in updateMessages(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in updateMessages()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
 	public void runBenchmarks() {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.runBenchmarks();
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
 	public void setRunMode(final ClientReplyReceiver callback, int mode) {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.setRunMode(mode, 0);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 			// Regardless of success we run update of client mode
 			// If there is problem with socket, it will be handled there
 			updateClientMode(callback);
@@ -443,16 +438,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
 	public void setNetworkMode(final ClientReplyReceiver callback, int mode) {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.setNetworkMode(mode, 0);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 			// Regardless of success we run update of client mode
 			// If there is problem with socket, it will be handled there
 			updateClientMode(callback);
@@ -460,16 +455,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
 	public void setGpuMode(final ClientReplyReceiver callback, int mode) {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.setGpuMode(mode, 0);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 			// Regardless of success we run update of client mode
 			// If there is problem with socket, it will be handled there
 			updateClientMode(callback);
@@ -477,7 +472,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
@@ -485,7 +480,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return;  // already in disconnect phase
 		boolean connectionAlive = true;
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.quit();
 			// We have to check, whether we are really disconnected
 			// We will try for 5 seconds only
@@ -500,7 +495,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 				}
 				Thread.sleep(1000);
 			}
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (InterruptedException e) {
 			// Interrupted while sleep, we better close socket now
@@ -511,12 +506,12 @@ public class ClientBridgeWorkerHandler extends Handler {
 			// The connection could be lost before client was able receive command 
 			if (Logging.DEBUG) Log.d(TAG, "Error in shutdownCore()", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in shutdownCore()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 		if (!connectionAlive) {
 			// Socket was closed on remote side, so connection was lost as expected
 			// We notify about lost connection
-			notifyDisconnected();
+			notifyDisconnected(DisconnectCause.NORMAL);
 			closeConnection();
 		}
 		// Otherwise, there is still connection present, we did not shutdown
@@ -527,23 +522,23 @@ public class ClientBridgeWorkerHandler extends Handler {
 	public void doNetworkCommunication() {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.networkAvailable();
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
 	public void projectOperation(final ClientReplyReceiver callback, int operation, String projectUrl) {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.projectOp(operation, projectUrl);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 			// Regardless of success we run update of projects
 			// If there is problem with socket, it will be handled there
 			updateProjects(callback);
@@ -551,16 +546,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
 	public void taskOperation(final ClientReplyReceiver callback, int operation, String projectUrl, String taskName) {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.resultOp(operation, projectUrl, taskName);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 			// Regardless of success we run update of tasks
 			// If there is problem with socket, it will be handled there
 			updateTasks(callback);
@@ -568,16 +563,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
 	public void transferOperation(final ClientReplyReceiver callback, int operation, String projectUrl, String fileName) {
 		if (mDisconnecting) return;  // already in disconnect phase
 		try {
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_STARTED);
+			notifyProgress(ProgressInd.XFER_STARTED);
 			mRpcClient.transferOp(operation, projectUrl, fileName);
-			notifyProgress(ClientReplyReceiver.PROGRESS_XFER_FINISHED);
+			notifyProgress(ProgressInd.XFER_FINISHED);
 			// Regardless of success we run update of transfers
 			// If there is problem with socket, it will be handled there
 			updateTransfers(callback);
@@ -585,11 +580,11 @@ public class ClientBridgeWorkerHandler extends Handler {
 		catch (RpcClientFailedException e) {
 			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
 			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
-			rpcFailed();
+			rpcFailed(DisconnectCause.CONNECTION_DROP);
 		}
 	}
 
-	private synchronized void notifyProgress(final int progress) {
+	private synchronized void notifyProgress(final ProgressInd progress) {
 		if (mDisconnecting) return;
 		mReplyHandler.post(new Runnable() {
 			@Override
@@ -609,7 +604,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		});
 	}
 
-	private synchronized void notifyDisconnected() {
+	private synchronized void notifyDisconnected(final DisconnectCause cause) {
 		if (mDisconnecting) return; // already notified (by other thread)
 		// Set flag, so no further notifications/replies will be posted to UI-thread
 		mDisconnecting = true;
@@ -617,7 +612,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		mReplyHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				mReplyHandler.notifyDisconnected(); // will send notification to observers
+				mReplyHandler.notifyDisconnected(cause); // will send notification to observers
 				mReplyHandler.disconnecting(); // will initiate clearing of bridge
 				// The mDisconnecting set to true above will prevent further posts
 				// and all post() calls are guarded by synchronized statement

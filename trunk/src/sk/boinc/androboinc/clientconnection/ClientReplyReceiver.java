@@ -22,22 +22,150 @@ package sk.boinc.androboinc.clientconnection;
 import java.util.Vector;
 
 
+/**
+ * Callback interface for BOINC client connection.
+ * The UI classes (Activities) should implement this interface to receive data
+ * from connector (which is running independently in worker thread)
+ * 
+ * @see ClientRequestHandler
+ */
 public interface ClientReplyReceiver {
-	public static final int PROGRESS_CONNECTING = 0;
-	public static final int PROGRESS_AUTHORIZATION_PENDING = 1;
-	public static final int PROGRESS_INITIAL_DATA = 2;
-	public static final int PROGRESS_XFER_STARTED = 3;
-	public static final int PROGRESS_XFER_FINISHED = 4;
 
-	public abstract void clientConnectionProgress(int progress);
+	/**
+	 * The indicator of the ongoing network operation
+	 */
+	public static enum ProgressInd {
+		/**
+		 * No indication
+		 */
+		NONE,
+
+		/**
+		 * Connection starting
+		 */
+		CONNECTING,
+
+		/**
+		 * Authorization in progress
+		 */
+		AUTHORIZATION_PENDING,
+
+		/**
+		 * Retrieving initial data
+		 */
+		INITIAL_DATA,
+
+		/**
+		 * Start of data transfer
+		 */
+		XFER_STARTED,
+
+		/**
+		 * Data transfer finished
+		 */
+		XFER_FINISHED
+	}
+
+	/**
+	 * The reason of client disconnection
+	 */
+	public static enum DisconnectCause {
+		/**
+		 * Expected disconnect (e.g. requested by user)
+		 */
+		NORMAL,
+
+		/**
+		 * Failure when initiating the connection (e.g. host unreachable)
+		 */
+		CONNECT_FAILURE,
+
+		/**
+		 * Authorization failure when connecting without password
+		 * (i.e. missing password)
+		 */
+		AUTH_FAIL_NO_PWD,
+
+		/**
+		 * Authorization failure when connecting with password
+		 * (i.e. wrong password supplied)
+		 */
+		AUTH_FAIL_WRONG_PWD,
+
+		/**
+		 * Connection failure during normal operation
+		 * (e.g. network failure, mobile/WiFi network unreachable or unexpected remote client shutdown)
+		 */
+		CONNECTION_DROP
+	}
+
+	/**
+	 * Indicates about the ongoing network connection operation
+	 * 
+	 * @param progress
+	 */
+	public abstract void clientConnectionProgress(ProgressInd progress);
+
+	/**
+	 * Indicates that the client is connected
+	 * 
+	 * @param clientVersion - the version of connected client
+	 */
 	public abstract void clientConnected(VersionInfo clientVersion);
-	public abstract void clientDisconnected();
 
+	/**
+	 * Indicates that the network connection was disconnected
+	 * 
+	 * @param cause - the reason of disconnect
+	 */
+	public abstract void clientDisconnected(DisconnectCause cause);
+
+	/**
+	 * Notifies about current run-mode, network-mode and GPU-mode of a client
+	 * 
+	 * @param modeInfo - the data about client
+	 * @return true if further updates should be sent, false otherwise
+	 */
 	public abstract boolean updatedClientMode(ModeInfo modeInfo);
+
+	/**
+	 * Notifies about currently retrieved host information
+	 * 
+	 * @param hostInfo - the data about client
+	 * @return true if further updates should be sent, false otherwise
+	 */
 	public abstract boolean updatedHostInfo(HostInfo hostInfo);
 
+	/**
+	 * Notifies about the latest retrieved projects of a client
+	 * 
+	 * @param projects - the list of projects
+	 * @return true if further updates should be sent, false otherwise
+	 */
 	public abstract boolean updatedProjects(Vector<ProjectInfo> projects);
+
+	/**
+	 * Notifies about the latest retrieved tasks of a client
+	 * 
+	 * @param tasks - the list of tasks
+	 * @return true if further updates should be sent, false otherwise
+	 */
 	public abstract boolean updatedTasks(Vector<TaskInfo> tasks);
+
+	/**
+	 * Notifies about the latest retrieved transfers of a client
+	 * 
+	 * @param transfers - the list of transfers
+	 * @return true if further updates should be sent, false otherwise
+	 */
 	public abstract boolean updatedTransfers(Vector<TransferInfo> transfers);
+
+	/**
+	 * Notifies about the latest retrieved messages of a client
+	 * 
+	 * @param messages - the list of messages
+	 * @return true if further updates should be sent, false otherwise
+	 */
 	public abstract boolean updatedMessages(Vector<MessageInfo> messages);
+
 }
