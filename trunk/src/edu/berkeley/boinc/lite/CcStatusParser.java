@@ -19,25 +19,38 @@
 
 package edu.berkeley.boinc.lite;
 
+import sk.boinc.androboinc.debug.Logging;
+import android.util.Log;
+import android.util.Xml;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import sk.boinc.androboinc.debug.Logging;
-
-import android.util.Log;
-import android.util.Xml;
 
 public class CcStatusParser extends BaseParser {
 	private static final String TAG = "CcStatusParser";
 
 	private CcStatus mCcStatus;
+	private boolean mUnauthorized = false;
 
 	
-	public final CcStatus getCcStatus() {
+	public final CcStatus getCcStatus() throws RpcClientFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
+		if (null == mCcStatus) throw new InvalidDataReceivedException();
 		return mCcStatus;
 	}
 
-	public static CcStatus parse(String rpcResult) {
+	/**
+	 * Parse the RPC result (cc_status)
+	 * @param rpcResult String returned by RPC call of core client
+	 * @return CcStatus
+	 * @throws RpcClientFailedException in case of error:
+	 * <ul>
+	 * <li>{@link AuthorizationFailedException} in case of unauthorized</li>
+	 * <li>{@link InvalidDataReceivedException} in case XML cannot be parsed
+	 *     or does not contain valid {@code <cc_status>} tag</li>
+	 * </ul>
+	 */
+	public static CcStatus parse(String rpcResult) throws RpcClientFailedException {
 		try {
 			CcStatusParser parser = new CcStatusParser();
 			Xml.parse(rpcResult, parser);
@@ -45,8 +58,7 @@ public class CcStatusParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Invalid data while parsing <cc_status>");
 		}
 	}
 
@@ -156,6 +168,10 @@ public class CcStatusParser extends BaseParser {
 //						}
 //					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// The <cc_status> was not present so far and we received <unauthorized/>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

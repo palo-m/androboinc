@@ -19,7 +19,25 @@
 
 package edu.berkeley.boinc.lite;
 
-public class AppVersion {
-	public String app_name;
-	public int version_num;
+/**
+ * This exception is thrown when authentication fails
+ */
+public class AuthorizationFailedException extends RpcClientFailedException {
+	private static final long serialVersionUID = 7752615754130475737L; // Generated
+
+	public AuthorizationFailedException() {
+		super("Authorization Failed");
+	}
+
+	public AuthorizationFailedException(String detailMessage) {
+		super(detailMessage);
+	}
+
+	public AuthorizationFailedException(String detailMessage, Throwable throwable) {
+		super(detailMessage, throwable);
+	}
+
+	public AuthorizationFailedException(Throwable throwable) {
+		super("Authorization Failed", throwable);
+	}
 }

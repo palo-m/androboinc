@@ -19,27 +19,33 @@
 
 package edu.berkeley.boinc.lite;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+
 
 public class VersionInfoParser extends BaseParser {
 	private static final String TAG = "VersionInfoParser";
 	private VersionInfo mVersionInfo = null;
+	private boolean mUnauthorized = false;
 
-	public final VersionInfo getVersionInfo() {
+	public final VersionInfo getVersionInfo() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
+		// Null is also accepted (older clients do not support this operation)
 		return mVersionInfo;
 	}
 
 	/**
-	 * Parse the RPC result (host_info) and generate vector of projects info
+	 * Parse the RPC result (version_info)
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
 	 * @return VersionInfo (of core client)
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static VersionInfo parse(String rpcResult) {
+	public static VersionInfo parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			VersionInfoParser parser = new VersionInfoParser();
 			Xml.parse(rpcResult, parser);
@@ -47,8 +53,7 @@ public class VersionInfoParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <server_version>", e);
 		}		
 	}
 
@@ -99,6 +104,10 @@ public class VersionInfoParser extends BaseParser {
 						mVersionInfo.release = Integer.parseInt(mCurrentElement.toString());
 					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// The <server_version> was not present so far and we received <unauthorized/>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

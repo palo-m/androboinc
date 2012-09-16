@@ -19,15 +19,12 @@
 
 package edu.berkeley.boinc.lite;
 
-import java.util.Vector;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import java.util.Vector;
 
 
 public class ProjectsParser extends BaseParser {
@@ -36,18 +33,22 @@ public class ProjectsParser extends BaseParser {
 	private Vector<Project> mProjects = new Vector<Project>();
 	private Project mProject = null;
 	private GuiUrl mGuiUrl = null;
+	private boolean mUnauthorized = false;
 
-
-	public final Vector<Project> getProjects() {
+	public final Vector<Project> getProjects() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mProjects;
 	}
 
 	/**
 	 * Parse the RPC result (projects) and generate vector of projects info
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
 	 * @return vector of projects info
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static Vector<Project> parse(String rpcResult) {
+	public static Vector<Project> parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			ProjectsParser parser = new ProjectsParser();
 			Xml.parse(rpcResult, parser);
@@ -55,8 +56,7 @@ public class ProjectsParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <project>", e);
 		}
 	}
 
@@ -272,6 +272,10 @@ public class ProjectsParser extends BaseParser {
 //						mProject.no_ati_pref = !trimmed.equals("0");
 //					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// There is <unauthorized/> outside <project>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

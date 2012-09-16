@@ -19,33 +19,35 @@
 
 package edu.berkeley.boinc.lite;
 
-import java.util.Vector;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import java.util.Vector;
+
 
 public class WorkunitsParser extends BaseParser {
 	private static final String TAG = "WorkunitsParser";
 
 	private Vector<Workunit> mWorkunits = new Vector<Workunit>();
 	private Workunit mWorkunit = null;
+	private boolean mUnauthorized = false;
 
-
-	public final Vector<Workunit> getWorkunits() {
+	public final Vector<Workunit> getWorkunits() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mWorkunits;
 	}
 
 	/**
 	 * Parse the RPC result (workunit) and generate corresponding vector
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
 	 * @return vector of workunits
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static Vector<Workunit> parse(String rpcResult) {
+	public static Vector<Workunit> parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			WorkunitsParser parser = new WorkunitsParser();
 			Xml.parse(rpcResult, parser);
@@ -53,8 +55,7 @@ public class WorkunitsParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <workunits>", e);
 		}
 	}
 
@@ -104,6 +105,10 @@ public class WorkunitsParser extends BaseParser {
 						mWorkunit.version_num = Integer.parseInt(mCurrentElement.toString());
 					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// There is <unauthorized/> outside <workunit>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {
