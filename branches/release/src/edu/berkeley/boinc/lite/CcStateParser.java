@@ -19,12 +19,12 @@
 
 package edu.berkeley.boinc.lite;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+
 
 public class CcStateParser extends BaseParser {
 	private static final String TAG = "CcStateParser";
@@ -37,23 +37,26 @@ public class CcStateParser extends BaseParser {
 	private boolean mInProject = false;
 	private AppsParser mAppsParser = new AppsParser();
 	private boolean mInApp = false;
-//	private AppVersionsParser mAppVersionsParser = new AppVersionsParser();
-//	private boolean mInAppVersion = false;
 	private WorkunitsParser mWorkunitsParser = new WorkunitsParser();
 	private boolean mInWorkunit = false;
 	private ResultsParser mResultsParser = new ResultsParser();
 	private boolean mInResult = false;
+	private boolean mUnauthorized = false;
 	
-	public final CcState getCcState() {
+	public final CcState getCcState() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mCcState;
 	}
 
 	/**
 	 * Parse the RPC result (state) and generate vector of projects info
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
 	 * @return connected client state
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
 	 */
-	public static CcState parse(String rpcResult) {
+	public static CcState parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			CcStateParser parser = new CcStateParser();
 			Xml.parse(rpcResult, parser);
@@ -61,8 +64,7 @@ public class CcStateParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <cc_state>", e);
 		}		
 
 	}
@@ -71,12 +73,28 @@ public class CcStateParser extends BaseParser {
 	public void endDocument() {
 		// Commit sub-parsers data to resulting CcState
 		mCcState.version_info = mVersionInfo;
-		mCcState.host_info = mHostInfoParser.getHostInfo();
-		mCcState.projects = mProjectsParser.getProjects();
-		mCcState.apps = mAppsParser.getApps();
-//		mCcState.app_versions = mAppVersionsParser.getAppVersions();
-		mCcState.workunits = mWorkunitsParser.getWorkunits();
-		mCcState.results = mResultsParser.getResults();
+		try {
+			mCcState.host_info = mHostInfoParser.getHostInfo();
+		}
+		catch (AuthorizationFailedException e) {
+			mUnauthorized = true;
+			// Abort further actions
+			return;
+		}
+		catch (InvalidDataReceivedException e) {
+			// The tag <host_info> is not mandatory in <cc_state>
+			// It could be missing
+			mCcState.host_info = null;
+		}
+		try {
+			mCcState.projects = mProjectsParser.getProjects();
+			mCcState.apps = mAppsParser.getApps();
+			mCcState.workunits = mWorkunitsParser.getWorkunits();
+			mCcState.results = mResultsParser.getResults();
+		}
+		catch (AuthorizationFailedException e) {
+			mUnauthorized = true;
+		}
 	}
 
 	@Override
@@ -103,13 +121,6 @@ public class CcStateParser extends BaseParser {
 		if (mInApp) {
 			mAppsParser.startElement(uri, localName, qName, attributes);
 		}
-//		if (localName.equalsIgnoreCase("app_version")) {
-//			// Just stepped inside <app_version>
-//			mInAppVersion = true;
-//		}
-//		if (mInAppVersion) {
-//			mAppVersionsParser.startElement(uri, localName, qName, attributes);
-//		}
 		if (localName.equalsIgnoreCase("workunit")) {
 			// Just stepped inside <workunit>
 			mInWorkunit = true;
@@ -149,10 +160,6 @@ public class CcStateParser extends BaseParser {
 			// We are inside <project>
 			mAppsParser.characters(ch, start, length);
 		}
-//		if (mInAppVersion) {
-//			// We are inside <project>
-//			mAppVersionsParser.characters(ch, start, length);
-//		}
 		if (mInWorkunit) {
 			// We are inside <workunit>
 			mWorkunitsParser.characters(ch, start, length);
@@ -194,15 +201,6 @@ public class CcStateParser extends BaseParser {
 					mInApp = false;
 				}
 			}
-//			if (mInAppVersion) {
-//				// We are inside <app_version>
-//				// parse it by sub-parser in any case (must parse also closing element!)
-//				mAppsParser.endElement(uri, localName, qName);
-//				if (localName.equalsIgnoreCase("app_version")) {
-//					// Closing tag of <app_version>
-//					mInAppVersion = false;
-//				}
-//			}
 			if (mInWorkunit) {
 				// We are inside <workunit>
 				// parse it by sub-parser in any case (must parse also closing element!)
@@ -234,6 +232,10 @@ public class CcStateParser extends BaseParser {
 					mVersionInfo.release = Integer.parseInt(mCurrentElement.toString());
 				}
 				mElementStarted = false;
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// Not inside <app> and we received <unauthorized/>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

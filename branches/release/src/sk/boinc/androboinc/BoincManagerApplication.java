@@ -19,13 +19,6 @@
 
 package sk.boinc.androboinc;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.util.PreferenceName;
 import android.app.Application;
@@ -37,6 +30,12 @@ import android.text.util.Linkify;
 import android.text.util.Linkify.TransformFilter;
 import android.util.Log;
 import android.widget.TextView;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -209,7 +208,7 @@ public class BoincManagerApplication extends Application {
 		// 1. Make line beginning with "Version" bold
 		String trans1 = changelog.replaceAll("(?m)^([Vv]ersion.*)$", "<b>$1</b>");
 		// 2. Append <br> at the end of each line
-		String trans2 = trans1.replaceAll("(?m)^(.*)$", "$1<br>");
+		String trans2 = trans1.replaceAll("(?m)^(.*)$", "$1<br/>");
 		// 3. Add HTML tags
 		if (mStringBuilder == null) mStringBuilder = new StringBuilder(32);
 		mStringBuilder.setLength(0);

@@ -19,13 +19,11 @@
 
 package edu.berkeley.boinc.lite;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 
 public class HostInfoParser extends BaseParser {
@@ -33,18 +31,24 @@ public class HostInfoParser extends BaseParser {
 
 	private HostInfo mHostInfo = null;
 	private boolean  mInCoprocX = false;
+	private boolean mUnauthorized = false;
 
-
-	public final HostInfo getHostInfo() {
+	public final HostInfo getHostInfo() throws AuthorizationFailedException, InvalidDataReceivedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
+		if (null == mHostInfo) throw new InvalidDataReceivedException();
 		return mHostInfo;
 	}
 
 	/**
-	 * Parse the RPC result (host_info) and generate vector of projects info
+	 * Parse the RPC result (host_info)
+	 * 
 	 * @param rpcResult String returned by RPC call of core client
 	 * @return HostInfo
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
+	 *     or does not contain valid {@code <host_info>} tag
 	 */
-	public static HostInfo parse(String rpcResult) {
+	public static HostInfo parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			HostInfoParser parser = new HostInfoParser();
 			Xml.parse(rpcResult, parser);
@@ -52,8 +56,7 @@ public class HostInfoParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return null;
+			throw new InvalidDataReceivedException("Malformed XML while parsing <host_info>", e);
 		}		
 	}
 
@@ -163,6 +166,10 @@ public class HostInfoParser extends BaseParser {
 						mHostInfo.os_version = mCurrentElement.toString();
 					}
 				}
+			}
+			else if (localName.equalsIgnoreCase("unauthorized")) {
+				// The <host_info> was not present so far and we received <unauthorized/>
+				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

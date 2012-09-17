@@ -23,6 +23,7 @@
 	<!-- Basic application stuff -->
 	<string name="app_name">AndroBOINC</string>
 	<string name="app_desc">Manager for BOINC clients</string>
+	<string name="service_name">Client Connection</string>
 	<string name="service_desc">Maintains connection to BOINC core clients</string>
 
 	<!-- Some common, generic strings -->
@@ -44,6 +45,7 @@
 	<string name="ok">OK</string>
 	<string name="projectSuspendedByUser">Project suspended by user</string>
 	<string name="received">Received</string>
+	<string name="reconnect">Reconnect</string>
 	<string name="retrievingData">Retrieving data&#8230;</string>
 	<string name="retrievingInitialData">Retrieving initial data&#8230;</string>
 	<string name="seeWiki">See Wiki</string>
@@ -144,7 +146,30 @@
 	<string name="prefChangelogSummary">History of changes</string>
 	<string name="prefLicenseSummary">Text of license</string>
 
-	<!-- Network status -->
+	<!-- Network/Connection status -->
+	<string name="authFailedNoPwd">
+	    Authorization failed.
+	    \nNo password was set up in %1$s, but client requires password.
+	    \nPlease set up correct password.
+	</string>
+	<string name="authFailedWrongPwd">
+	    Authorization failed.
+	    \nThe password in %1$s does not match the password in client.
+		\nPlease set up correct password.
+	</string>
+	<string name="connectFailed">
+	    Connection to client failed.
+	    \nPossible reasons are:
+	    \n* Network unavailable
+	    \n* Host unreachable
+	    \n* Firewall blocking the access to client
+	</string>
+	<string name="connectionDropped">
+	    Connection to client dropped.
+	    \nPossible reasons are:
+	    \n* Client closed connection or crashed
+	    \n* Network unavailable
+	</string>
 	<string name="networkUnavailable">Network connection unavailable.</string>
 
 	<!-- ManageClient Activity -->

@@ -22,6 +22,13 @@ package sk.boinc.androboinc.clientconnection;
 import sk.boinc.androboinc.util.ClientId;
 
 
+/**
+ * Interface for client connector.
+ * UI classes (Activities) use this interface to make connection to client
+ * and send requests to it.
+ * 
+ * @see ClientReplyReceiver
+ */
 public interface ClientRequestHandler {
 	public abstract void registerStatusObserver(ClientReplyReceiver observer);
 	public abstract void unregisterStatusObserver(ClientReplyReceiver observer);

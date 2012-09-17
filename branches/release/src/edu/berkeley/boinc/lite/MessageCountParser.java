@@ -19,40 +19,45 @@
 
 package edu.berkeley.boinc.lite;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
 import sk.boinc.androboinc.debug.Logging;
-
 import android.util.Log;
 import android.util.Xml;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
-public class MessageCountParser extends DefaultHandler {
+
+public class MessageCountParser extends BaseParser {
 	private static final String TAG = "MessageCountParser";
 
-	private boolean mParsed = false;
-	private boolean mInReply = false;
 	private int mSeqno = -1;
-	private StringBuilder mCurrentElement = new StringBuilder();
+	private boolean mInReply = false;
+	private boolean mUnauthorized = false;
 
 	// Disable direct instantiation of this class
 	private MessageCountParser() {}
 
-	public final int seqno() {
+	public final int seqno() throws AuthorizationFailedException {
+		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mSeqno;
 	}
 
-	public static int getSeqno(String reply) {
+	/**
+	 * Parse the RPC result (seqno) and generate corresponding vector
+	 * 
+	 * @param rpcResult String returned by RPC call of core client
+	 * @return number of messages
+	 * @throws AuthorizationFailedException in case of unauthorized
+	 * @throws InvalidDataReceivedException in case XML cannot be parsed
+	 */
+	public static int getSeqno(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			MessageCountParser parser = new MessageCountParser();
-			Xml.parse(reply, parser);
+			Xml.parse(rpcResult, parser);
 			return parser.seqno();
 		}
 		catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + reply);
-			else if (Logging.INFO) Log.i(TAG, "Malformed XML");
-			return -1;
+			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			throw new InvalidDataReceivedException("Malformed XML while parsing <seqno>", e);
 		}		
 
 	}
@@ -63,59 +68,43 @@ public class MessageCountParser extends DefaultHandler {
 		if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
 			mInReply = true;
 		}
+		else {
+			// Another element, hopefully primitive and not constructor
+			// (although unknown constructor does not hurt, because there will be primitive start anyway)
+			mElementStarted = true;
+			mCurrentElement.setLength(0);
+		}
 	}
 
-	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
-		super.characters(ch, start, length);
-		// put it into StringBuilder
-		int myStart = start;
-		int myLength = length;
-		if (mCurrentElement.length() == 0) {
-			// still empty - trim leading white-spaces
-			for ( ; myStart < length; ++myStart, --myLength) {
-				if (!Character.isWhitespace(ch[myStart])) {
-					// First non-white-space character
-					break;
-				}
-			}
-		}
-		mCurrentElement.append(ch, myStart, myLength);
-	}
+	// Method characters(char[] ch, int start, int length) is implemented by BaseParser,
+	// filling mCurrentElement (including stripping of leading whitespaces)
+	//@Override
+	//public void characters(char[] ch, int start, int length) throws SAXException { }
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		super.endElement(uri, localName, qName);
-
 		try {
-			trimEnd();
-			if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
-				mInReply = false;
-			}
-			else if (mInReply && !mParsed) {
-				if (localName.equalsIgnoreCase("seqno")) {
-					mSeqno = Integer.parseInt(mCurrentElement.toString());
-					mParsed = true;
+			if (mInReply) {
+				// We are inside <boinc_gui_rpc_reply>
+				if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
+					mInReply = false;
+				}
+				else {
+					trimEnd();
+					if (localName.equalsIgnoreCase("seqno")) {
+						mSeqno = Integer.parseInt(mCurrentElement.toString());
+					}
+					else if (localName.equalsIgnoreCase("unauthorized")) {
+						// There is <unauthorized/> inside <boinc_gui_rpc_reply>
+						mUnauthorized = true;
+					}
 				}
 			}
 		}
 		catch (NumberFormatException e) {
 			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
 		}
-		mCurrentElement.setLength(0);
-	}
-
-	private void trimEnd() {
-		int length = mCurrentElement.length();
-		int i;
-		// Trim trailing spaces
-		for (i = length - 1; i >= 0; --i) {
-			if (!Character.isWhitespace(mCurrentElement.charAt(i))) {
-				// All trailing white-spaces are skipped, i is position of last character
-				break;
-			}
-		}
-		// i is position of last character
-		mCurrentElement.setLength(i+1);
+		mElementStarted = false;
 	}
 }

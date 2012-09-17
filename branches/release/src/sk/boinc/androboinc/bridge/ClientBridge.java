@@ -19,11 +19,6 @@
 
 package sk.boinc.androboinc.bridge;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
-
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
 import sk.boinc.androboinc.clientconnection.HostInfo;
@@ -33,6 +28,8 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
+import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.DisconnectCause;
+import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.ProgressInd;
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.debug.NetStats;
 import sk.boinc.androboinc.util.ClientId;
@@ -40,6 +37,10 @@ import android.content.Context;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.util.Log;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Vector;
 
 
 /**
@@ -79,7 +80,7 @@ public class ClientBridge implements ClientRequestHandler {
 			}
 		}
 
-		public void notifyProgress(int progress) {
+		public void notifyProgress(ProgressInd progress) {
 			Iterator<ClientReplyReceiver> it = mObservers.iterator();
 			while (it.hasNext()) {
 				ClientReplyReceiver observer = it.next();
@@ -97,13 +98,13 @@ public class ClientBridge implements ClientRequestHandler {
 			}
 		}
 
-		public void notifyDisconnected() {
+		public void notifyDisconnected(DisconnectCause cause) {
 			mConnected = false;
 			mRemoteClientVersion = null;
 			Iterator<ClientReplyReceiver> it = mObservers.iterator();
 			while (it.hasNext()) {
 				ClientReplyReceiver observer = it.next();
-				observer.clientDisconnected();
+				observer.clientDisconnected(cause);
 				if (Logging.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString()); // see below clearing of all observers
 			}
 			mObservers.clear();
