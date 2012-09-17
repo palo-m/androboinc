@@ -208,7 +208,7 @@ public class BoincManagerApplication extends Application {
 		// 1. Make line beginning with "Version" bold
 		String trans1 = changelog.replaceAll("(?m)^([Vv]ersion.*)$", "<b>$1</b>");
 		// 2. Append <br> at the end of each line
-		String trans2 = trans1.replaceAll("(?m)^(.*)$", "$1<br>");
+		String trans2 = trans1.replaceAll("(?m)^(.*)$", "$1<br/>");
 		// 3. Add HTML tags
 		if (mStringBuilder == null) mStringBuilder = new StringBuilder(32);
 		mStringBuilder.setLength(0);
