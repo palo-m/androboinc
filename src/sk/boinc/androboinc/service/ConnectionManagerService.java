@@ -19,13 +19,10 @@
 
 package sk.boinc.androboinc.service;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import sk.boinc.androboinc.bridge.ClientBridge;
 import sk.boinc.androboinc.bridge.ClientBridgeCallback;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
+import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.DisconnectCause;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
 import sk.boinc.androboinc.clientconnection.NoConnectivityException;
 import sk.boinc.androboinc.debug.Logging;
@@ -36,6 +33,9 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 
 public class ConnectionManagerService extends Service implements ClientRequestHandler, ClientBridgeCallback, ConnectivityListener {
@@ -55,6 +55,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 	private Runnable mTerminateRunnable = null;
 
 	private ConnectivityStatus mConnectivityStatus = null;
+	private ConnectionStatusNotifier mStatusNotifier = null;
 	private ClientBridge mClientBridge = null;
 	private Set<ClientBridge> mDyingBridges = new HashSet<ClientBridge>();
 	private Set<ClientReplyReceiver> mObservers = new HashSet<ClientReplyReceiver>();
@@ -128,6 +129,8 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
 		// Add connectivity monitoring (to be notified when connection is down)
 		mConnectivityStatus = new ConnectivityStatus(this, this);
+		// Notifications handler
+		mStatusNotifier = new ConnectionStatusNotifier(this);
 		// Create network statistics handler
 		mNetStats = new NetworkStatisticsHandler(this);
 	}
@@ -138,6 +141,9 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 		// Clean-up connectivity monitoring
 		mConnectivityStatus.cleanup();
 		mConnectivityStatus = null;
+		// Clean-up notifications handler
+		mStatusNotifier.cleanup();
+		mStatusNotifier = null;
 		// Clean-up network statistics handler
 		mNetStats.cleanup();
 		mNetStats = null;
@@ -178,6 +184,7 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 			// This is unsolicited disconnect
 			if (Logging.INFO) Log.i(TAG, "Unsolicited disconnect of ClientBridge");
 			mClientBridge = null;
+			if (mStatusNotifier != null) mStatusNotifier.disconnected(DisconnectCause.CONNECTION_DROP);
 		}
 		else {
 			if (mDyingBridges.contains(clientBridge)) {
@@ -243,6 +250,9 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 			}
 			// Finally, initiate connection to remote client
 			mClientBridge.connect(host, retrieveInitialData);
+			// Notification
+			// TODO: Should show truly connected status, not just attempt
+			if (mStatusNotifier != null) mStatusNotifier.connected(host);
 		}
 		else {
 			throw new NoConnectivityException();
@@ -256,6 +266,8 @@ public class ConnectionManagerService extends Service implements ClientRequestHa
 			mDyingBridges.add(mClientBridge);
 			mClientBridge.disconnect();
 			mClientBridge = null;
+			// TODO: Should show truly disconnected status, not just attempt
+			if (mStatusNotifier != null) mStatusNotifier.disconnected(DisconnectCause.NORMAL);
 		}
 		else {
 			if (Logging.DEBUG) Log.d(TAG, "disconnect() - not connected already ");
