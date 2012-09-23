@@ -30,11 +30,6 @@ import sk.boinc.androboinc.util.ClientId;
  * @see ClientReplyReceiver
  */
 public interface ClientRequestHandler {
-	public abstract void registerStatusObserver(ClientReplyReceiver observer);
-	public abstract void unregisterStatusObserver(ClientReplyReceiver observer);
-	public abstract void connect(ClientId host, boolean retrieveInitialData) throws NoConnectivityException;
-	public abstract void disconnect();
-
 	public abstract ClientId getClientId();
 
 	public abstract void updateClientMode(ClientReplyReceiver callback);

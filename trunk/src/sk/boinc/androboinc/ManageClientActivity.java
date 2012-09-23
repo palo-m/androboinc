@@ -20,10 +20,11 @@
 package sk.boinc.androboinc;
 
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
-import sk.boinc.androboinc.clientconnection.NoConnectivityException;
 import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
@@ -61,7 +62,7 @@ import android.widget.Toast;
 import java.util.Vector;
 
 
-public class ManageClientActivity extends PreferenceActivity implements ClientReplyReceiver {
+public class ManageClientActivity extends PreferenceActivity implements ConnectionManagerCallback, ClientReplyReceiver {
 	private static final String TAG = "ManageClientActivity";
 
 	private static final int DIALOG_CONNECT_PROGRESS = 1;
@@ -83,7 +84,7 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 	private HostInfo mHostInfo = null;
 	private boolean mPeriodicModeRetrievalAllowed = false;
 
-	private ConnectionManagerService mConnectionManager = null;
+	private ClientRequestHandler mConnectedClientHandler = null;
 	private boolean mDelayedObserverRegistration = false;
 	private ClientId mConnectedClient = null;
 	private ClientId mSelectedClient = null;
@@ -102,13 +103,16 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		}
 	}
 
+	private ConnectionManagerService mConnectionManager = null;
+
 	private ServiceConnection mServiceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
 			if (Logging.DEBUG) Log.d(TAG, "onServiceConnected()");
 			if (mDelayedObserverRegistration) {
-				mConnectionManager.registerStatusObserver(ManageClientActivity.this);
+				mConnectionManager.getConnectionManager().registerStatusObserver(ManageClientActivity.this);
+				mConnectionManager.getConnectionManager().registerDataReceiver(ManageClientActivity.this);
 				mDelayedObserverRegistration = false;
 			}
 			if (mSelectedClient != null) {
@@ -121,6 +125,7 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			mConnectionManager = null;
+			mConnectedClientHandler = null;
 			// This should not happen normally, because it's local service 
 			// running in the same process...
 			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
@@ -253,9 +258,10 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		// We are in foreground, so we want to receive notification when data are updated
 		if (mConnectionManager != null) {
 			// register right now
-			mConnectionManager.registerStatusObserver(ManageClientActivity.this);
+			mConnectionManager.getConnectionManager().registerStatusObserver(this);
+			mConnectionManager.getConnectionManager().registerDataReceiver(this);
 			// Check, whether we are connected now or not
-			mConnectedClient = mConnectionManager.getClientId();
+			mConnectedClient = mConnectionManager.getConnectionManager().getClientId();
 		}
 		else {
 			// During creation of activity, we'll receive onServiceConnected() callback afterwards
@@ -289,7 +295,10 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 				// Maybe the old one we have is correct, but we are not sure - so we disable it for now
 				// The values are still visible, but they are grayed out
 				refreshClientModePending();
-				mConnectionManager.updateClientMode(this);
+				// We just registered as data receiver above and we still do not have reference
+				// to ClientRequestHandler; mConnectedClientHandler was set to null in onPause()
+				// For connected client we will receive clientConnected(ClientRequestHandler)
+				// soon and then we will be able to request fresh client mode
 			}
 			else {
 				// We are not connected - update display accordingly
@@ -309,10 +318,12 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		// Do not receive notifications about state and data availability, as we are not front activity now
 		// We will change that when we resume again
 		if (mConnectionManager != null) {
-			mConnectionManager.unregisterStatusObserver(this);
+			mConnectionManager.getConnectionManager().unregisterDataReceiver(this);
+			mConnectionManager.getConnectionManager().unregisterStatusObserver(this);
+			mConnectedClientHandler = null; 
 			mConnectedClient = null; // will be again retrieved in onResume();
 		}
-		// In case of servicce binding unfinished (i.e. this activity is created and 
+		// In case of service binding is unfinished (i.e. this activity is created and 
 		// service bind is triggered, but callback onServiceConnected() not received yet),
 		// we will NOT register observer at the time of onServiceConnected(), as we are in
 		// background now and we do not want to observe connection
@@ -484,9 +495,11 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		switch (item.getItemId()) {
 		case R.id.menuHostInfo:
 			// Request fresh host-info from client in any case
-			showProgressDialog(ProgressInd.INITIAL_DATA);
-			mConnectionManager.updateHostInfo(this);
-			break;
+			if (mConnectedClientHandler != null) {
+				showProgressDialog(ProgressInd.INITIAL_DATA);
+				mConnectedClientHandler.updateHostInfo(this);
+			}
+			return true;
 		case R.id.menuDisconnect:
 			// Disconnect from currently connected client
 			boincDisconnect();
@@ -517,10 +530,8 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		case INITIAL_DATA:
 			// We are already connected, so hopefully we can display client ID in title bar
 			// as well as progress spinner
-			ClientId clientId = mConnectionManager.getClientId();
-			if (clientId != null) {
-				mConnectedClient = mConnectionManager.getClientId();
-				refreshClientName();
+			if (mLastAttemptedClient != null) {
+				setTitle(mLastAttemptedClient.getNickname());
 			}
 			setProgressBarIndeterminateVisibility(true);
 			// No break here, we drop to next case (dialog update)
@@ -542,33 +553,21 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 	}
 
 	@Override
-	public void clientConnected(VersionInfo clientVersion) {
+	public void clientConnected(ClientId clientId, VersionInfo clientVersion) {
+		if (Logging.DEBUG) Log.d(TAG, "clientConnected(clientId=\"" + clientId.getNickname() + "\", clientVersion=\"" + clientVersion.version + "\")");
 		setProgressBarIndeterminateVisibility(false);
-		mConnectedClient = mConnectionManager.getClientId();
+		mConnectedClient = clientId;
 		refreshClientName();
-		if (mConnectedClient != null) {
-			// Connected client is retrieved
-			if (Logging.DEBUG) Log.d(TAG, "Client " + mConnectedClient.getNickname() + " is connected");
-			mLastAttemptedClient = mConnectedClient; // For re-connect
-			// Trigger retrieval of client run/network modes
-			mPeriodicModeRetrievalAllowed = true;
-			if (mConnectProgressIndicator != ProgressInd.NONE) {
-				// We are still showing dialog about connection progress
-				// Connect was just initiated by us (not reported by registering as observer)
-				// We will update the dialog text now
-				showProgressDialog(ProgressInd.INITIAL_DATA);
-			}
-			mConnectionManager.updateClientMode(this);
-		}
-		else {
-			// Received connected notification, but client is unknown!
-			if (Logging.ERROR) Log.e(TAG, "Client not connected despite notification");
-		}
+		mLastAttemptedClient = mConnectedClient; // For re-connect
+		// Trigger retrieval of client run/network modes
+		mPeriodicModeRetrievalAllowed = true;
+		// Now we wait for clientConnected(ClientRequestHandler) to continue in handling
 	}
 
 	@Override
-	public void clientDisconnected(DisconnectCause cause) {
-		if (Logging.DEBUG) Log.d(TAG, "Client " + ( (mConnectedClient != null) ? mConnectedClient.getNickname() : "<not connected>" ) + " is disconnected");
+	public void clientDisconnected(ClientId clientId, DisconnectCause cause) {
+		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected(clientId=\"" + clientId.getNickname() + "\", cause=" + cause.toString() + ")");
+		mConnectedClientHandler = null;
 		mConnectedClient = null;
 		refreshClientName();
 		mClientMode = null;
@@ -582,6 +581,9 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 		else if (mDialogsAllowed) {
 			if (Logging.DEBUG) Log.d(TAG, "Received " + cause.toString());
 			switch (cause) {
+			case NO_CONNECTIVITY:
+				showDialog(DIALOG_NETWORK_DOWN);
+				break;
 			case CONNECT_FAILURE:
 				showDialog(DIALOG_CONNECT_FAILED);
 				break;
@@ -599,6 +601,40 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 				break;
 			}
 		}
+		
+	}
+
+	@Override
+	public void clientConnected(ClientRequestHandler requestHandler) {
+		if (Logging.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
+		mConnectedClientHandler = requestHandler;
+		mConnectedClient = mConnectedClientHandler.getClientId();
+		refreshClientName();
+		if (mConnectedClientHandler != null) {
+			// Trigger retrieval of client run/network modes
+			mPeriodicModeRetrievalAllowed = true;
+			if (mConnectProgressIndicator != ProgressInd.NONE) {
+				// We are still showing dialog about connection progress
+				// Connect was just initiated by us (not reported by registering as observer)
+				// We will update the dialog text now
+				showProgressDialog(ProgressInd.INITIAL_DATA);
+			}
+			mConnectedClientHandler.updateClientMode(this);
+		}
+		else {
+			// Received connected notification, but client is unknown!
+			if (Logging.ERROR) Log.e(TAG, "Client not connected despite notification");
+		}
+	}
+
+	@Override
+	public void clientDisconnected() {
+		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected()");
+		mConnectedClientHandler = null;
+		mConnectedClient = null;
+		refreshClientName();
+		mClientMode = null;
+		refreshClientMode();
 	}
 
 	@Override
@@ -692,7 +728,7 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 			}
 		}
 		else {
-			// Has not not retrieved mode yet
+			// Mode was not retrieved yet
 			// actRunMode preference
 			Preference pref = findPreference("actRunMode");
 			pref.setSummary(R.string.noHostConnected);
@@ -779,23 +815,15 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 	}
 
 	private void boincConnect() {
-		try {
-			mClientMode = null;
-			refreshClientModePending();
-			mConnectionManager.connect(mSelectedClient, false);
-			mLastAttemptedClient = mSelectedClient;
-			mSelectedClient = null;
-		}
-		catch (NoConnectivityException e) {
-			if (Logging.DEBUG) Log.d(TAG, "No connectivity - cannot connect");
-			if (mDialogsAllowed) {
-				showDialog(DIALOG_NETWORK_DOWN);
-			}
-		}
+		mClientMode = null;
+		refreshClientModePending();
+		mConnectionManager.getConnectionManager().connect(this, mSelectedClient, false);
+		mLastAttemptedClient = mSelectedClient;
+		mSelectedClient = null;
 	}
 
 	private void boincDisconnect() {
-		mConnectionManager.disconnect();
+		mConnectionManager.getConnectionManager().disconnect(this);
 		mLastAttemptedClient = null;
 	}
 
@@ -822,29 +850,41 @@ public class ManageClientActivity extends PreferenceActivity implements ClientRe
 	}
 
 	private void boincChangeRunMode(int mode) {
-		mConnectionManager.setRunMode(this, mode);
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.setRunMode(this, mode);
+		}
 	}
 
 	private void boincChangeNetworkMode(int mode) {
-		mConnectionManager.setNetworkMode(this, mode);
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.setNetworkMode(this, mode);
+		}
 	}
 
 	private void boincChangeGpuMode(int mode) {
-		mConnectionManager.setGpuMode(this, mode);
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.setGpuMode(this, mode);
+		}
 	}
 
 	private void boincRunCpuBenchmarks() {
-		mConnectionManager.runBenchmarks();
-		Toast.makeText(this, R.string.clientRunBenchNotify, Toast.LENGTH_LONG).show();
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.runBenchmarks();
+			Toast.makeText(this, R.string.clientRunBenchNotify, Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private void boincDoNetworkCommunication() {
-		mConnectionManager.doNetworkCommunication();
-		Toast.makeText(this, R.string.clientDoNetCommNotify, Toast.LENGTH_LONG).show();
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.doNetworkCommunication();
+			Toast.makeText(this, R.string.clientDoNetCommNotify, Toast.LENGTH_LONG).show();
+		}
 	}
 
 	private void boincShutdownClient() {
-		mConnectionManager.shutdownCore();
-		Toast.makeText(this, R.string.clientShutdownNotify, Toast.LENGTH_LONG).show();
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.shutdownCore();
+			Toast.makeText(this, R.string.clientShutdownNotify, Toast.LENGTH_LONG).show();
+		}
 	}
 }
