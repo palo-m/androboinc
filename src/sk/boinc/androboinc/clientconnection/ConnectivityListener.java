@@ -19,13 +19,8 @@
 
 package sk.boinc.androboinc.clientconnection;
 
-@SuppressWarnings("serial")
-public class NoConnectivityException extends Exception {
-	public NoConnectivityException() {
-		super();
-	}
-
-	public NoConnectivityException(String s) {
-		super(s);
-	}
+public interface ConnectivityListener {
+	public abstract void onConnectivityAvailable(int connectivityType);
+	public abstract void onConnectivityUnavailable();
+	public abstract void onConnectivityChangedType(int connectivityType);
 }

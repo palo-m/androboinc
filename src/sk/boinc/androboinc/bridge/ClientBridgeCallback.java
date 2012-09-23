@@ -19,7 +19,35 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.ProgressInd;
+import sk.boinc.androboinc.clientconnection.VersionInfo;
+import sk.boinc.androboinc.util.ClientId;
+
 
 public interface ClientBridgeCallback {
-	public abstract void bridgeDisconnected(ClientBridge clientBridge);
+
+	/**
+	 * Indicates the ongoing network connection operation
+	 * 
+	 * @param progress - progress indicator
+	 */
+	public abstract void bridgeConnectionProgress(ProgressInd progress);
+
+	/**
+	 * Indicates that client has been connected
+	 * 
+	 * @param clientId - the identity of connected client
+	 * @param clientVersion - BOINC version of the connected client
+	 */
+	public abstract void bridgeConnected(ClientId clientId, VersionInfo clientVersion);
+
+	/**
+	 * Indicates that client has been disconnected
+	 * 
+	 * @param clientId - the identity of client which disconnected
+	 * @param cause - disconnect reason
+	 */
+	public abstract void bridgeDisconnected(ClientId clientId, DisconnectCause cause);
+
 }

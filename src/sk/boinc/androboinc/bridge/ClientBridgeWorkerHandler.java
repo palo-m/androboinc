@@ -20,8 +20,8 @@
 package sk.boinc.androboinc.bridge;
 
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
-import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.DisconnectCause;
-import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.ProgressInd;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.ProgressInd;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
@@ -73,6 +73,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private RpcClient mRpcClient = null; // read/write only by worker thread 
 	private NetStats mNetStats = null;
 	private Formatter mFormatter = null;
+	private ClientId mClientId = null;
 
 	private Set<ClientReplyReceiver> mUpdateCancel = new HashSet<ClientReplyReceiver>();
 
@@ -86,6 +87,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private SortedMap<Integer, MessageInfo> mMessages = new TreeMap<Integer, MessageInfo>();
 	private boolean mInitialStateRetrieved = false;
 	private boolean mGpuPresent = false;
+	private DisconnectCause mDisconnectCause = DisconnectCause.NORMAL;
 
 
 	public ClientBridgeWorkerHandler(ClientBridge.ReplyHandler replyHandler, final Context context, final NetStats netStats) {
@@ -104,10 +106,12 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 		final ClientBridge.ReplyHandler moribund = mReplyHandler;
 		mReplyHandler = null;
+		final ClientId clientId = mClientId;
+		mClientId = null;
 		moribund.post(new Runnable() {
 			@Override
 			public void run() {
-				moribund.disconnected();
+				moribund.disconnected(clientId, mDisconnectCause);
 			}			
 		});
 	}
@@ -128,6 +132,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 
 	public void connect(ClientId client, boolean retrieveInitialData) {
 		if (mDisconnecting) return;  // already in disconnect phase
+		mClientId = client;
 		try {
 			if (Logging.DEBUG) Log.d(TAG, "Opening connection to " + client.getNickname());
 			notifyProgress(ProgressInd.CONNECTING);
@@ -221,7 +226,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 		// Put removal of callback at the end of queue. So only currently pending
 		// updates (these already in queue) will be canceled. Any later updates
-		// for the same calback will be again processed normally
+		// for the same callback will be again processed normally
 		this.post(new Runnable() {
 			@Override
 			public void run() {
@@ -608,6 +613,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mDisconnecting) return; // already notified (by other thread)
 		// Set flag, so no further notifications/replies will be posted to UI-thread
 		mDisconnecting = true;
+		mDisconnectCause = cause;
 		// post last notification - about disconnect
 		mReplyHandler.post(new Runnable() {
 			@Override

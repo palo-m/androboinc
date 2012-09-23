@@ -17,10 +17,18 @@
  * 
  */
 
-package sk.boinc.androboinc.service;
+package sk.boinc.androboinc.clientconnection;
 
-public interface ConnectivityListener {
-	public abstract void onConnectivityLost();
-	public abstract void onConnectivityRestored(int connectivityType);
-	public abstract void onConnectivityChangedType(int connectivityType);
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
+import sk.boinc.androboinc.util.ClientId;
+
+
+public interface StatusNotifier {
+
+	public void connected(ClientId host);
+
+	public void disconnected(ClientId host, DisconnectCause cause);
+	
+	public void cancelDisconnected();
+
 }
