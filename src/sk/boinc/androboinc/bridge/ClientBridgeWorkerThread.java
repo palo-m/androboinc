@@ -163,7 +163,6 @@ public class ClientBridgeWorkerThread extends Thread {
 	private ClientBridgeWorkerHandler mHandler;
 	private ConditionVariable mLock;
 	private ClientBridge.BridgeReply mBridgeReply;
-
 	private Context mContext;
 	private NetStats mNetStats;
 
@@ -177,7 +176,6 @@ public class ClientBridgeWorkerThread extends Thread {
 		mContext = context;
 		mNetStats = netStats;
 		mReplyHandler = new ReplyHandler(); // Create in UI thread
-		if (Logging.DEBUG) Log.d(TAG, "mReplyHandler=" + mReplyHandler.toString());
 		setDaemon(true);
 	}
 
@@ -200,7 +198,6 @@ public class ClientBridgeWorkerThread extends Thread {
 		}
 
 		// We passed the references to handler, we don't need them here anymore
-//		mBridgeReply = null;
 		mContext = null;
 		mNetStats = null;
 
