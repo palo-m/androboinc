@@ -35,7 +35,6 @@ import sk.boinc.androboinc.debug.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;
 import android.os.ConditionVariable;
-import android.os.Handler;
 import android.util.Log;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,8 +50,8 @@ import java.util.Vector;
 public class ClientBridge implements ClientRequestHandler {
 	private static final String TAG = "ClientBridge";
 
-	public class ReplyHandler extends Handler {
-		private static final String TAG = "ClientBridge.ReplyHandler";
+	public class BridgeReply {
+		private static final String TAG = "ClientBridge.BridgeReply";
 
 		public void disconnecting() {
 			// The worker thread started disconnecting
@@ -108,7 +107,6 @@ public class ClientBridge implements ClientRequestHandler {
 			}
 			mReceivers.clear();
 		}
-
 
 		public void updatedClientMode(final ClientReplyReceiver callback, final ModeInfo modeInfo) {
 			if (callback == null) {
@@ -224,8 +222,7 @@ public class ClientBridge implements ClientRequestHandler {
 		}
 	}
 
-	// TODO: Fix Lint warning
-	private final ReplyHandler mReplyHandler = new ReplyHandler();
+	private final BridgeReply mBridgeReply = new BridgeReply();
 
 	private Set<ClientReplyReceiver> mReceivers = new HashSet<ClientReplyReceiver>();
 	private boolean mConnected = false;
@@ -247,7 +244,7 @@ public class ClientBridge implements ClientRequestHandler {
 		if (Logging.DEBUG) Log.d(TAG, "Starting ClientBridgeWorkerThread");
 		ConditionVariable lock = new ConditionVariable(false);
 		mAutoRefresh = new AutoRefresh(context, this);
-		mWorker = new ClientBridgeWorkerThread(lock, mReplyHandler, context, netStats);
+		mWorker = new ClientBridgeWorkerThread(lock, mBridgeReply, context, netStats);
 		mWorker.start();
 		boolean runningOk = lock.block(2000); // Locking until new thread fully runs
 		if (!runningOk) {
@@ -264,7 +261,7 @@ public class ClientBridge implements ClientRequestHandler {
 		// So we trigger notification now (before real disconnect) which will
 		// also clear the data receivers. So after real disconnect is finished,
 		// there will be no further notifications
-		mReplyHandler.notifyDisconnected(DisconnectCause.NORMAL);
+		mBridgeReply.notifyDisconnected(DisconnectCause.NORMAL);
 		disconnect();
 	}
 
@@ -301,6 +298,7 @@ public class ClientBridge implements ClientRequestHandler {
 	}
 
 	public void disconnect() {
+		if (Logging.DEBUG) Log.d(TAG, "disconnect()");
 		if (mRemoteClient == null) return; // not connected
 		mWorker.disconnect();
 		mRemoteClient = null; // This will prevent further triggers towards worker thread

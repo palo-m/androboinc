@@ -135,7 +135,7 @@
 	<string name="prefNetworkUsageStats">Network usage</string>
 	<string name="prefNetworkUsageDisabled">Statistics are NOT collected</string>
 	<string name="prefNetworkUsageNull">Received: 0B, Sent: 0B</string>
-	<string name="prefNetworkUsageDisclaimer">
+	<string name="prefNetworkUsageDisclaimer" formatted="false">
 	    This function is experimental.
 		The numbers displayed in network usage here are not 100% accurate.
 		It is intended for temporary use only, to get rough idea about volume of transferred data.
