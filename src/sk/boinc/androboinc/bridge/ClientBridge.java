@@ -19,6 +19,7 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.bridge.AutoRefresh.RequestType;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
@@ -148,7 +149,7 @@ public class ClientBridge implements ClientRequestHandler {
 				// Observer is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedClientMode(modeInfo);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.CLIENT_MODE);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.CLIENT_MODE);
 				}
 			}
 		}
@@ -177,7 +178,7 @@ public class ClientBridge implements ClientRequestHandler {
 				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedProjects(projects);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.PROJECTS);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.PROJECTS);
 				}
 			}
 		}
@@ -198,7 +199,7 @@ public class ClientBridge implements ClientRequestHandler {
 				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedTasks(tasks);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.TASKS);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.TASKS);
 				}
 			}
 		}
@@ -219,7 +220,7 @@ public class ClientBridge implements ClientRequestHandler {
 				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedTransfers(transfers);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.TRANSFERS);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.TRANSFERS);
 				}
 			}
 		}
@@ -240,7 +241,7 @@ public class ClientBridge implements ClientRequestHandler {
 				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedMessages(messages);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.MESSAGES);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.MESSAGES);
 				}
 			}
 		}
