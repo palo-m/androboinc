@@ -82,6 +82,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	public void cleanup() {
 		if (Logging.DEBUG) Log.d(TAG, "cleanup()");
 		mDeferredConnect = null;
+		mDataReceivers.clear();
 		if (mClientBridge != null) {
 			// Detach from bridge immediately.
 			// We cannot wait for callback from bridge anymore,
@@ -89,7 +90,6 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 			// is still in progress (no more notification afterwards)
 			Set<ConnectionManagerCallback> closingObservers = mStatusObservers;
 			mStatusObservers = new HashSet<ConnectionManagerCallback>();
-			mDataReceivers.clear();
 			mClientBridge.cleanup();
 			mClientBridge = null;
 			Iterator<ConnectionManagerCallback> oit = closingObservers.iterator();
