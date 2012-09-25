@@ -65,14 +65,23 @@ public class ClientBridgeWorkerThread extends Thread {
 			});
 		}
 
-		public void disconnected(final ClientId clientId, final DisconnectCause cause) {
+		public void disconnected(final DisconnectCause cause) {
 			// This is final call - the cleanup() of ClientBridgeWorkerHandler finished
 			final ClientBridge.BridgeReply moribund = mBridgeReply;
 			mBridgeReply = null;
 			mBridgeReplyHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					moribund.disconnected(clientId, cause);
+					moribund.disconnected(cause);
+				}
+			});
+		}
+
+		public void delayedDisconnect(final DisconnectCause cause) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.delayedDisconnect(cause);
 				}
 			});
 		}
@@ -95,11 +104,11 @@ public class ClientBridgeWorkerThread extends Thread {
 			});
 		}
 
-		public void notifyDisconnected(final DisconnectCause cause) {
+		public void notifyDisconnected() {
 			mBridgeReplyHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					mBridgeReply.notifyDisconnected(cause);
+					mBridgeReply.notifyDisconnected();
 				}
 			});
 		}
@@ -237,18 +246,8 @@ public class ClientBridgeWorkerThread extends Thread {
 	}
 
 	public void disconnect() {
-		// Set indication immediately (from UI thread) - NOW!
-		// Worker thread can be busy with some time-consuming task
-		mHandler.disconnectInd();
-		// Execute main action in worker thread afterwards
-		// Worker thread will autonomously discard requests which are
-		// already in queue (i.e. waiting for current operation to finish)
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				mHandler.disconnect();
-			}
-		});
+		// Run immediately (from UI thread) - NOW!
+		mHandler.disconnect();
 	}
 
 	public void cancelPendingUpdates(final ClientReplyReceiver callback) {

@@ -52,6 +52,14 @@ public class ClientBridge implements ClientRequestHandler {
 
 	public class BridgeReply {
 		private static final String TAG = "ClientBridge.BridgeReply";
+		
+		private ClientId mClientId = null;
+		
+		public void setClientId(ClientId clientId) {
+			if (mClientId == null) {
+				mClientId = clientId;
+			}
+		}
 
 		public void disconnecting() {
 			// The worker thread started disconnecting
@@ -66,17 +74,33 @@ public class ClientBridge implements ClientRequestHandler {
 			mAutoRefresh = null;
 		}
 
-		public void disconnected(final ClientId clientId, final DisconnectCause cause) {
-			if (Logging.DEBUG) Log.d(TAG, "disconnected()");
-			// The worker thread was cleared completely 
-			mWorker = null;
+		private void detachCallback(final DisconnectCause cause) {
 			if (mCallback != null) {
-				// We are ready to be deleted
-				// The callback can now delete reference to us, so this
-				// object can be garbage collected then
-				mCallback.bridgeDisconnected(clientId, cause);
+				// The callback can now delete reference to us
+				mCallback.bridgeDisconnected(mClientId, cause);
 				mCallback = null;
 			}
+		}
+
+		public void disconnected(final DisconnectCause cause) {
+			if (Logging.DEBUG) Log.d(TAG, "disconnected(cause=" + cause.toString() + ")");
+			// The worker thread was cleared completely 
+			mWorker = null;
+			// We detach the callback, so it can delete reference to this object
+			// That should be the last reference, so this object could be garbage collected
+			detachCallback(cause);
+		}
+
+		public void delayedDisconnect(final DisconnectCause cause) {
+			if (Logging.DEBUG) Log.d(TAG, "delayedDisconnect(cause=" + cause.toString() + ")");
+			// The disconnection will continue autonomously;
+			// We must make sure nothing else is sent out
+			mReceivers.clear();
+			// The callback can now delete reference to us, but
+			// the worker thread continues running until disconnect is finished
+			// Worker thread still has the reference to us until disconnected() is called,
+			// so the garbage collection can be done afterwards
+			detachCallback(cause);
 		}
 
 		public void notifyProgress(ProgressInd progress) {
@@ -88,7 +112,7 @@ public class ClientBridge implements ClientRequestHandler {
 		public void notifyConnected(VersionInfo clientVersion) {
 			mConnected = true;
 			if (mCallback != null) {
-				mCallback.bridgeConnected(getClientId(), clientVersion);
+				mCallback.bridgeConnected(mClientId, clientVersion);
 			}
 			Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 			while (it.hasNext()) {
@@ -97,7 +121,7 @@ public class ClientBridge implements ClientRequestHandler {
 			}
 		}
 
-		public void notifyDisconnected(DisconnectCause cause) {
+		public void notifyDisconnected() {
 			mConnected = false;
 			Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 			while (it.hasNext()) {
@@ -227,8 +251,8 @@ public class ClientBridge implements ClientRequestHandler {
 	private Set<ClientReplyReceiver> mReceivers = new HashSet<ClientReplyReceiver>();
 	private boolean mConnected = false;
 
-	private ClientBridgeCallback mCallback = null;
-	private ClientBridgeWorkerThread mWorker = null;
+	private ClientBridgeCallback mCallback;
+	private ClientBridgeWorkerThread mWorker;
 
 	private ClientId mRemoteClient = null;
 
@@ -249,19 +273,19 @@ public class ClientBridge implements ClientRequestHandler {
 		boolean runningOk = lock.block(2000); // Locking until new thread fully runs
 		if (!runningOk) {
 			// Too long time waiting for worker thread to be on-line - cancel it
-			if (Logging.ERROR) Log.e(TAG, "ClientBridgeWorkerThread did not start in 1 second");
+			if (Logging.ERROR) Log.e(TAG, "ClientBridgeWorkerThread did not start in 2 seconds");
 			throw new RuntimeException("Worker thread cannot start");
 		}
 		if (Logging.DEBUG) Log.d(TAG, "ClientClientBridgeWorkerThread started successfully");
 	}
 
 	public void cleanup() {
-		mCallback = null;
 		// We are cleaning up - no more callback should be done afterwards
-		// So we trigger notification now (before real disconnect) which will
+		mCallback = null;
+		// We also trigger notification now (before real disconnect) which will
 		// also clear the data receivers. So after real disconnect is finished,
-		// there will be no further notifications
-		mBridgeReply.notifyDisconnected(DisconnectCause.NORMAL);
+		// there will be no further notifications sent
+		mBridgeReply.notifyDisconnected();
 		disconnect();
 	}
 
@@ -293,6 +317,7 @@ public class ClientBridge implements ClientRequestHandler {
 			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " while already connected to: " + mRemoteClient.getNickname());
 			return;
 		}
+		mBridgeReply.setClientId(remoteClient); // For bridge callback
 		mRemoteClient = remoteClient;
 		mWorker.connect(remoteClient, retrieveInitialData);
 	}
