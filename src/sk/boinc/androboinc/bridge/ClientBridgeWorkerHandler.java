@@ -67,10 +67,10 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private static final int MESSAGE_INITIAL_LIMIT = 50;
 
 	private ClientBridgeWorkerThread.ReplyHandler mReplyHandler;
-	private Context mContext = null;
+	private final Context mContext;
+	private NetStats mNetStats;
+	private Formatter mFormatter;
 	private RpcClient mRpcClient = null; // read/write only by worker thread 
-	private NetStats mNetStats = null;
-	private Formatter mFormatter = null;
 	private ClientId mClientId = null;
 
 	private Boolean mDisconnecting = false; // read by worker thread, write by both threads
@@ -114,8 +114,6 @@ public class ClientBridgeWorkerHandler extends Handler {
 	public void cleanup() {
 		if (mFormatter != null) mFormatter.cleanup();
 		mFormatter = null;
-		mContext = null;
-		mNetStats = null;
 		if (mRpcClient != null) {
 			if (Logging.WARNING) Log.w(TAG, "cleanup(): RpcClient still opened, closing it now");
 			closeConnection();
@@ -188,6 +186,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			if (Logging.DEBUG) Log.d(TAG, "Opening connection to " + client.getNickname());
 			notifyProgress(ProgressInd.CONNECTING);
 			RpcClient rpcClient = new RpcClient(mNetStats);
+			mNetStats = null; // Not needed here anymore
 			rpcClient.open(client.getAddress(), client.getPort());
 			mRpcClient = rpcClient;
 			if (Logging.DEBUG) Log.d(TAG, "Connected to " + client.getNickname());

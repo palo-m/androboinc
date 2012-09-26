@@ -36,7 +36,7 @@ import android.content.res.Resources;
  * reusing of objects could prevent some garbage collection.
  */
 public class Formatter {
-	private Context mContext = null;
+	private final Context mContext;
 	private Resources mResources = null;
 	private StringBuilder mSb = new StringBuilder();
 	private SimpleDateFormat mDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -47,7 +47,6 @@ public class Formatter {
 	}
 
 	public void cleanup() {
-		mContext = null;
 		mResources = null;
 		mSb = null;
 		mDateFormatter = null;

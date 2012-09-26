@@ -72,7 +72,6 @@ public class ClientBridge implements ClientRequestHandler {
 			mWorker.stopThread(null);
 			// Clean up periodic updater as well, because no more periodic updates will be needed
 			mAutoRefresh.cleanup();
-			mAutoRefresh = null;
 		}
 
 		private void detachCallback(final DisconnectCause cause) {
@@ -87,6 +86,7 @@ public class ClientBridge implements ClientRequestHandler {
 			if (Logging.DEBUG) Log.d(TAG, "disconnected(cause=" + cause.toString() + ")");
 			// The worker thread was cleared completely 
 			mWorker = null;
+			mRemoteClient = null; // Should already be - here it is again for security
 			// We detach the callback, so it can delete reference to this object
 			// That should be the last reference, so this object could be garbage collected
 			detachCallback(cause);
@@ -257,7 +257,7 @@ public class ClientBridge implements ClientRequestHandler {
 
 	private ClientId mRemoteClient = null;
 
-	private AutoRefresh mAutoRefresh = null;
+	private final AutoRefresh mAutoRefresh;
 
 	/**
 	 * Constructs a new <code>ClientBridge</code> and starts worker thread
@@ -316,6 +316,11 @@ public class ClientBridge implements ClientRequestHandler {
 		if (mRemoteClient != null) {
 			// already connected
 			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " while already connected to: " + mRemoteClient.getNickname());
+			return;
+		}
+		if (mWorker == null) {
+			// After disconnect - it cannot be reused
+			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " after being cleaned up");
 			return;
 		}
 		mBridgeReply.setClientId(remoteClient); // For bridge callback

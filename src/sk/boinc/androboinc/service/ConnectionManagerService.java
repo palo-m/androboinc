@@ -108,11 +108,11 @@ public class ConnectionManagerService extends Service {
 	public void onCreate() {
 		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
 		// Notifications handler
-		mStatusNotifier = new ConnectionStatusNotifier(this);
+		mStatusNotifier = new ConnectionStatusNotifier(getApplicationContext());
 		// Create network statistics handler
-		mNetStats = new NetworkStatisticsHandler(this);
+		mNetStats = new NetworkStatisticsHandler(getApplicationContext());
 		// Finally, create connection manager
-		mConnectionManager = new BridgeManager(this, mStatusNotifier, mNetStats);
+		mConnectionManager = new BridgeManager(getApplicationContext(), mStatusNotifier, mNetStats);
 		// Add connectivity monitoring (to be notified when connection is down)
 		mConnectivityStatus = new ConnectivityStatus(this, mConnectionManager);
 	}
@@ -120,12 +120,12 @@ public class ConnectionManagerService extends Service {
 	@Override
 	public void onDestroy() {
 		if (Logging.DEBUG) Log.d(TAG, "onDestroy()");
-		// Clean-up bridge
-		mConnectionManager.cleanup();
-		mConnectionManager = null;
 		// Clean-up connectivity monitoring
 		mConnectivityStatus.cleanup();
 		mConnectivityStatus = null;
+		// Clean-up bridge
+		mConnectionManager.cleanup();
+		mConnectionManager = null;
 		// Clean-up notifications handler
 		mStatusNotifier.cleanup();
 		mStatusNotifier = null;
