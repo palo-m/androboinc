@@ -43,13 +43,14 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 	private static final int CONNECTED_ID = 1;
 	private static final int DISCONNECTED_ID = 2;
 
-	private Context mContext;
+	private final Context mContext;
 	private NotificationManager mNotificationManager;
 	private boolean mConnected = false;
 	private boolean mDisconnected = false;
 
 
 	public ConnectionStatusNotifier(Context context) {
+		if (context == null) throw new NullPointerException();
 		if (Logging.DEBUG) Log.d(TAG, "ConnectionStatusNotifier(context=" + context.toString() + ")");
 		mContext = context;
 		mNotificationManager = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);

@@ -48,9 +48,9 @@ import java.util.Set;
 public class BridgeManager implements ConnectionManager, ClientBridgeCallback, ConnectivityListener {
 	private static final String TAG = "BridgeManager";
 
-	private Context mContext = null;
-	private StatusNotifier mNotifier = null;
-	private NetStats mNetStats = null;
+	private final Context mContext;
+	private final StatusNotifier mNotifier;
+	private final NetStats mNetStats;
 	private ClientBridge mClientBridge = null;
 	private Runnable mDeferredConnect = null;
 	private VersionInfo mClientVersion = null;
@@ -67,6 +67,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	 * @param netStats - Used for network statistics collection (can be {@code null})
 	 */
 	public BridgeManager(final Context context, final StatusNotifier notifier, final NetStats netStats) {
+		if (context == null) throw new NullPointerException();
 		if (Logging.DEBUG) Log.d(TAG, "BridgeManager()");
 		mContext = context;
 		mNotifier = notifier;
@@ -88,26 +89,21 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 			// We cannot wait for callback from bridge anymore,
 			// so we will notify disconnection autonomously while real disconnect
 			// is still in progress (no more notification afterwards)
-			Set<ConnectionManagerCallback> closingObservers = mStatusObservers;
-			mStatusObservers = new HashSet<ConnectionManagerCallback>();
-			mClientBridge.cleanup();
-			mClientBridge = null;
-			Iterator<ConnectionManagerCallback> oit = closingObservers.iterator();
-			while (oit.hasNext()) {
-				ConnectionManagerCallback observer = oit.next();
+			Iterator<ConnectionManagerCallback> it = mStatusObservers.iterator();
+			while (it.hasNext()) {
+				ConnectionManagerCallback observer = it.next();
 				observer.clientDisconnected(mClientId, DisconnectCause.NORMAL);
 			}
+			mStatusObservers.clear();
+			mClientBridge.cleanup();
+			mClientBridge = null;
 			if ( (mNotifier != null) && (mClientId != null) ) {
 				mNotifier.disconnected(mClientId, DisconnectCause.NORMAL);
 			}
 		}
-		mStatusObservers = null;
-		mDataReceivers = null;
+		mStatusObservers.clear();
 		mClientId = null;
 		mClientVersion = null;
-		mNetStats = null;
-		mNotifier = null;
-		mContext = null;
 	}
 
 	/**

@@ -38,6 +38,7 @@ public class ConnectivityStatus extends BroadcastReceiver {
 	private int mConnectivityType = ConnectivityManager.TYPE_MOBILE;
 
 	public ConnectivityStatus(Context context, ConnectivityListener connectivityListener) {
+		if (connectivityListener == null) throw new NullPointerException();
 		// Store callback to forward notifications about connectivity change
 		mConnectivityListener = connectivityListener;
 		// Register ourselves as receiver of broadcasts when connectivity changes
@@ -62,6 +63,8 @@ public class ConnectivityStatus extends BroadcastReceiver {
 	public void cleanup() {
 		mContext.unregisterReceiver(this);
 		if (Logging.DEBUG) Log.d(TAG, "cleanup(), unregistered receiver");
+		// No more calls of onReceive(), so we do not need reference to ConnectivityListener
+		mConnectivityListener = null;
 	}
 
 	@Override

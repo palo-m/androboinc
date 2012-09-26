@@ -70,7 +70,10 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 
 		@Override
 		public int hashCode() {
-			return (callback.hashCode() + requestType.hashCode());
+			int result = 17;
+			result = 31 * result + callback.toString().hashCode();
+			result = 31 * result + requestType.toString().hashCode();
+			return result;
 		}
 	}
 
@@ -97,22 +100,32 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 				UpdateRequest request = (UpdateRequest)msg.obj;
 				if (autoRefresh.mScheduledUpdates.remove(request)) {
 					// So far so good, update was still scheduled
-					if (Logging.DEBUG) Log.d(TAG, "triggering automatic update (" + request.callback.toString() + "," + request.requestType.toString() + ")");
+					ClientRequestHandler clientBridge = autoRefresh.mClientBridge;
+					if (clientBridge == null) {
+						// Cleared meanwhile in AutoRefresh class
+						// This indicates cleanup phase, so we really do not need to
+						// do the auto-refresh anymore
+						// Nevertheless, this should never happen (cleanup() should make it sure)
+						// so we emit warning here...
+						if (Logging.WARNING) Log.w(TAG, "handleMessage(): after cleanup(), message ignored");
+						return;
+					}
+					if (Logging.DEBUG) Log.d(TAG, "handleMessage(): triggering automatic update (" + request.callback.toString() + "," + request.requestType.toString() + ")");
 					switch (request.requestType) {
 					case CLIENT_MODE:
-						autoRefresh.mClientBridge.updateClientMode(request.callback);
+						clientBridge.updateClientMode(request.callback);
 						break;
 					case PROJECTS:
-						autoRefresh.mClientBridge.updateProjects(request.callback);
+						clientBridge.updateProjects(request.callback);
 						break;
 					case TASKS:
-						autoRefresh.mClientBridge.updateTasks(request.callback);
+						clientBridge.updateTasks(request.callback);
 						break;
 					case TRANSFERS:
-						autoRefresh.mClientBridge.updateTransfers(request.callback);
+						clientBridge.updateTransfers(request.callback);
 						break;
 					case MESSAGES:
-						autoRefresh.mClientBridge.updateMessages(request.callback);
+						clientBridge.updateMessages(request.callback);
 						break;						
 					default:
 						if (Logging.ERROR) Log.e(TAG, "Unhandled request type: " + request.requestType.toString());					
@@ -176,18 +189,18 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 			// Let's unregister now
 			SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 			globalPrefs.unregisterOnSharedPreferenceChangeListener(this);
+			mContext = null;
 		}
-		Iterator<UpdateRequest> it = mScheduledUpdates.iterator();
-		while (it.hasNext()) {
-			// Found pending auto-update; remove its schedule now
-			UpdateRequest req = it.next();
-			mRefreshHandler.removeMessages(RUN_UPDATE, req);
-			if (Logging.DEBUG) Log.d(TAG, "cleanup(): Removed schedule for entry (" + req.callback.toString() + "," + req.requestType.toString() + ")");
+		if (mRefreshHandler.hasMessages(RUN_UPDATE)) {
+			if (Logging.DEBUG) Log.d(TAG, "cleanup(): Removing messages from handler queue");
+			mRefreshHandler.removeMessages(RUN_UPDATE);
 		}
 		mScheduledUpdates.clear();
-		mRefreshHandler = null;
 		mClientBridge = null;
 		mAutoRefresh = 0;
+		// Since we unregistered preference change listener, 
+		// the mAutoRefresh will not change anymore.
+		// So further calls of scheduleAutomaticRefresh() will have no effect on this class
 	}
 
 	@Override

@@ -180,6 +180,7 @@ public class ClientBridgeWorkerThread extends Thread {
 			final ClientBridge.BridgeReply bridgeReply, 
 			final Context context, 
 			final NetStats netStats) {
+		if (bridgeReply == null) throw new NullPointerException();
 		mLock = lock;
 		mBridgeReply = bridgeReply;
 		mContext = context;
