@@ -32,10 +32,6 @@ public class ModeInfoCreator {
 		if ( (ccStatus.network_mode > 3) || (ccStatus.network_mode < 1) ) {
 			return null;
 		}
-		ModeInfo mi = new ModeInfo();
-		mi.task_mode = ccStatus.task_mode;
-		mi.gpu_mode = ccStatus.gpu_mode;
-		mi.network_mode = ccStatus.network_mode;
-		return mi;
+		return new ModeInfo(ccStatus.task_mode, ccStatus.gpu_mode, ccStatus.network_mode);
 	}
 }

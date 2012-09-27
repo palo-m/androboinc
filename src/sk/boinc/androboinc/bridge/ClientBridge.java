@@ -422,20 +422,20 @@ public class ClientBridge implements ClientRequestHandler {
 	}
 
 	@Override
-	public void projectOperation(final ClientReplyReceiver callback, final int operation, final String projectUrl) {
+	public void projectOperation(final ClientReplyReceiver callback, final ProjectOp operation, final String projectUrl) {
 		if (mRemoteClient == null) return; // not connected
-		mWorker.projectOperation(callback, operation, projectUrl);
+		mWorker.projectOperation(callback, operation.opCode(), projectUrl);
 	}
 
 	@Override
-	public void taskOperation(final ClientReplyReceiver callback, final int operation, final String projectUrl, final String taskName) {
+	public void taskOperation(final ClientReplyReceiver callback, final TaskOp operation, final String projectUrl, final String taskName) {
 		if (mRemoteClient == null) return; // not connected
-		mWorker.taskOperation(callback, operation, projectUrl, taskName);
+		mWorker.taskOperation(callback, operation.opCode(), projectUrl, taskName);
 	}
 
 	@Override
-	public void transferOperation(final ClientReplyReceiver callback, final int operation, final String projectUrl, final String fileName) {
+	public void transferOperation(final ClientReplyReceiver callback, final TransferOp operation, final String projectUrl, final String fileName) {
 		if (mRemoteClient == null) return; // not connected
-		mWorker.transferOperation(callback, operation, projectUrl, fileName);
+		mWorker.transferOperation(callback, operation.opCode(), projectUrl, fileName);
 	}
 }

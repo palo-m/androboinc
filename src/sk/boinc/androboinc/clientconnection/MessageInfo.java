@@ -24,9 +24,21 @@ package sk.boinc.androboinc.clientconnection;
  * Reflects the class Message of BOINC-library (and also class Project)
  */
 public class MessageInfo {
-	public int    seqNo = 0;     // Message.seqno - sequence number of message - unique ID
-	public int    priority;      // Message.priority
-	public String project;       // Project.getName()
-	public String time;          // Message.timestamp converted to date-String
-	public String body;          // Message.body
+	public final int    seqNo;		// Message.seqno - sequence number of message - unique ID
+	public final int    priority;   // Message.priority
+	public final String project;    // Project.getName()
+	public final String time;       // Message.timestamp converted to date-String
+	public final String body;       // Message.body
+
+	public MessageInfo(int seqNo,
+			int priority,
+			String project,
+			String time,
+			String body) {
+		this.seqNo = seqNo;
+		this.priority = priority;
+		this.project = project;
+		this.time = time;
+		this.body = body;
+	}
 }

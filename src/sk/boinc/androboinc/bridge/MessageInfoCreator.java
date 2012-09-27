@@ -25,15 +25,15 @@ import edu.berkeley.boinc.lite.Message;
 
 public class MessageInfoCreator {
 	public static MessageInfo create(final Message msg, final Formatter formatter) {
-		MessageInfo mi = new MessageInfo();
-		mi.seqNo = msg.seqno;
-		mi.project = msg.project;
-		if (mi.project.length() == 0) {
-			mi.project = "---";
+		String project = msg.project;
+		if (project.length() == 0) {
+			project = "---";
 		}
-		mi.time = formatter.formatDate(msg.timestamp);
-		mi.body = msg.body;
-		mi.priority = msg.priority;
-		return mi;
+		String time = formatter.formatDate(msg.timestamp);
+		return new MessageInfo(msg.seqno,
+				msg.priority,
+				project,
+				time,
+				msg.body);
 	}
 }

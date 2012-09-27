@@ -19,9 +19,9 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.clientconnection.ClientOp;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler.TaskOp;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
@@ -175,9 +175,13 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 				break;
 			case TaskInfo.DOWNLOADING:
 			case TaskInfo.UPLOADING:
-				// Setting progress to 0 will let the secondary progress to display itself (which is always set to 100)
-				task.progInd = 0;
-				// no break, we continue following case (READY_TO_REPORT)
+				progressWaiting.setVisibility(View.GONE);
+				progressSuspended.setVisibility(View.GONE);
+				progressRunning.setVisibility(View.GONE);
+				// Using progress 0 will let the secondary progress to display itself (which is always set to 100)
+				progressFinished.setProgress(0);
+				progressFinished.setVisibility(View.VISIBLE);
+				break;
 			case TaskInfo.READY_TO_REPORT:
 				// Downloading, Uploading or Ready to report
 				progressWaiting.setVisibility(View.GONE);
@@ -373,7 +377,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	    				public void onClick(DialogInterface dialog, int whichButton) {
 	    					TaskInfo task = (TaskInfo)getListAdapter().getItem(mPosition);
 	    					if (mConnectedClientHandler != null) {
-	    						mConnectedClientHandler.taskOperation(TasksActivity.this, ClientOp.TASK_ABORT, task.projectUrl, task.taskName);
+	    						mConnectedClientHandler.taskOperation(TasksActivity.this, TaskOp.ABORT, task.projectUrl, task.taskName);
 	    					}
 	    				}
 	    			})
@@ -437,12 +441,12 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 			return true;
 		case SUSPEND:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.taskOperation(this, ClientOp.TASK_SUSPEND, task.projectUrl, task.taskName);
+				mConnectedClientHandler.taskOperation(this, TaskOp.SUSPEND, task.projectUrl, task.taskName);
 			}
 			return true;
 		case RESUME:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.taskOperation(this, ClientOp.TASK_RESUME, task.projectUrl, task.taskName);
+				mConnectedClientHandler.taskOperation(this, TaskOp.RESUME, task.projectUrl, task.taskName);
 			}
 			return true;
 		case ABORT:

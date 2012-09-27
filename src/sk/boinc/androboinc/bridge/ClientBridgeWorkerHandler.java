@@ -826,13 +826,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 		Iterator<Transfer> ti = transfers.iterator();
 		while (ti.hasNext()) {
 			Transfer transfer = ti.next();
+			String projectName;
 			ProjectInfo proj = mProjects.get(transfer.project_url);
-			if (proj == null) {
-				if (Logging.WARNING) Log.w(TAG, "No project for WU=" + transfer.name + " (project_url: " + transfer.project_url + "), setting dummy");
-				proj = new ProjectInfo();
-				proj.project = "???";
+			if (proj != null) {
+				projectName = proj.project;
 			}
-			TransferInfo transferInfo = TransferInfoCreator.create(transfer, proj.project, mFormatter);
+			else {
+				if (Logging.WARNING) Log.w(TAG, "No project for WU=" + transfer.name + " (project_url: " + transfer.project_url + "), setting dummy");
+				projectName = "???";
+			}
+			TransferInfo transferInfo = TransferInfoCreator.create(transfer, projectName, mFormatter);
 			mTransfers.add(transferInfo);
 		}
 		if (Logging.DEBUG) Log.d(TAG, "dataSetTransfers(): End update");
@@ -854,7 +857,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 				if (Logging.DEBUG) Log.d(TAG, "Task not found while trying dataUpdateTasks() - needs full updateCcState() update");
 				return false;
 			}
-			TaskInfoCreator.update(task, result, mFormatter);
+			task = TaskInfoCreator.update(task, result, mFormatter);
 			if (result.active_task) {
 				// This is also active task
 				mActiveTasks.add(result.name);

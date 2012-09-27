@@ -24,19 +24,43 @@ package sk.boinc.androboinc.clientconnection;
  * Reflects the classes of BOINC-library
  */
 public class TransferInfo {
-	public String fileName;     // unique ID
-	public String projectUrl;   // Transfer.project_url
-	public int    stateControl; // state control in numerical form
+	public final String fileName;     // unique ID
+	public final String projectUrl;   // Transfer.project_url
+	public final int    stateControl; // state control in numerical form
 	public static final int SUSPENDED = 1; // bit 1 of stateControl
 	public static final int ABORTED = 2;   // bit 2 of stateControl
 	public static final int FAILED = 4;    // bit 3 of stateControl
 	public static final int RUNNING = 8;   // bit 4 of stateControl
 	public static final int STARTED = 16;  // bit 5 of stateControl
-	public int    progInd;      // Progress indication in numerical form
-	public String project;      // Project.getName()
-	public String progress;     // converted to percentage
-	public String size;         // converted to string
-	public String elapsed;      // converted to time-string
-	public String speed;        // converted to string
-	public String state;        // converted to string
+
+	public final int    progInd;      // Progress indication in numerical form
+	public final String project;      // Project.getName()
+	public final String progress;     // converted to percentage
+	public final String size;         // converted to string
+	public final String elapsed;      // converted to time-string
+	public final String speed;        // converted to string
+	public final String state;        // converted to string
+
+	public TransferInfo(String fileName,
+			String projectUrl,
+			int    stateControl,
+			int    progInd,
+			String project,
+			String progress,
+			String size,
+			String elapsed,
+			String speed,
+			String state
+			) {
+		this.fileName = fileName;
+		this.projectUrl = projectUrl;
+		this.stateControl = stateControl;
+		this.progInd = progInd;
+		this.project = project;
+		this.progress = progress;
+		this.size = size;
+		this.elapsed = elapsed;
+		this.speed = speed;
+		this.state = state;
+	}
 }

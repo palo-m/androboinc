@@ -24,9 +24,8 @@ import sk.boinc.androboinc.clientconnection.VersionInfo;
 
 public class VersionInfoCreator {
 	public static VersionInfo create(final edu.berkeley.boinc.lite.VersionInfo versionInfo) {
-		VersionInfo vi = new VersionInfo();
-		vi.versNum = versionInfo.major * 100000 + versionInfo.minor * 1000 + versionInfo.release;
-		vi.version = String.format("%d.%d.%d", versionInfo.major, versionInfo.minor, versionInfo.release);
-		return vi;
+		int versNum = versionInfo.major * 100000 + versionInfo.minor * 1000 + versionInfo.release;
+		String version = String.format("%d.%d.%d", versionInfo.major, versionInfo.minor, versionInfo.release);
+		return new VersionInfo(versNum, version);
 	}
 }
