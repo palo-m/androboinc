@@ -19,9 +19,9 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.clientconnection.ClientOp;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler.TransferOp;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
@@ -347,7 +347,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	    				public void onClick(DialogInterface dialog, int whichButton) {
 	    					TransferInfo transfer = (TransferInfo)getListAdapter().getItem(mPosition);
 	    					if (mConnectedClientHandler != null) {
-	    						mConnectedClientHandler.transferOperation(TransfersActivity.this, ClientOp.TRANSFER_ABORT, transfer.projectUrl, transfer.fileName);
+	    						mConnectedClientHandler.transferOperation(TransfersActivity.this, TransferOp.ABORT, transfer.projectUrl, transfer.fileName);
 	    					}
 	    				}
 	    			})
@@ -407,7 +407,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 			return true;
 		case RETRY:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.transferOperation(this, ClientOp.TRANSFER_RETRY, transfer.projectUrl, transfer.fileName);
+				mConnectedClientHandler.transferOperation(this, TransferOp.RETRY, transfer.projectUrl, transfer.fileName);
 			}
 			return true;
 		case ABORT:

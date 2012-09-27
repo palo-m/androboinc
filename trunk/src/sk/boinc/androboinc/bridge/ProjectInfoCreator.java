@@ -28,34 +28,35 @@ import edu.berkeley.boinc.lite.Project;
 public class ProjectInfoCreator {
 	public static ProjectInfo create(final Project prj, float totalResources, final Formatter formatter) {
 		Resources resources = formatter.getResources();
-		ProjectInfo pi = new ProjectInfo();
-		pi.masterUrl = prj.master_url;
-		pi.project = prj.getName();
-		pi.account = prj.user_name;
-		pi.team = prj.team_name;
-		pi.user_credit = prj.user_total_credit;
-		pi.user_rac = prj.user_expavg_credit;
-		pi.host_credit = prj.host_total_credit;
-		pi.host_rac = prj.host_expavg_credit;
 		float pctShare = prj.resource_share/totalResources*100;
-		pi.resShare = (int)pctShare;
-		pi.share = String.format("%.0f (%.2f%%)", prj.resource_share, pctShare);
+		int resShare = (int)pctShare;
+		String share = String.format("%.0f (%.2f%%)", prj.resource_share, pctShare);
 		StringBuilder sb = formatter.getStringBuilder();
-		pi.statusId = 0; // 0 = active
+		int statusId = 0; // 0 = active
 		if (prj.suspended_via_gui) {
 			sb.append(resources.getString(R.string.projectStatusSuspended));
-			pi.statusId |= ProjectInfo.SUSPENDED;
+			statusId |= ProjectInfo.SUSPENDED;
 		}
 		if (prj.dont_request_more_work) {
 			if (sb.length() > 0) sb.append(", ");
 			sb.append(resources.getString(R.string.projectStatusNNW));
-			pi.statusId |= ProjectInfo.NNW;
+			statusId |= ProjectInfo.NNW;
 		}
-		if (pi.statusId == 0) {
+		if (statusId == 0) {
 			// not suspended & new tasks allowed
 			sb.append(resources.getString(R.string.projectStatusActive));
 		}
-		pi.status = sb.toString();
-		return pi;
+		return new ProjectInfo(prj.master_url,
+				statusId,
+				resShare,
+				prj.getName(),
+				prj.user_name,
+				prj.team_name,
+				prj.user_total_credit,
+				prj.user_expavg_credit,
+				prj.host_total_credit,
+				prj.host_expavg_credit,
+				share,
+				sb.toString());
 	}
 }

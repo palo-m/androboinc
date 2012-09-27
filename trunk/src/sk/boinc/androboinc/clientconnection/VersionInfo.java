@@ -21,6 +21,11 @@ package sk.boinc.androboinc.clientconnection;
 
 
 public class VersionInfo {
-	public int    versNum;
-	public String version;
+	public final int    versNum;
+	public final String version;
+
+	public VersionInfo(int versNum, String version) {
+		this.versNum = versNum;
+		this.version = version;
+	}
 }

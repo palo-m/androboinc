@@ -19,9 +19,9 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.clientconnection.ClientOp;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler.ProjectOp;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
@@ -380,27 +380,27 @@ public class ProjectsActivity extends ListActivity implements ClientReplyReceive
 			return true;
 		case UPDATE:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.projectOperation(this, ClientOp.PROJECT_UPDATE, proj.masterUrl);
+				mConnectedClientHandler.projectOperation(this, ProjectOp.UPDATE, proj.masterUrl);
 			}
 			return true;
 		case SUSPEND:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.projectOperation(this, ClientOp.PROJECT_SUSPEND, proj.masterUrl);
+				mConnectedClientHandler.projectOperation(this, ProjectOp.SUSPEND, proj.masterUrl);
 			}
 			return true;
 		case RESUME:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.projectOperation(this, ClientOp.PROJECT_RESUME, proj.masterUrl);
+				mConnectedClientHandler.projectOperation(this, ProjectOp.RESUME, proj.masterUrl);
 			}
 			return true;
 		case NNW:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.projectOperation(this, ClientOp.PROJECT_NNW, proj.masterUrl);
+				mConnectedClientHandler.projectOperation(this, ProjectOp.NNW, proj.masterUrl);
 			}
 			return true;
 		case ANW:
 			if (mConnectedClientHandler != null) {
-				mConnectedClientHandler.projectOperation(this, ClientOp.PROJECT_ANW, proj.masterUrl);
+				mConnectedClientHandler.projectOperation(this, ProjectOp.ANW, proj.masterUrl);
 			}
 			return true;
 		}

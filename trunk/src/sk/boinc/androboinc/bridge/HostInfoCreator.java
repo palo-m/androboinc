@@ -26,8 +26,6 @@ import android.content.res.Resources;
 
 public class HostInfoCreator {
 	public static HostInfo create(final edu.berkeley.boinc.lite.HostInfo hostInfo, final Formatter formatter) {
-		HostInfo hi = new HostInfo();
-		hi.hostCpId = hostInfo.host_cpid;
 		StringBuilder sb = formatter.getStringBuilder();
 		Resources resources = formatter.getResources();
 		sb.append(
@@ -55,7 +53,6 @@ public class HostInfoCreator {
 						String.format("%.1f %s", hostInfo.d_total/1000000000, resources.getString(R.string.unitGB)),
 						String.format("%.1f %s", hostInfo.d_free/1000000000, resources.getString(R.string.unitGB)))
 				);
-		hi.htmlText = sb.toString();
-		return hi;
+		return new HostInfo(hostInfo.host_cpid, sb.toString());
 	}
 }

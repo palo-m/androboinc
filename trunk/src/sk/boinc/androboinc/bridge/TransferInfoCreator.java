@@ -32,38 +32,38 @@ public class TransferInfoCreator {
 	public static TransferInfo create(final Transfer transfer, final String projectName, final Formatter formatter) {
 		Resources resources = formatter.getResources();
 		StringBuilder sb = formatter.getStringBuilder();
-		TransferInfo ti = new TransferInfo();
-		ti.fileName = transfer.name;
-		ti.projectUrl = transfer.project_url;
-		ti.stateControl = transfer.status;
-		ti.project = projectName;
+		int stateControl = transfer.status;
 		float pctDone = (float)transfer.bytes_xferred / transfer.nbytes * 100;
 		if (pctDone > 100) pctDone = 100.0F;
-		ti.progInd = (int)pctDone;
-		ti.progress = String.format("%.3f%%", pctDone);
+		int progInd = (int)pctDone;
+		String progress = String.format("%.3f%%", pctDone);
 		sb.append(formatter.formatSize(transfer.bytes_xferred));
 		sb.append(" / ");
 		sb.append(formatter.formatSize(transfer.nbytes));
-		ti.size = sb.toString();
-		ti.elapsed = Formatter.formatElapsedTime(transfer.time_so_far);
-		ti.speed = formatter.formatSpeed(transfer.xfer_speed);
-		ti.stateControl = 0;
+		String size = sb.toString();
+		String elapsed = Formatter.formatElapsedTime(transfer.time_so_far);
+		String speed = formatter.formatSpeed(transfer.xfer_speed);
+		stateControl = 0;
 		sb.setLength(0);
+		if (transfer.time_so_far > 0) {
+			// This transfer already started
+			stateControl |= TransferInfo.STARTED;
+		}
 		if (transfer.next_request_time > (System.currentTimeMillis() / 1000)) {
 			// Suspended for some time
 			long toGo = (transfer.next_request_time - System.currentTimeMillis() / 1000);
 			sb.append(resources.getString(R.string.retryIn));
 			sb.append(" ");
 			sb.append(Formatter.formatElapsedTime(toGo));
-			ti.stateControl |= TransferInfo.SUSPENDED;
+			stateControl |= TransferInfo.SUSPENDED;
 		}
 		else if (transfer.status == ERR_GIVEUP_DOWNLOAD) {
 			sb.append(resources.getString(R.string.downloadFailed));
-			ti.stateControl |= TransferInfo.FAILED;
+			stateControl |= TransferInfo.FAILED;
 		}
 		else if (transfer.status == ERR_GIVEUP_UPLOAD) {
 			sb.append(resources.getString(R.string.uploadFailed));
-			ti.stateControl |= TransferInfo.FAILED;
+			stateControl |= TransferInfo.FAILED;
 		}
 		else if (transfer.xfer_active) {
 			// Currently transferring
@@ -73,7 +73,7 @@ public class TransferInfoCreator {
 			else {
 				sb.append(resources.getString(R.string.downloading));
 			}
-			ti.stateControl |= TransferInfo.RUNNING;
+			stateControl |= TransferInfo.RUNNING;
 		}
 		else {
 			// Not transferring
@@ -91,11 +91,16 @@ public class TransferInfoCreator {
 			sb.append(Formatter.formatElapsedTime(transfer.project_backoff));
 			sb.append(")");
 		}
-		ti.state = sb.toString();
-		if (transfer.time_so_far > 0) {
-			// This transfer already started
-			ti.stateControl |= TransferInfo.STARTED;
-		}
-		return ti;
+		String state = sb.toString();
+		return new TransferInfo(transfer.name,
+				transfer.project_url,
+				stateControl,
+				progInd,
+				projectName,
+				progress,
+				size,
+				elapsed,
+				speed,
+				state);
 	}
 }
