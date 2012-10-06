@@ -19,21 +19,20 @@
 
 package sk.boinc.androboinc.clientconnection;
 
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
+import sk.boinc.androboinc.util.ClientId;
 
-public interface ClientOp {
-	// Project operations - should be in sync with back-end class
-	public static final int PROJECT_UPDATE  = 1;
-	public static final int PROJECT_SUSPEND = 2;
-	public static final int PROJECT_RESUME  = 3;
-	public static final int PROJECT_NNW     = 4;
-	public static final int PROJECT_ANW     = 5;
 
-	// Result operations - should be in sync with back-end class
-	public static final int TASK_SUSPEND  = 1;
-	public static final int TASK_RESUME   = 2;
-	public static final int TASK_ABORT    = 3;
+public interface StatusNotifier {
 
-	// Transfer operations - should be in sync with back-end class
-	public static final int TRANSFER_RETRY  = 1;
-	public static final int TRANSFER_ABORT  = 2;
+	public void connected(ClientId host);
+
+	public void connectionNoFrontend(ClientId host);
+
+	public void disconnected(ClientId host, DisconnectCause cause);
+
+	public void disconnectedNoFrontend(ClientId host);
+	
+	public void cancelDisconnected();
+
 }

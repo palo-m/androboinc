@@ -32,93 +32,16 @@ import java.util.Vector;
 public interface ClientReplyReceiver {
 
 	/**
-	 * The indicator of the ongoing network operation
-	 */
-	public static enum ProgressInd {
-		/**
-		 * No indication
-		 */
-		NONE,
-
-		/**
-		 * Connection starting
-		 */
-		CONNECTING,
-
-		/**
-		 * Authorization in progress
-		 */
-		AUTHORIZATION_PENDING,
-
-		/**
-		 * Retrieving initial data
-		 */
-		INITIAL_DATA,
-
-		/**
-		 * Start of data transfer
-		 */
-		XFER_STARTED,
-
-		/**
-		 * Data transfer finished
-		 */
-		XFER_FINISHED
-	}
-
-	/**
-	 * The reason of client disconnection
-	 */
-	public static enum DisconnectCause {
-		/**
-		 * Expected disconnect (e.g. requested by user)
-		 */
-		NORMAL,
-
-		/**
-		 * Failure when initiating the connection (e.g. host unreachable)
-		 */
-		CONNECT_FAILURE,
-
-		/**
-		 * Authorization failure when connecting without password
-		 * (i.e. missing password)
-		 */
-		AUTH_FAIL_NO_PWD,
-
-		/**
-		 * Authorization failure when connecting with password
-		 * (i.e. wrong password supplied)
-		 */
-		AUTH_FAIL_WRONG_PWD,
-
-		/**
-		 * Connection failure during normal operation
-		 * (e.g. network failure, mobile/WiFi network unreachable or unexpected remote client shutdown)
-		 */
-		CONNECTION_DROP
-	}
-
-	/**
-	 * Indicates about the ongoing network connection operation
-	 * 
-	 * @param progress
-	 */
-	public abstract void clientConnectionProgress(ProgressInd progress);
-
-	/**
 	 * Indicates that the client is connected
 	 * 
-	 * @param clientVersion - the version of connected client
+	 * @param requestHandler - the handler which can be used for requests from now on
 	 */
-	public abstract void clientConnected(VersionInfo clientVersion);
+	public abstract void clientConnected(ClientRequestHandler requestHandler);
 
 	/**
 	 * Indicates that the network connection was disconnected
-	 * 
-	 * @param cause - the reason of disconnect
 	 */
-	public abstract void clientDisconnected(DisconnectCause cause);
+	public abstract void clientDisconnected();
 
 	/**
 	 * Notifies about current run-mode, network-mode and GPU-mode of a client

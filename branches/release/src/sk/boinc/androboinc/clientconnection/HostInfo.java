@@ -20,6 +20,11 @@
 package sk.boinc.androboinc.clientconnection;
 
 public class HostInfo {
-	public String hostCpId;      // HostInfo.host_cpid - Cross-project ID
-	public String htmlText;      // Text to display
+	public final String hostCpId;	// HostInfo.host_cpid - Cross-project ID
+	public final String htmlText;	// Text to display
+
+	public HostInfo(String hostCpId, String htmlText) {
+		this.hostCpId = hostCpId;
+		this.htmlText = htmlText;
+	}
 }

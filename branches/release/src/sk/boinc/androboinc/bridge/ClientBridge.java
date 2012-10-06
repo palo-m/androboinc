@@ -19,8 +19,11 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.bridge.AutoRefresh.RequestType;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.ProgressInd;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
@@ -28,14 +31,11 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.DisconnectCause;
-import sk.boinc.androboinc.clientconnection.ClientReplyReceiver.ProgressInd;
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.debug.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;
 import android.os.ConditionVariable;
-import android.os.Handler;
 import android.util.Log;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -51,8 +51,16 @@ import java.util.Vector;
 public class ClientBridge implements ClientRequestHandler {
 	private static final String TAG = "ClientBridge";
 
-	public class ReplyHandler extends Handler {
-		private static final String TAG = "ClientBridge.ReplyHandler";
+	public class BridgeReply {
+		private static final String TAG = "ClientBridge.BridgeReply";
+		
+		private ClientId mClientId = null;
+		
+		public void setClientId(ClientId clientId) {
+			if (mClientId == null) {
+				mClientId = clientId;
+			}
+		}
 
 		public void disconnecting() {
 			// The worker thread started disconnecting
@@ -64,239 +72,264 @@ public class ClientBridge implements ClientRequestHandler {
 			mWorker.stopThread(null);
 			// Clean up periodic updater as well, because no more periodic updates will be needed
 			mAutoRefresh.cleanup();
-			mAutoRefresh = null;
 		}
 
-		public void disconnected() {
-			if (Logging.DEBUG) Log.d(TAG, "disconnected()");
-			// The worker thread was cleared completely 
-			mWorker = null;
+		private void detachCallback(final DisconnectCause cause) {
 			if (mCallback != null) {
-				// We are ready to be deleted
-				// The callback can now delete reference to us, so this
-				// object can be garbage collected then
-				mCallback.bridgeDisconnected(ClientBridge.this);
+				// The callback can now delete reference to us
+				mCallback.bridgeDisconnected(mClientId, cause);
 				mCallback = null;
 			}
 		}
 
+		public void disconnected(final DisconnectCause cause) {
+			if (Logging.DEBUG) Log.d(TAG, "disconnected(cause=" + cause.toString() + ")");
+			// The worker thread was cleared completely 
+			mWorker = null;
+			mRemoteClient = null; // Should already be - here it is again for security
+			// We detach the callback, so it can delete reference to this object
+			// That should be the last reference, so this object could be garbage collected
+			detachCallback(cause);
+		}
+
+		public void delayedDisconnect(final DisconnectCause cause) {
+			if (Logging.DEBUG) Log.d(TAG, "delayedDisconnect(cause=" + cause.toString() + ")");
+			// The disconnection will continue autonomously;
+			// We must make sure nothing else is sent out
+			mReceivers.clear();
+			// The callback can now delete reference to us, but
+			// the worker thread continues running until disconnect is finished
+			// Worker thread still has the reference to us until disconnected() is called,
+			// so the garbage collection can be done afterwards
+			detachCallback(cause);
+		}
+
 		public void notifyProgress(ProgressInd progress) {
-			Iterator<ClientReplyReceiver> it = mObservers.iterator();
-			while (it.hasNext()) {
-				ClientReplyReceiver observer = it.next();
-				observer.clientConnectionProgress(progress);
+			if (mCallback != null) {
+				mCallback.bridgeConnectionProgress(progress);
 			}
 		}
 
 		public void notifyConnected(VersionInfo clientVersion) {
 			mConnected = true;
-			mRemoteClientVersion = clientVersion;
-			Iterator<ClientReplyReceiver> it = mObservers.iterator();
+			if (mCallback != null) {
+				mCallback.bridgeConnected(mClientId, clientVersion);
+			}
+			Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 			while (it.hasNext()) {
-				ClientReplyReceiver observer = it.next();
-				observer.clientConnected(mRemoteClientVersion);
+				ClientReplyReceiver receiver = it.next();
+				receiver.clientConnected(ClientBridge.this);
 			}
 		}
 
-		public void notifyDisconnected(DisconnectCause cause) {
+		public void notifyDisconnected() {
 			mConnected = false;
-			mRemoteClientVersion = null;
-			Iterator<ClientReplyReceiver> it = mObservers.iterator();
+			Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 			while (it.hasNext()) {
-				ClientReplyReceiver observer = it.next();
-				observer.clientDisconnected(cause);
-				if (Logging.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString()); // see below clearing of all observers
+				ClientReplyReceiver receiver = it.next();
+				receiver.clientDisconnected();
+				if (Logging.DEBUG) Log.d(TAG, "Detached receiver: " + receiver.toString()); // see below clearing of all receivers
 			}
-			mObservers.clear();
+			mReceivers.clear();
 		}
-
 
 		public void updatedClientMode(final ClientReplyReceiver callback, final ModeInfo modeInfo) {
 			if (callback == null) {
-				// No specific callback - broadcast to all observers
+				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mObservers.iterator();
+				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 				while (it.hasNext()) {
-					ClientReplyReceiver observer = it.next();
-					observer.updatedClientMode(modeInfo);
+					ClientReplyReceiver receiver = it.next();
+					receiver.updatedClientMode(modeInfo);
 				}
 				return;
 			}
-			// Check whether callback is still present in observers
-			if (mObservers.contains(callback)) {
+			// Check whether callback is still present in receivers
+			if (mReceivers.contains(callback)) {
 				// Observer is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedClientMode(modeInfo);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.CLIENT_MODE);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.CLIENT_MODE);
 				}
 			}
 		}
 
 		public void updatedHostInfo(final ClientReplyReceiver callback, final HostInfo hostInfo) {
-			// First, check whether callback is still present in observers
-			if (mObservers.contains(callback)) {
-				// Yes, observer is still present, so we can call it back with data
+			// First, check whether callback is still present in receivers
+			if (mReceivers.contains(callback)) {
+				// Yes, receiver is still present, so we can call it back with data
 				callback.updatedHostInfo(hostInfo);
 			}
 		}
 
 		public void updatedProjects(final ClientReplyReceiver callback, final Vector <ProjectInfo> projects) {
 			if (callback == null) {
-				// No specific callback - broadcast to all observers
+				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mObservers.iterator();
+				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 				while (it.hasNext()) {
-					ClientReplyReceiver observer = it.next();
-					observer.updatedProjects(projects);
+					ClientReplyReceiver receiver = it.next();
+					receiver.updatedProjects(projects);
 				}
 				return;
 			}
-			// Check whether callback is still present in observers
-			if (mObservers.contains(callback)) {
-				// Yes, observer is still present, so we can call it back with data
+			// Check whether callback is still present in receivers
+			if (mReceivers.contains(callback)) {
+				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedProjects(projects);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.PROJECTS);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.PROJECTS);
 				}
 			}
 		}
 
 		public void updatedTasks(final ClientReplyReceiver callback, final Vector <TaskInfo> tasks) {
 			if (callback == null) {
-				// No specific callback - broadcast to all observers
+				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mObservers.iterator();
+				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 				while (it.hasNext()) {
-					ClientReplyReceiver observer = it.next();
-					observer.updatedTasks(tasks);
+					ClientReplyReceiver receiver = it.next();
+					receiver.updatedTasks(tasks);
 				}
 				return;
 			}
-			// Check whether callback is still present in observers
-			if (mObservers.contains(callback)) {
-				// Yes, observer is still present, so we can call it back with data
+			// Check whether callback is still present in receivers
+			if (mReceivers.contains(callback)) {
+				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedTasks(tasks);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.TASKS);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.TASKS);
 				}
 			}
 		}
 
 		public void updatedTransfers(final ClientReplyReceiver callback, final Vector <TransferInfo> transfers) {
 			if (callback == null) {
-				// No specific callback - broadcast to all observers
+				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mObservers.iterator();
+				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 				while (it.hasNext()) {
-					ClientReplyReceiver observer = it.next();
-					observer.updatedTransfers(transfers);
+					ClientReplyReceiver receiver = it.next();
+					receiver.updatedTransfers(transfers);
 				}
 				return;
 			}
-			// Check whether callback is still present in observers
-			if (mObservers.contains(callback)) {
-				// Yes, observer is still present, so we can call it back with data
+			// Check whether callback is still present in receivers
+			if (mReceivers.contains(callback)) {
+				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedTransfers(transfers);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.TRANSFERS);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.TRANSFERS);
 				}
 			}
 		}
 
 		public void updatedMessages(final ClientReplyReceiver callback, final Vector <MessageInfo> messages) {
 			if (callback == null) {
-				// No specific callback - broadcast to all observers
+				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mObservers.iterator();
+				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
 				while (it.hasNext()) {
-					ClientReplyReceiver observer = it.next();
-					observer.updatedMessages(messages);
+					ClientReplyReceiver receiver = it.next();
+					receiver.updatedMessages(messages);
 				}
 				return;
 			}
-			// Check whether callback is still present in observers
-			if (mObservers.contains(callback)) {
-				// Yes, observer is still present, so we can call it back with data
+			// Check whether callback is still present in receivers
+			if (mReceivers.contains(callback)) {
+				// Yes, receiver is still present, so we can call it back with data
 				boolean periodicAllowed = callback.updatedMessages(messages);
 				if (periodicAllowed) {
-					mAutoRefresh.scheduleAutomaticRefresh(callback, AutoRefresh.MESSAGES);
+					mAutoRefresh.scheduleAutomaticRefresh(callback, RequestType.MESSAGES);
 				}
 			}
 		}
 	}
 
-	private final ReplyHandler mReplyHandler = new ReplyHandler();
+	private final BridgeReply mBridgeReply = new BridgeReply();
 
-	private Set<ClientReplyReceiver> mObservers = new HashSet<ClientReplyReceiver>();
+	private Set<ClientReplyReceiver> mReceivers = new HashSet<ClientReplyReceiver>();
 	private boolean mConnected = false;
 
-	private ClientBridgeCallback mCallback = null;
-	private ClientBridgeWorkerThread mWorker = null;
+	private ClientBridgeCallback mCallback;
+	private ClientBridgeWorkerThread mWorker;
 
 	private ClientId mRemoteClient = null;
-	private VersionInfo mRemoteClientVersion = null;
 
-	private AutoRefresh mAutoRefresh = null;
+	private final AutoRefresh mAutoRefresh;
 
 	/**
 	 * Constructs a new <code>ClientBridge</code> and starts worker thread
 	 * 
 	 * @throws RuntimeException if worker thread cannot start in a timely fashion
 	 */
-	public ClientBridge(ClientBridgeCallback callback, NetStats netStats) throws RuntimeException {
+	public ClientBridge(ClientBridgeCallback callback, Context context, NetStats netStats) throws RuntimeException {
 		mCallback = callback;
 		if (Logging.DEBUG) Log.d(TAG, "Starting ClientBridgeWorkerThread");
 		ConditionVariable lock = new ConditionVariable(false);
-		Context context = (Context)callback;
 		mAutoRefresh = new AutoRefresh(context, this);
-		mWorker = new ClientBridgeWorkerThread(lock, mReplyHandler, context, netStats);
+		mWorker = new ClientBridgeWorkerThread(lock, mBridgeReply, context, netStats);
 		mWorker.start();
 		boolean runningOk = lock.block(2000); // Locking until new thread fully runs
 		if (!runningOk) {
 			// Too long time waiting for worker thread to be on-line - cancel it
-			if (Logging.ERROR) Log.e(TAG, "ClientBridgeWorkerThread did not start in 1 second");
+			if (Logging.ERROR) Log.e(TAG, "ClientBridgeWorkerThread did not start in 2 seconds");
 			throw new RuntimeException("Worker thread cannot start");
 		}
 		if (Logging.DEBUG) Log.d(TAG, "ClientClientBridgeWorkerThread started successfully");
 	}
 
-	@Override
-	public void registerStatusObserver(ClientReplyReceiver observer) {
-		// Another observer wants to be notified - add him into collection of observers
-		mObservers.add(observer);
-		if (Logging.DEBUG) Log.d(TAG, "Attached new observer: " + observer.toString());
+	public void cleanup() {
+		// We are cleaning up - no more callback should be done afterwards
+		mCallback = null;
+		// We also trigger notification now (before real disconnect) which will
+		// also clear the data receivers. So after real disconnect is finished,
+		// there will be no further notifications sent
+		mBridgeReply.notifyDisconnected();
+		disconnect();
+	}
+
+	public void registerDataReceiver(ClientReplyReceiver receiver) {
+		// Another receiver wants to be notified - add him into collection of receivers
+		mReceivers.add(receiver);
+		if (Logging.DEBUG) Log.d(TAG, "Attached new receiver: " + receiver.toString());
 		if (mConnected) {
-			// New observer is attached while we are already connected
-			// Notify new observer that we are connected, so it can fetch data
-			observer.clientConnected(mRemoteClientVersion);
+			// New receiver is attached while we are already connected
+			// Notify new receiver that we are connected, so it can fetch data
+			receiver.clientConnected(this);
 		}
 	}
 
-	@Override
-	public void unregisterStatusObserver(ClientReplyReceiver observer) {
+	public void unregisterDataReceiver(ClientReplyReceiver receiver) {
 		// Observer does not want to receive notifications anymore - remove him
-		mObservers.remove(observer);
+		mReceivers.remove(receiver);
 		if (mConnected) {
-			// The observer could have automatic refresh pending
+			// The receiver could have automatic refresh pending
 			// Remove it now
-			mAutoRefresh.unscheduleAutomaticRefresh(observer);
+			mAutoRefresh.unscheduleAutomaticRefresh(receiver);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString());
+		if (Logging.DEBUG) Log.d(TAG, "Detached receiver: " + receiver.toString());
 	}
 
-	@Override
 	public void connect(final ClientId remoteClient, final boolean retrieveInitialData) {
 		if (mRemoteClient != null) {
 			// already connected
 			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " while already connected to: " + mRemoteClient.getNickname());
 			return;
 		}
+		if (mWorker == null) {
+			// After disconnect - it cannot be reused
+			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " after being cleaned up");
+			return;
+		}
+		mBridgeReply.setClientId(remoteClient); // For bridge callback
 		mRemoteClient = remoteClient;
 		mWorker.connect(remoteClient, retrieveInitialData);
 	}
 
-	@Override
 	public void disconnect() {
+		if (Logging.DEBUG) Log.d(TAG, "disconnect()");
 		if (mRemoteClient == null) return; // not connected
 		mWorker.disconnect();
 		mRemoteClient = null; // This will prevent further triggers towards worker thread
@@ -389,20 +422,20 @@ public class ClientBridge implements ClientRequestHandler {
 	}
 
 	@Override
-	public void projectOperation(final ClientReplyReceiver callback, final int operation, final String projectUrl) {
+	public void projectOperation(final ClientReplyReceiver callback, final ProjectOp operation, final String projectUrl) {
 		if (mRemoteClient == null) return; // not connected
-		mWorker.projectOperation(callback, operation, projectUrl);
+		mWorker.projectOperation(callback, operation.opCode(), projectUrl);
 	}
 
 	@Override
-	public void taskOperation(final ClientReplyReceiver callback, final int operation, final String projectUrl, final String taskName) {
+	public void taskOperation(final ClientReplyReceiver callback, final TaskOp operation, final String projectUrl, final String taskName) {
 		if (mRemoteClient == null) return; // not connected
-		mWorker.taskOperation(callback, operation, projectUrl, taskName);
+		mWorker.taskOperation(callback, operation.opCode(), projectUrl, taskName);
 	}
 
 	@Override
-	public void transferOperation(final ClientReplyReceiver callback, final int operation, final String projectUrl, final String fileName) {
+	public void transferOperation(final ClientReplyReceiver callback, final TransferOp operation, final String projectUrl, final String fileName) {
 		if (mRemoteClient == null) return; // not connected
-		mWorker.transferOperation(callback, operation, projectUrl, fileName);
+		mWorker.transferOperation(callback, operation.opCode(), projectUrl, fileName);
 	}
 }

@@ -30,69 +30,83 @@ import edu.berkeley.boinc.lite.Workunit;
 
 public class TaskInfoCreator {
 	public static TaskInfo create(final Result result, final Workunit workunit, final ProjectInfo pi, final App app, final Formatter formatter) {
-		TaskInfo ti = new TaskInfo();
-		ti.taskName = result.name;
-		ti.projectUrl = result.project_url;
-		ti.project = pi.project;
 		int appVersion = result.version_num;
 		if (appVersion == 0) {
 			// Older versions of client do not contain this information in Result,
 			// but it is present in Workunit
 			appVersion = workunit.version_num;
 		}
-		ti.application = String.format("%s %.2f", app.getName(), appVersion/100.0);
-		update(ti, result, formatter);
-		return ti;
+		String application = String.format("%s %.2f", app.getName(), appVersion/100.0);
+		String deadline = formatter.formatDate(result.report_deadline);
+		TaskInfo skelTaskInfo = new TaskInfo(result.name,
+				result.project_url,
+				0,			// dummy stateControl
+				0,			// dummy progInd
+				result.report_deadline,
+				pi.project,
+				application,
+				null,		// dummy elapsed
+				null,		// dummy progress
+				null,		// dummy toCompletion
+				deadline,
+				null,		// dummy virtMemSize
+				null,		// dummy workSetSize
+				null,		// dummy cpuTime
+				null,		// dummy chckpntTime
+				null,		// dummy resources
+				null		// dummy state
+				);
+		return update(skelTaskInfo, result, formatter);
 	}
 
-	public static void update(TaskInfo ti, Result result, final Formatter formatter) {
+	public static TaskInfo update(TaskInfo old, Result result, final Formatter formatter) {
 		Resources resources = formatter.getResources();
-		ti.state = formatTaskState(result.state, result.active_task_state, resources);
-		ti.stateControl = 0;
+		String state = formatTaskState(result.state, result.active_task_state, resources);
+		int stateControl = 0;
 		if (result.project_suspended_via_gui) {
-			ti.stateControl = TaskInfo.SUSPENDED;
-			ti.state = resources.getString(R.string.projectSuspendedByUser);
+			stateControl = TaskInfo.SUSPENDED;
+			state = resources.getString(R.string.projectSuspendedByUser);
 		}
 		if (result.suspended_via_gui) {
-			ti.stateControl = TaskInfo.SUSPENDED;
-			ti.state = resources.getString(R.string.taskSuspendedByUser);
+			stateControl = TaskInfo.SUSPENDED;
+			state = resources.getString(R.string.taskSuspendedByUser);
 		}
-		if (ti.stateControl == 0) {
+		if (stateControl == 0) {
 			// Not suspended - we retrieve detailed state
 			switch (result.state) {
 			case 0:
 			case 1:
-				ti.stateControl = TaskInfo.DOWNLOADING;
+				stateControl = TaskInfo.DOWNLOADING;
 				break;
 			case 2:
 				if (result.active_task_state == 1) {
 					// Running right now
-					ti.stateControl = TaskInfo.RUNNING;
+					stateControl = TaskInfo.RUNNING;
 				}
 				else if ( (result.active_task_state != 0) || (result.fraction_done > 0.0) ) {
 					// Was already running before, but now it's not running
-					ti.stateControl = TaskInfo.PREEMPTED;
+					stateControl = TaskInfo.PREEMPTED;
 				}
 				else if (result.active_task_state == 0) {
 					// Ready to start (was not running yet)
-					ti.stateControl = TaskInfo.READY_TO_START;
+					stateControl = TaskInfo.READY_TO_START;
 				}
 				else if (result.active_task_state == 5) {
 					// Aborted
-					ti.stateControl = TaskInfo.ABORTED;
+					stateControl = TaskInfo.ABORTED;
 				}
 				break;
 			case 3:
-				ti.stateControl = TaskInfo.ERROR;
+				stateControl = TaskInfo.ERROR;
 				break;
 			case 4:
-				ti.stateControl = TaskInfo.UPLOADING;
+				stateControl = TaskInfo.UPLOADING;
 				break;
 			case 5:
-				ti.stateControl = TaskInfo.READY_TO_REPORT;
+				stateControl = TaskInfo.READY_TO_REPORT;
 				break;
 			case 6:
-				ti.stateControl = TaskInfo.ABORTED;
+				stateControl = TaskInfo.ABORTED;
 				break;
 			}
 		}
@@ -117,20 +131,39 @@ public class TaskInfoCreator {
 				elapsedTime = (long)result.current_cpu_time;
 			}
 		}
-		ti.elapsed = Formatter.formatElapsedTime(elapsedTime);
-		ti.progInd = (int)pctDone;
-		ti.progress = String.format("%.3f%%", pctDone);
-		ti.toCompletion = Formatter.formatElapsedTime((long)result.estimated_cpu_time_remaining);
-		ti.deadline = formatter.formatDate(result.report_deadline);
-		ti.deadlineNum = result.report_deadline;
+		String elapsed = Formatter.formatElapsedTime(elapsedTime);
+		int progInd = (int)pctDone;
+		String progress = String.format("%.3f%%", pctDone);
+		String toCompletion = Formatter.formatElapsedTime((long)result.estimated_cpu_time_remaining);
+		String virtMemSize = null;
+		String workSetSize = null;
+		String cpuTime = null;
+		String chckpntTime = null;
 		if (result.fraction_done > 0.0) {
 			// Task is running/preempted, probably using some resources
-			ti.virtMemSize = formatter.formatBinSize((long)result.swap_size);
-			ti.workSetSize = formatter.formatSize((long)result.working_set_size_smoothed);
-			ti.cpuTime = Formatter.formatElapsedTime((long)result.current_cpu_time);
-			ti.chckpntTime = Formatter.formatElapsedTime((long)result.checkpoint_cpu_time);
+			virtMemSize = formatter.formatBinSize((long)result.swap_size);
+			workSetSize = formatter.formatSize((long)result.working_set_size_smoothed);
+			cpuTime = Formatter.formatElapsedTime((long)result.current_cpu_time);
+			chckpntTime = Formatter.formatElapsedTime((long)result.checkpoint_cpu_time);
 		}
-		ti.resources = result.resources;
+		return new TaskInfo(old.taskName,
+				old.projectUrl,
+				stateControl,
+				progInd,
+				old.deadlineNum,
+				old.project,
+				old.application,
+				elapsed,
+				progress,
+				toCompletion,
+				old.deadline,
+				virtMemSize,
+				workSetSize,
+				cpuTime,
+				chckpntTime,
+				result.resources,
+				state
+				);
 	}
 
 	private static final String formatTaskState(int state, int activeTaskState, final Resources resources) {

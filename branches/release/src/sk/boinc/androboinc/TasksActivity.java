@@ -19,18 +19,17 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.clientconnection.ClientOp;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler.TaskOp;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
 import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
-import sk.boinc.androboinc.clientconnection.VersionInfo;
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
-import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -80,7 +79,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 
 	private ScreenOrientationHandler mScreenOrientation;
 
-	private ClientId mConnectedClient = null;
+	private ClientRequestHandler mConnectedClientHandler = null;
 	private boolean mRequestUpdates = false;
 	private boolean mViewUpdatesAllowed = false;
 	private boolean mViewDirty = false;
@@ -176,9 +175,13 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 				break;
 			case TaskInfo.DOWNLOADING:
 			case TaskInfo.UPLOADING:
-				// Setting progress to 0 will let the secondary progress to display itself (which is always set to 100)
-				task.progInd = 0;
-				// no break, we continue following case (READY_TO_REPORT)
+				progressWaiting.setVisibility(View.GONE);
+				progressSuspended.setVisibility(View.GONE);
+				progressRunning.setVisibility(View.GONE);
+				// Using progress 0 will let the secondary progress to display itself (which is always set to 100)
+				progressFinished.setProgress(0);
+				progressFinished.setVisibility(View.VISIBLE);
+				break;
 			case TaskInfo.READY_TO_REPORT:
 				// Downloading, Uploading or Ready to report
 				progressWaiting.setVisibility(View.GONE);
@@ -225,12 +228,13 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
 			if (Logging.DEBUG) Log.d(TAG, "onServiceConnected()");
-			mConnectionManager.registerStatusObserver(TasksActivity.this);
+			mConnectionManager.getConnectionManager().registerDataReceiver(TasksActivity.this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			mConnectionManager = null;
+			mConnectedClientHandler = null;
 			// This should not happen normally, because it's local service 
 			// running in the same process...
 			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
@@ -272,10 +276,10 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 		super.onResume();
 		mScreenOrientation.setOrientation();
 		mRequestUpdates = true;
-		if (mConnectedClient != null) {
+		if (mConnectedClientHandler != null) {
 			// We are connected right now, request fresh data
 			if (Logging.DEBUG) Log.d(TAG, "onResume() - Starting refresh of data");
-			mConnectionManager.updateTasks(this);
+			mConnectedClientHandler.updateTasks(this);
 		}
 		mViewUpdatesAllowed = true;
 		if (mViewDirty) {
@@ -295,8 +299,8 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 		mRequestUpdates = false;
 		mViewUpdatesAllowed = false;
 		// Also remove possibly scheduled automatic updates
-		if (mConnectionManager != null) {
-			mConnectionManager.cancelScheduledUpdates(this);
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.cancelScheduledUpdates(this);
 		}
 	}
 
@@ -304,8 +308,8 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	protected void onDestroy() {
 		super.onDestroy();
 		if (mConnectionManager != null) {
-			mConnectionManager.unregisterStatusObserver(this);
-			mConnectedClient = null;
+			mConnectionManager.getConnectionManager().unregisterDataReceiver(this);
+			mConnectedClientHandler = null;
 		}
 		doUnbindService();
 		mScreenOrientation = null;
@@ -338,7 +342,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		MenuItem item = menu.findItem(R.id.menuRefresh);
-		item.setVisible(mConnectedClient != null);
+		item.setVisible(mConnectedClientHandler != null);
 		return true;
 	}
 
@@ -346,7 +350,9 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuRefresh:
-			mConnectionManager.updateTasks(this);
+			if (mConnectedClientHandler != null) {
+				mConnectedClientHandler.updateTasks(this);
+			}
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -370,7 +376,9 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	    			new DialogInterface.OnClickListener() {
 	    				public void onClick(DialogInterface dialog, int whichButton) {
 	    					TaskInfo task = (TaskInfo)getListAdapter().getItem(mPosition);
-	    					mConnectionManager.taskOperation(TasksActivity.this, ClientOp.TASK_ABORT, task.projectUrl, task.taskName);
+	    					if (mConnectedClientHandler != null) {
+	    						mConnectedClientHandler.taskOperation(TasksActivity.this, TaskOp.ABORT, task.projectUrl, task.taskName);
+	    					}
 	    				}
 	    			})
 	    		.setNegativeButton(R.string.cancel, null)
@@ -432,12 +440,14 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 			showDialog(DIALOG_DETAILS);
 			return true;
 		case SUSPEND:
-
-			mConnectionManager.taskOperation(this, ClientOp.TASK_SUSPEND, task.projectUrl, task.taskName);
+			if (mConnectedClientHandler != null) {
+				mConnectedClientHandler.taskOperation(this, TaskOp.SUSPEND, task.projectUrl, task.taskName);
+			}
 			return true;
 		case RESUME:
-
-			mConnectionManager.taskOperation(this, ClientOp.TASK_RESUME, task.projectUrl, task.taskName);
+			if (mConnectedClientHandler != null) {
+				mConnectedClientHandler.taskOperation(this, TaskOp.RESUME, task.projectUrl, task.taskName);
+			}
 			return true;
 		case ABORT:
 			mPosition = info.position;
@@ -449,27 +459,21 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 
 
 	@Override
-	public void clientConnectionProgress(ProgressInd progress) {
-		// We don't care about progress indicator in this activity, just ignore this
-	}
-
-	@Override
-	public void clientConnected(VersionInfo clientVersion) {
-		mConnectedClient = mConnectionManager.getClientId();
-		if (mConnectedClient != null) {
+	public void clientConnected(ClientRequestHandler requestHandler) {
+		if (Logging.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
+		mConnectedClientHandler = requestHandler;
+		if (mConnectedClientHandler != null) {
 			// Connected client is retrieved
-			if (Logging.DEBUG) Log.d(TAG, "Client is connected");
 			if (mRequestUpdates) {
-				// Request fresh data
-				mConnectionManager.updateTasks(this);
+				mConnectedClientHandler.updateTasks(this);
 			}
 		}
 	}
 
 	@Override
-	public void clientDisconnected(DisconnectCause cause) {
-		if (Logging.DEBUG) Log.d(TAG, "Client is disconnected");
-		mConnectedClient = null;
+	public void clientDisconnected() {
+		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected()");
+		mConnectedClientHandler = null;
 		mTasks.clear();
 		((BaseAdapter)getListAdapter()).notifyDataSetChanged();
 		mViewDirty = false;

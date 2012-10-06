@@ -17,10 +17,10 @@
  * 
  */
 
-package sk.boinc.androboinc.service;
+package sk.boinc.androboinc.clientconnection;
 
 public interface ConnectivityListener {
-	public abstract void onConnectivityLost();
-	public abstract void onConnectivityRestored(int connectivityType);
+	public abstract void onConnectivityAvailable(int connectivityType);
+	public abstract void onConnectivityUnavailable();
 	public abstract void onConnectivityChangedType(int connectivityType);
 }

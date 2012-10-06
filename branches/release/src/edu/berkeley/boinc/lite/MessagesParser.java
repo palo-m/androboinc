@@ -54,34 +54,49 @@ public class MessagesParser extends BaseParser {
 	public static Vector<Message> parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		MessagesParser parser = new MessagesParser();
 		try {
+			// Try to parse as received first, in a hope it is valid XML
 			Xml.parse(rpcResult, parser);
 			return parser.getMessages();
 		}
-		catch (SAXException e) {
-			if (Logging.DEBUG) {
-				SAXParseException details = (SAXParseException)e;
-				Log.d(TAG, "Malformed XML: sytemId=" + details.getSystemId() + 
-						", publicId=" + details.getPublicId() + 
-						", lineNumber=" + details.getLineNumber() + 
-						", columnNumber=" + details.getColumnNumber()
-					);
-				BufferedReader br = new BufferedReader(new StringReader(rpcResult));
-				String line;
-				int lineNum = 0;
-				try {
-					int errLine = details.getLineNumber();
-					while ((line = br.readLine()) != null) {
-						++lineNum;
-						if ( (lineNum >= (errLine - 5)) && (lineNum <= (errLine + 5))) {
-							Log.d("Malformed XML", "line " + lineNum + ": " + line);
+		catch (SAXException dummy) {
+			// BOINC is known to not escape message body, resulting in invalid XML.
+			// Typical non-escaped message is:
+			// "A new version of BOINC is available. <a href=http://boinc.berkeley.edu/download.php>Download it.</a>"
+			// Another example of invalid XML is produced when using the gui_rpc_debug log-flag
+			// So, we try to sanitize the body of messages by escaping XML special characters
+			// and then we try parsing the sanitized data
+			try {
+				String sanitized = XmlSanitizer.sanitize(rpcResult, "body");
+				Xml.parse(sanitized, parser);
+				return parser.getMessages();
+			}
+			catch (SAXException e) {
+				// Still some trouble, even after sanitizing the message bodies
+				if (Logging.DEBUG) {
+					SAXParseException details = (SAXParseException)e;
+					Log.d(TAG, "Malformed XML: sytemId=" + details.getSystemId() + 
+							", publicId=" + details.getPublicId() + 
+							", lineNumber=" + details.getLineNumber() + 
+							", columnNumber=" + details.getColumnNumber()
+							);
+					BufferedReader br = new BufferedReader(new StringReader(rpcResult));
+					String line;
+					int lineNum = 0;
+					try {
+						int errLine = details.getLineNumber();
+						while ((line = br.readLine()) != null) {
+							++lineNum;
+							if ( (lineNum >= (errLine - 5)) && (lineNum <= (errLine + 5))) {
+								Log.d("Malformed XML", "line " + lineNum + ": " + line);
+							}
 						}
 					}
+					catch (IOException ioe) {
+					}
+					Log.d(TAG, "Decoded " + parser.getMessages().size() + " messages");
 				}
-				catch (IOException ioe) {
-				}
-				Log.d(TAG, "Decoded " + parser.getMessages().size() + " messages");
+				throw new InvalidDataReceivedException("Malformed XML while parsing <msgs>", e);
 			}
-			throw new InvalidDataReceivedException("Malformed XML while parsing <msgs>", e);
 		}
 	}
 

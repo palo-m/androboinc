@@ -20,33 +20,172 @@
 package sk.boinc.androboinc.bridge;
 
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
+import sk.boinc.androboinc.clientconnection.HostInfo;
+import sk.boinc.androboinc.clientconnection.MessageInfo;
+import sk.boinc.androboinc.clientconnection.ModeInfo;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.ProgressInd;
+import sk.boinc.androboinc.clientconnection.ProjectInfo;
+import sk.boinc.androboinc.clientconnection.TaskInfo;
+import sk.boinc.androboinc.clientconnection.TransferInfo;
+import sk.boinc.androboinc.clientconnection.VersionInfo;
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.debug.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;
 import android.os.ConditionVariable;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import java.util.Vector;
 
 
+/**
+ * This class handles creation of worker thread as well as posting
+ * of requests from requesting thread to the worker thread
+ * @see ClientBridgeWorkerThread.ReplyHandler
+ */
 public class ClientBridgeWorkerThread extends Thread {
 	private static final String TAG = "ClientBridgeWorkerThread";
 
+	/**
+	 * This class is used to switch from worker thread back to requesting thread
+	 * so the data received from network by worker thread are posted
+	 * back to UI thread
+	 */
+	public class ReplyHandler {
+		private Handler mBridgeReplyHandler = new Handler();
+
+		public void disconnecting() {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.disconnecting();
+				}
+			});
+		}
+
+		public void disconnected(final DisconnectCause cause) {
+			// This is final call - the cleanup() of ClientBridgeWorkerHandler finished
+			final ClientBridge.BridgeReply moribund = mBridgeReply;
+			mBridgeReply = null;
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					moribund.disconnected(cause);
+				}
+			});
+		}
+
+		public void delayedDisconnect(final DisconnectCause cause) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.delayedDisconnect(cause);
+				}
+			});
+		}
+
+		public void notifyProgress(final ProgressInd progress) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.notifyProgress(progress);
+				}
+			});
+		}
+
+		public void notifyConnected(final VersionInfo clientVersion) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.notifyConnected(clientVersion);
+				}
+			});
+		}
+
+		public void notifyDisconnected() {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.notifyDisconnected();
+				}
+			});
+		}
+
+		public void updatedClientMode(final ClientReplyReceiver callback, final ModeInfo modeInfo) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.updatedClientMode(callback, modeInfo);
+				}
+			});
+		}
+
+		public void updatedHostInfo(final ClientReplyReceiver callback, final HostInfo hostInfo) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.updatedHostInfo(callback, hostInfo);
+				}
+			});
+		}
+
+		public void updatedProjects(final ClientReplyReceiver callback, final Vector <ProjectInfo> projects) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.updatedProjects(callback, projects);
+				}
+			});
+		}
+
+		public void updatedTasks(final ClientReplyReceiver callback, final Vector <TaskInfo> tasks) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.updatedTasks(callback, tasks);
+				}
+			});
+		}
+
+		public void updatedTransfers(final ClientReplyReceiver callback, final Vector <TransferInfo> transfers) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.updatedTransfers(callback, transfers);
+				}
+			});
+		}
+
+		public void updatedMessages(final ClientReplyReceiver callback, final Vector <MessageInfo> messages) {
+			mBridgeReplyHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mBridgeReply.updatedMessages(callback, messages);
+				}
+			});
+		}
+	}
+
+	private ReplyHandler mReplyHandler;
 	private ClientBridgeWorkerHandler mHandler;
 	private ConditionVariable mLock;
-	private ClientBridge.ReplyHandler mReplyHandler;
+	private ClientBridge.BridgeReply mBridgeReply;
 	private Context mContext;
 	private NetStats mNetStats;
 
 	public ClientBridgeWorkerThread(
 			ConditionVariable lock, 
-			final ClientBridge.ReplyHandler replyHandler, 
+			final ClientBridge.BridgeReply bridgeReply, 
 			final Context context, 
 			final NetStats netStats) {
+		if (bridgeReply == null) throw new NullPointerException();
 		mLock = lock;
-		mReplyHandler = replyHandler;
+		mBridgeReply = bridgeReply;
 		mContext = context;
 		mNetStats = netStats;
+		mReplyHandler = new ReplyHandler(); // Create in UI thread
 		setDaemon(true);
 	}
 
@@ -69,7 +208,6 @@ public class ClientBridgeWorkerThread extends Thread {
 		}
 
 		// We passed the references to handler, we don't need them here anymore
-		mReplyHandler = null;
 		mContext = null;
 		mNetStats = null;
 
@@ -109,14 +247,12 @@ public class ClientBridgeWorkerThread extends Thread {
 	}
 
 	public void disconnect() {
-		// Run immediately NOW (from UI thread), 
-		// because worker thread can be busy with some time-consuming task
+		// Run immediately (from UI thread) - NOW!
 		mHandler.disconnect();
-		// Triggers for worker thread will be internally arranged by mHandler
 	}
 
 	public void cancelPendingUpdates(final ClientReplyReceiver callback) {
-		// Run immediately NOW (from UI thread)
+		// Run immediately (from UI thread) - NOW!
 		mHandler.cancelPendingUpdates(callback);
 	}
 

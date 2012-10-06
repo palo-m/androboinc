@@ -19,6 +19,7 @@
 
 package sk.boinc.androboinc.service;
 
+import sk.boinc.androboinc.clientconnection.ConnectivityListener;
 import sk.boinc.androboinc.debug.Logging;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -37,6 +38,7 @@ public class ConnectivityStatus extends BroadcastReceiver {
 	private int mConnectivityType = ConnectivityManager.TYPE_MOBILE;
 
 	public ConnectivityStatus(Context context, ConnectivityListener connectivityListener) {
+		if (connectivityListener == null) throw new NullPointerException();
 		// Store callback to forward notifications about connectivity change
 		mConnectivityListener = connectivityListener;
 		// Register ourselves as receiver of broadcasts when connectivity changes
@@ -50,11 +52,19 @@ public class ConnectivityStatus extends BroadcastReceiver {
 			mConnectivityType = ni.getType();
 		}
 		if (Logging.DEBUG) Log.d(TAG, "Created, registered as receiver, connected=" + mConnected);
+		if (mConnected) {
+			mConnectivityListener.onConnectivityAvailable(mConnectivityType);
+		}
+		else {
+			mConnectivityListener.onConnectivityUnavailable();
+		}
 	}
 
 	public void cleanup() {
 		mContext.unregisterReceiver(this);
 		if (Logging.DEBUG) Log.d(TAG, "cleanup(), unregistered receiver");
+		// No more calls of onReceive(), so we do not need reference to ConnectivityListener
+		mConnectivityListener = null;
 	}
 
 	@Override
@@ -72,17 +82,18 @@ public class ConnectivityStatus extends BroadcastReceiver {
 			else {
 				// NetworkInfo not available - We are not connected then...
 				mConnected = false;
+				mConnectivityType = ConnectivityManager.TYPE_MOBILE;
 				if (Logging.DEBUG) Log.d(TAG, "onReceive() - NOT connected (no NetworkInfo)");
 			}
 			if (previouslyConnected && !mConnected) {
 				// Lost connection right now
 				if (Logging.DEBUG) Log.d(TAG, "Connectivity lost");
-				mConnectivityListener.onConnectivityLost();
+				mConnectivityListener.onConnectivityUnavailable();
 			}
 			else if (!previouslyConnected && mConnected) {
 				// Connection available now
 				if (Logging.DEBUG) Log.d(TAG, "Connectivity restored, type " + mConnectivityType);
-				mConnectivityListener.onConnectivityRestored(mConnectivityType);
+				mConnectivityListener.onConnectivityAvailable(mConnectivityType);
 			}
 			else if (previouslyConnected && mConnected) {
 				// It was connected before and it is connected now
@@ -98,13 +109,5 @@ public class ConnectivityStatus extends BroadcastReceiver {
 			if (Logging.ERROR) Log.e(TAG, "Unexpected action received: " + action);
 			return;
 		}
-	}
-
-	public final boolean isConnected() {
-		return mConnected;
-	}
-
-	public final int getConnectivityType() {
-		return mConnectivityType;
 	}
 }

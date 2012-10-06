@@ -19,18 +19,17 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.clientconnection.ClientOp;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler.TransferOp;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
 import sk.boinc.androboinc.clientconnection.ModeInfo;
 import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
-import sk.boinc.androboinc.clientconnection.VersionInfo;
 import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
-import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -75,6 +74,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 
 	private ScreenOrientationHandler mScreenOrientation;
 
+	private ClientRequestHandler mConnectedClientHandler = null;
 	private boolean mRequestUpdates = false;
 	private boolean mViewUpdatesAllowed = false;
 	private boolean mViewDirty = false;
@@ -192,19 +192,19 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 
 
 	private ConnectionManagerService mConnectionManager = null;
-	private ClientId mConnectedClient = null;
 
 	private ServiceConnection mServiceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
 			if (Logging.DEBUG) { Log.d(TAG, "onServiceConnected()"); }
-			mConnectionManager.registerStatusObserver(TransfersActivity.this);
+			mConnectionManager.getConnectionManager().registerDataReceiver(TransfersActivity.this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			mConnectionManager = null;
+			mConnectedClientHandler = null;
 			// This should not happen normally, because it's local service 
 			// running in the same process...
 			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
@@ -246,10 +246,10 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		super.onResume();
 		mScreenOrientation.setOrientation();
 		mRequestUpdates = true;
-		if (mConnectedClient != null) {
+		if (mConnectedClientHandler != null) {
 			// We are connected right now, request fresh data
 			if (Logging.DEBUG) Log.d(TAG, "onResume() - Starting refresh of data");
-			mConnectionManager.updateTransfers(this);
+			mConnectedClientHandler.updateTransfers(this);
 		}
 		mViewUpdatesAllowed = true;
 		if (mViewDirty) {
@@ -269,8 +269,8 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 		mRequestUpdates = false;
 		mViewUpdatesAllowed = false;
 		// Also remove possibly scheduled automatic updates
-		if (mConnectionManager != null) {
-			mConnectionManager.cancelScheduledUpdates(this);
+		if (mConnectedClientHandler != null) {
+			mConnectedClientHandler.cancelScheduledUpdates(this);
 		}
 	}
 
@@ -278,8 +278,8 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	protected void onDestroy() {
 		super.onDestroy();
 		if (mConnectionManager != null) {
-			mConnectionManager.unregisterStatusObserver(this);
-			mConnectedClient = null;
+			mConnectionManager.getConnectionManager().unregisterDataReceiver(this);
+			mConnectedClientHandler = null;
 		}
 		doUnbindService();
 		mScreenOrientation = null;
@@ -312,7 +312,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		MenuItem item = menu.findItem(R.id.menuRefresh);
-		item.setVisible(mConnectedClient != null);
+		item.setVisible(mConnectedClientHandler != null);
 		return true;
 	}
 
@@ -320,7 +320,9 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuRefresh:
-			mConnectionManager.updateTransfers(this);
+			if (mConnectedClientHandler != null) {
+				mConnectedClientHandler.updateTransfers(this);
+			}
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -344,7 +346,9 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	    			new DialogInterface.OnClickListener() {
 	    				public void onClick(DialogInterface dialog, int whichButton) {
 	    					TransferInfo transfer = (TransferInfo)getListAdapter().getItem(mPosition);
-	    					mConnectionManager.transferOperation(TransfersActivity.this, ClientOp.TRANSFER_ABORT, transfer.projectUrl, transfer.fileName);
+	    					if (mConnectedClientHandler != null) {
+	    						mConnectedClientHandler.transferOperation(TransfersActivity.this, TransferOp.ABORT, transfer.projectUrl, transfer.fileName);
+	    					}
 	    				}
 	    			})
 	    		.setNegativeButton(R.string.cancel, null)
@@ -402,7 +406,9 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 			showDialog(DIALOG_DETAILS);
 			return true;
 		case RETRY:
-			mConnectionManager.transferOperation(this, ClientOp.TRANSFER_RETRY, transfer.projectUrl, transfer.fileName);
+			if (mConnectedClientHandler != null) {
+				mConnectedClientHandler.transferOperation(this, TransferOp.RETRY, transfer.projectUrl, transfer.fileName);
+			}
 			return true;
 		case ABORT:
 			mPosition = info.position;
@@ -414,27 +420,21 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 
 
 	@Override
-	public void clientConnectionProgress(ProgressInd progress) {
-		// We don't care about progress indicator in this activity, just ignore this
-	}
-
-	@Override
-	public void clientConnected(VersionInfo clientVersion) {
-		mConnectedClient = mConnectionManager.getClientId();
-		if (mConnectedClient != null) {
+	public void clientConnected(ClientRequestHandler requestHandler) {
+		if (Logging.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
+		mConnectedClientHandler = requestHandler;
+		if (mConnectedClientHandler != null) {
 			// Connected client is retrieved
-			if (Logging.DEBUG) Log.d(TAG, "Client is connected");
 			if (mRequestUpdates) {
-				// Request fresh data
-				mConnectionManager.updateTransfers(this);
+				mConnectedClientHandler.updateTransfers(this);
 			}
 		}
 	}
 
 	@Override
-	public void clientDisconnected(DisconnectCause cause) {
-		if (Logging.DEBUG) Log.d(TAG, "Client is disconnected");
-		mConnectedClient = null;
+	public void clientDisconnected() {
+		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected()");
+		mConnectedClientHandler = null;
 		mTransfers.clear();
 		((BaseAdapter)getListAdapter()).notifyDataSetChanged();
 		mViewDirty = false;

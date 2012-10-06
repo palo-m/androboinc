@@ -1,3 +1,7 @@
+Version 6.10.58.rc4 (2012-10-06)
+- Fix for sudden disconnect right after connect
+- Added notifications
+
 Version 6.10.58.rc3 (2012-09-17)
 - Fix for crash on connecting without password to a client requiring password
 - Added dialogs for connection failures
