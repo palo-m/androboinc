@@ -22,6 +22,7 @@ package sk.boinc.androboinc.service;
 import sk.boinc.androboinc.bridge.BridgeManager;
 import sk.boinc.androboinc.clientconnection.ConnectionManager;
 import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.util.ClientId;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -33,8 +34,9 @@ import android.util.Log;
 public class ConnectionManagerService extends Service {
 	private static final String TAG = "ConnectionManagerService";
 
-	private static final int TERMINATE_GRACE_PERIOD_CONN = 45;
+	private static final int TERMINATE_GRACE_PERIOD_CONN = 30;
 	private static final int TERMINATE_GRACE_PERIOD_IDLE = 3;
+	private static final int TERMINATE_NOTIFICATION_DELAY = 1;
 
 	public class LocalBinder extends Binder {
 		public ConnectionManagerService getService() {
@@ -45,6 +47,7 @@ public class ConnectionManagerService extends Service {
 	private final IBinder mBinder = new LocalBinder();
 	private final Handler mHandler = new Handler();
 	private Runnable mTerminateRunnable = null;
+	private Runnable mPendingNotification = null;
 
 	private ConnectivityStatus mConnectivityStatus = null;
 	private ConnectionStatusNotifier mStatusNotifier = null;
@@ -67,6 +70,12 @@ public class ConnectionManagerService extends Service {
 			// We cancel that request now
 			mHandler.removeCallbacks(mTerminateRunnable);
 			mTerminateRunnable = null;
+			if (mPendingNotification != null) {
+				// Not notified yet (possibly changed screen orientation)
+				// Just cancel pending notification
+				mHandler.removeCallbacks(mPendingNotification);
+				mPendingNotification = null;
+			}
 			if (Logging.DEBUG) Log.d(TAG, "onRebind() - cancelled stopping of the service");
 		}
 		else {
@@ -93,8 +102,25 @@ public class ConnectionManagerService extends Service {
 		};
 		// Post the runnable to self - delayed by grace period
 		long gracePeriod;
-		if (mConnectionManager.getClientId() != null) {
+		final ClientId connectedHost;
+		if (mConnectionManager != null) {
+			connectedHost = mConnectionManager.getClientId();
+		}
+		else {
+			connectedHost = null;
+		}
+		if (connectedHost != null) {
 			gracePeriod = TERMINATE_GRACE_PERIOD_CONN * 1000;
+			mPendingNotification = new Runnable() {
+				@Override
+				public void run() {
+					mPendingNotification = null;
+					if (mStatusNotifier != null) {
+						mStatusNotifier.connectionNoFrontend(connectedHost);
+					}
+				}
+			};
+			mHandler.postDelayed(mPendingNotification, TERMINATE_NOTIFICATION_DELAY * 1000);
 		}
 		else {
 			gracePeriod = TERMINATE_GRACE_PERIOD_IDLE * 1000;

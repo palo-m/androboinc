@@ -27,7 +27,11 @@ public interface StatusNotifier {
 
 	public void connected(ClientId host);
 
+	public void connectionNoFrontend(ClientId host);
+
 	public void disconnected(ClientId host, DisconnectCause cause);
+
+	public void disconnectedNoFrontend(ClientId host);
 	
 	public void cancelDisconnected();
 

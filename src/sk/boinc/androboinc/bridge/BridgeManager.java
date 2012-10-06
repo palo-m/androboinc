@@ -98,7 +98,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 			mClientBridge.cleanup();
 			mClientBridge = null;
 			if ( (mNotifier != null) && (mClientId != null) ) {
-				mNotifier.disconnected(mClientId, DisconnectCause.NORMAL);
+				mNotifier.disconnectedNoFrontend(mClientId);
 			}
 		}
 		mStatusObservers.clear();

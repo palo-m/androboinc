@@ -579,7 +579,6 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 			boincConnect();
 		}
 		else if (mDialogsAllowed) {
-			if (Logging.DEBUG) Log.d(TAG, "Received " + cause.toString());
 			switch (cause) {
 			case NO_CONNECTIVITY:
 				showDialog(DIALOG_NETWORK_DOWN);
