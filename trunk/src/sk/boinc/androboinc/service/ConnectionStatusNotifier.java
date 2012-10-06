@@ -30,6 +30,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
 
 
@@ -47,6 +48,8 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 	private NotificationManager mNotificationManager;
 	private boolean mConnected = false;
 	private boolean mDisconnected = false;
+	private Handler mHandler = new Handler();
+	private Runnable mDelayedTrigger = null;
 
 
 	public ConnectionStatusNotifier(Context context) {
@@ -54,6 +57,9 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		if (Logging.DEBUG) Log.d(TAG, "ConnectionStatusNotifier(context=" + context.toString() + ")");
 		mContext = context;
 		mNotificationManager = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+		// Cancel possible old notifications
+		mNotificationManager.cancel(CONNECTED_ID);
+		mNotificationManager.cancel(DISCONNECTED_ID);
 	}
 
 	public void cleanup() {
@@ -62,40 +68,80 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		// We will keep disconnected notification
 	}
 
-	@Override
-	public void connected(ClientId host) {
-		// TODO: Make proper notification text
+	private void notifyConnected(String contentText, String tickerText) {
 		Intent intent = new Intent(mContext, BoincManagerActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		Notification notification = new Notification(R.drawable.ic_stat_connected, null, System.currentTimeMillis());
-		notification.setLatestEventInfo(mContext, mContext.getString(R.string.app_name), host.getNickname() + " connected", contentIntent);
+		Notification notification = new Notification(R.drawable.ic_stat_connected, tickerText, System.currentTimeMillis());
+		notification.setLatestEventInfo(mContext, mContext.getString(R.string.app_name), contentText, contentIntent);
 		notification.flags |= (Notification.FLAG_NO_CLEAR|Notification.FLAG_ONGOING_EVENT);
 		cancelDisconnected();
 		cancelConnected();
 		mNotificationManager.notify(CONNECTED_ID, notification);
 		mConnected = true;
+	}
+
+	@Override
+	public void connected(ClientId host) {
+		String contentText = String.format(mContext.getString(R.string.notifyConnected), host.getNickname());
+		notifyConnected(contentText, null);
 		if (Logging.DEBUG) Log.d(TAG, "Shown connected notification");
 	}
 
 	@Override
-	public void disconnected(ClientId host, DisconnectCause cause) {
-		// TODO: Make proper notification text
-		String tickerText = null;
-		if (cause != DisconnectCause.NORMAL) {
-			tickerText = "Disconnected";
-		}
-		Intent intent = new Intent(mContext, BoincManagerActivity.class);
+	public void connectionNoFrontend(ClientId host) {
+		String contentText = String.format(mContext.getString(R.string.notifyConnected), host.getNickname());
+		String tickerText = String.format(mContext.getString(R.string.notifyConnNoFrontend), host.getNickname());
+		notifyConnected(contentText, tickerText);
+		if (Logging.DEBUG) Log.d(TAG, "Shown connectedNoFrontend notification");
+	}
+
+	private void notifyDisconnected(ClientId host, String contentText, boolean autoCancel) {
+		String tickerText = String.format(mContext.getString(R.string.notifyDisconnected), host.getNickname());
+		Intent intent = new Intent(mContext, BoincManagerActivity.class).putExtra(ClientId.TAG, host);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		Notification notification = new Notification(R.drawable.ic_stat_disconnected, tickerText, System.currentTimeMillis());
-		notification.setLatestEventInfo(mContext, mContext.getString(R.string.app_name), host.getNickname() + " disconnected", contentIntent);
+		notification.setLatestEventInfo(mContext, mContext.getString(R.string.app_name), contentText, contentIntent);
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		cancelDisconnected();
 		cancelConnected();
 		mNotificationManager.notify(DISCONNECTED_ID, notification);
 		mDisconnected = true;
-		if (Logging.DEBUG) Log.d(TAG, "Shown disconnected notification");		
+		if (autoCancel) {
+			mDelayedTrigger = new Runnable() {
+				@Override
+				public void run() {
+					if (Logging.DEBUG) Log.d(TAG, "Auto-cancelling disconnected notification (normal disconnect)");
+					mDelayedTrigger = null;
+					cancelDisconnected();
+				}
+			};
+			mHandler.postDelayed(mDelayedTrigger, 10000);
+		}
+	}
+
+	@Override
+	public void disconnected(ClientId host, DisconnectCause cause) {
+		String contentText;
+		switch (cause) {
+		case NORMAL:
+		case CONNECTION_DROP:
+			contentText = String.format(mContext.getString(R.string.notifyDiscReconnect), host.getNickname());
+			break;
+		default:
+			contentText = String.format(mContext.getString(R.string.notifyDisconnected), host.getNickname());
+			break;
+		}
+		notifyDisconnected(host, contentText, (cause == DisconnectCause.NORMAL));
+		if (Logging.DEBUG) Log.d(TAG, "Shown disconnected notification");
+	}
+
+	@Override
+	public void disconnectedNoFrontend(ClientId host) {
+		String contentText = String.format(mContext.getString(R.string.notifyDiscNoFrontend), host.getNickname());
+		notifyDisconnected(host, contentText, false);
+		if (Logging.DEBUG) Log.d(TAG, "Shown disconnectedNoFrontend notification");
 	}
 
 	private void cancelConnected() {
@@ -112,6 +158,10 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 			// Discard previous disconnected notification
 			mNotificationManager.cancel(DISCONNECTED_ID);
 			mDisconnected = false;
+		}
+		if (mDelayedTrigger != null) {
+			mHandler.removeCallbacks(mDelayedTrigger);
+			mDelayedTrigger = null;
 		}
 	}
 }

@@ -172,6 +172,13 @@
 	</string>
 	<string name="networkUnavailable">Network connection unavailable.</string>
 
+	<!-- Notifications -->
+	<string name="notifyConnected">%1$s connected</string>
+	<string name="notifyConnNoFrontend">%1$s is still connected but it will be disconnected automatically soon</string>
+	<string name="notifyDisconnected">%1$s disconnected</string>
+	<string name="notifyDiscReconnect">%1$s disconnected. Select to reconnect.</string>
+	<string name="notifyDiscNoFrontend">%1$s disconnected due to inactivity. Select to reconnect.</string>
+			
 	<!-- ManageClient Activity -->
 	<string name="noHostConnected">No host connected</string>
 	<string name="selectHostTitle">Current host</string>

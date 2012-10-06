@@ -231,14 +231,17 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 		}
 		else {
 			// Just normal start
-			String autoConnectHost = globalPrefs.getString(PreferenceName.AUTO_CONNECT_HOST, null);
-			if ((autoConnectHost != null) && globalPrefs.getBoolean(PreferenceName.AUTO_CONNECT, false)) {
-				// We should auto-connect to recently connected host
-				HostListDbAdapter dbHelper = new HostListDbAdapter(this);
-				dbHelper.open();
-				mSelectedClient = dbHelper.fetchHost(autoConnectHost);
-				if (Logging.DEBUG) Log.d(TAG, "Will auto-connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
-				dbHelper.close();
+			ClientId clientId = getIntent().getParcelableExtra(ClientId.TAG);
+			if (clientId == null) {
+				String autoConnectHost = globalPrefs.getString(PreferenceName.AUTO_CONNECT_HOST, null);
+				if ((autoConnectHost != null) && globalPrefs.getBoolean(PreferenceName.AUTO_CONNECT, false)) {
+					// We should auto-connect to recently connected host
+					HostListDbAdapter dbHelper = new HostListDbAdapter(this);
+					dbHelper.open();
+					mSelectedClient = dbHelper.fetchHost(autoConnectHost);
+					if (Logging.DEBUG) Log.d(TAG, "Will auto-connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
+					dbHelper.close();
+				}
 			}
 		}
 	}
@@ -263,6 +266,13 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			else {
 				mWakeLock.release();
 				if (Logging.DEBUG) Log.d(TAG, "Released screen lock");
+			}
+		}
+		if (mSelectedClient == null) {
+			ClientId clientId = getIntent().getParcelableExtra(ClientId.TAG);
+			if (clientId != null) {
+				mSelectedClient = clientId;
+				if (Logging.DEBUG) Log.d(TAG, "Intent triggers connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
 			}
 		}
 		// Update name of connected client (or show "not connected")
@@ -752,7 +762,6 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			boincConnect();
 		}
 		else if (mDialogsAllowed) {
-			if (Logging.DEBUG) Log.d(TAG, "Received " + cause.toString());
 			switch (cause) {
 			case NO_CONNECTIVITY:
 				showDialog(DIALOG_NETWORK_DOWN);
