@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="HardcodedText">
+        <ignore path="res/layout-land/projects_list_item.xml" />
+        <ignore path="res/layout-land/tasks_list_item.xml" />
+        <ignore path="res/layout-land/transfers_list_item.xml" />
+        <ignore path="res/layout/dialog.xml" />
+        <ignore path="res/layout/messages_list_item.xml" />
+        <ignore path="res/layout/opt_out_dialog.xml" />
+        <ignore path="res/layout/projects_list_item.xml" />
+        <ignore path="res/layout/tasks_list_item.xml" />
+        <ignore path="res/layout/transfers_list_item.xml" />
+    </issue>
+</lint>
