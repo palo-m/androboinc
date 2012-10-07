@@ -858,6 +858,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 				return false;
 			}
 			task = TaskInfoCreator.update(task, result, mFormatter);
+			mTasks.put(task.taskName, task);
 			if (result.active_task) {
 				// This is also active task
 				mActiveTasks.add(result.name);

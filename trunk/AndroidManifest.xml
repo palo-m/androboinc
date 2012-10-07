@@ -21,8 +21,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="sk.boinc.androboinc"
-	android:versionCode="8"
-	android:versionName="6.10.58.rc4"
+	android:versionCode="9"
+	android:versionName="6.10.58.rc5"
 	android:installLocation="auto">
 
 	<uses-sdk
