@@ -1,0 +1,9 @@
+# How to sign automatically:
+# Make a copy of this file and name it signing.properties
+# Fill in correct data in the variables below
+# NOTE: The file signing.properties is listed in .gitignore, so it will not be committed
+#
+STORE_FILE=/path/to/your/keystore.release
+STORE_PASSWORD=password
+KEY_ALIAS=key_name
+KEY_PASSWORD=password

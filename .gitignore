@@ -1,0 +1,18 @@
+# IntelliJ
+.idea
+*.iml
+*.iws
+*.ipr
+classes
+gen-external-apklibs
+
+# Gradle
+.gradle/
+
+# local
+local.properties
+.DS_Store
+.gitreview
+.directory
+*~
+

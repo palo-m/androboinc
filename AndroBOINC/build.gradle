@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        release {
+            // These are just dummy values here;
+            // Create file signing.properties with real values for automatic signing
+            // See signing.properties.template for details
+            storeFile     file(System.getenv('HOME') + "/.android/debug.keystore")
+            storePassword "android"
+            keyAlias      "androiddebugkey"
+            keyPassword   "android"
+        }
+    }
+    compileSdkVersion 8
+    buildToolsVersion "23.0.2"
+    defaultConfig {
+        applicationId "sk.boinc.androboinc"
+        minSdkVersion 3
+        targetSdkVersion 8
+        versionCode 9
+        versionName "6.10.58.rc5"
+        project.ext.set("archivesBaseName", archivesBaseName + "-" + defaultConfig.versionName);
+    }
+    buildTypes {
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix '.debug'
+        }
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+}
+
+// Load signing configuration from external file
+// if it exists and contains valid data
+def Properties props = new Properties()
+def propFile = file('signing.properties')
+if (propFile.canRead()) {
+    props.load(new FileInputStream(propFile))
+
+    if (props!=null && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+
+        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+    }
+    else {
+        android.buildTypes.release.signingConfig = null
+    }
+}
+else {
+    android.buildTypes.release.signingConfig = null
+}
+
+
