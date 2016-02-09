@@ -148,48 +148,46 @@ public class BoincManagerApplication extends Application {
 
 	public void setAboutText(TextView text) {
 		text.setText(getString(R.string.aboutText, getApplicationVersion(), getString(R.string.app_name)));
-		String httpURL = "http://";
 		// Link to wiki
 		Pattern wikiText = Pattern.compile(getString(R.string.app_name) +" wiki");
 		TransformFilter wikiTransformer = new TransformFilter() {
 			@Override
 			public String transformUrl(Matcher match, String url) {
-				return getString(R.string.wikiHowtoAddress);
+				return getString(R.string.wikiHowtoUrl);
 			}
 		};
-		Linkify.addLinks(text, wikiText, httpURL, null, wikiTransformer);
+		Linkify.addLinks(text, wikiText, "", null, wikiTransformer);
 		// Link to BOINC.SK page
 		Pattern boincskText = Pattern.compile("BOINC\\.SK");
 		TransformFilter boincskTransformer = new TransformFilter() {
 			@Override
 			public String transformUrl(Matcher match, String url) {
-				return url.toLowerCase() + "/";
+				return "http://" + url.toLowerCase() + "/";
 			}
 		};
-		Linkify.addLinks(text, boincskText, httpURL, null, boincskTransformer);
+		Linkify.addLinks(text, boincskText, "", null, boincskTransformer);
 		// Link to GPLv3 license
 		Pattern gplText = Pattern.compile("LGPLv3");
 		TransformFilter gplTransformer = new TransformFilter() {
 			@Override
 			public String transformUrl(Matcher match, String url) {
-				return "www.gnu.org/licenses/lgpl-3.0.txt";
+				return getString(R.string.licenseUrl);
 			}
 		};
-		Linkify.addLinks(text, gplText, httpURL, null, gplTransformer);
+		Linkify.addLinks(text, gplText, "", null, gplTransformer);
 	}
 
 	public void setNewInstallText(TextView text) {
 		text.setText(getString(R.string.newInstall, getString(R.string.app_name), getString(R.string.menuAbout)));
-		String httpURL = "http://";
 		// Link to wiki
 		Pattern wikiText = Pattern.compile(getString(R.string.app_name) +" wiki");
 		TransformFilter wikiTransformer = new TransformFilter() {
 			@Override
 			public String transformUrl(Matcher match, String url) {
-				return getString(R.string.wikiHowtoAddress);
+				return getString(R.string.wikiHowtoUrl);
 			}
 		};
-		Linkify.addLinks(text, wikiText, httpURL, null, wikiTransformer);
+		Linkify.addLinks(text, wikiText, "", null, wikiTransformer);
 	}
 
 	public void setLicenseText(TextView text) {

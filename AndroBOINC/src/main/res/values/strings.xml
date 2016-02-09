@@ -59,9 +59,10 @@
 	<string name="welcome">Welcome</string>
 	
 	<!-- URLs/addresses -->
-	<string name="homepageUrl">http://code.google.com/p/androboinc/</string>
-	<string name="sourceCodeUrl">http://code.google.com/p/androboinc/source</string>
-	<string name="wikiHowtoAddress">code.google.com/p/androboinc/wiki/HowToSetup</string>
+	<string name="homepageUrl">https://github.com/palo-m/androboinc/wiki</string>
+	<string name="sourceCodeUrl">https://github.com/palo-m/androboinc</string>
+	<string name="wikiHowtoUrl">https://github.com/palo-m/androboinc/wiki/AndroBOINC-Setup</string>
+	<string name="licenseUrl">https://www.gnu.org/licenses/lgpl-3.0#content</string>
 	
 	<!-- Units -->
 	<string name="unitKiB">KiB</string>

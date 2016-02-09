@@ -586,7 +586,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 				.setPositiveButton(R.string.seeWiki, 
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
-							Uri uri = Uri.parse("http://" + getString(R.string.wikiHowtoAddress));
+							Uri uri = Uri.parse(getString(R.string.wikiHowtoUrl));
 							startActivity(new Intent(Intent.ACTION_VIEW, uri));
 						}
 					})

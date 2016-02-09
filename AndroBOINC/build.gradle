@@ -18,8 +18,8 @@ android {
         applicationId "sk.boinc.androboinc"
         minSdkVersion 3
         targetSdkVersion 8
-        versionCode 9
-        versionName "6.10.58.rc5"
+        versionCode 10
+        versionName "6.10.58.rc6"
         project.ext.set("archivesBaseName", archivesBaseName + "-" + defaultConfig.versionName);
     }
     buildTypes {

@@ -139,7 +139,7 @@ public class EditHostActivity extends Activity {
 		wikiButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Uri uri = Uri.parse("http://" + getString(R.string.wikiHowtoAddress));
+				Uri uri = Uri.parse(getString(R.string.wikiHowtoUrl));
 				startActivity(new Intent(Intent.ACTION_VIEW, uri));
 			}
 		});
