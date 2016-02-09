@@ -46,7 +46,7 @@ import java.util.Vector;
  * @see ClientBridgeWorkerThread.ReplyHandler
  */
 public class ClientBridgeWorkerThread extends Thread {
-	private static final String TAG = "ClientBridgeWorkerThread";
+	private static final String TAG = "ClientBridgeWorkerThrea";
 
 	/**
 	 * This class is used to switch from worker thread back to requesting thread

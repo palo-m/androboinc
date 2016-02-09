@@ -32,7 +32,7 @@ import android.util.Log;
 
 
 public class ConnectionManagerService extends Service {
-	private static final String TAG = "ConnectionManagerService";
+	private static final String TAG = "ConnectionManagerServic";
 
 	private static final int TERMINATE_GRACE_PERIOD_CONN = 30;
 	private static final int TERMINATE_GRACE_PERIOD_IDLE = 3;

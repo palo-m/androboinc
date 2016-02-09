@@ -62,7 +62,7 @@ import java.util.Vector;
 
 
 public class ClientBridgeWorkerHandler extends Handler {
-	private static final String TAG = "ClientBridgeWorkerHandler";
+	private static final String TAG = "ClientBridgeWorkerHandl";
 
 	private static final int MESSAGE_INITIAL_LIMIT = 50;
 

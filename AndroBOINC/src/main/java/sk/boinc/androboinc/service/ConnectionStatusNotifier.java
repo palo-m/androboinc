@@ -39,7 +39,7 @@ import android.util.Log;
  *
  */
 public class ConnectionStatusNotifier implements StatusNotifier {
-	private static final String TAG = "ConnectionStatusNotifier";
+	private static final String TAG = "ConnectionStatusNotifie";
 
 	private static final int CONNECTED_ID = 1;
 	private static final int DISCONNECTED_ID = 2;

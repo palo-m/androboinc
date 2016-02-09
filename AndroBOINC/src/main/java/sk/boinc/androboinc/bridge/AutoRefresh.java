@@ -82,7 +82,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 	 * received messages
 	 */
 	public static class RefreshHandler extends Handler {
-		private static final String TAG = "AutoRefresh.RefreshHandler";
+		private static final String TAG = "AutoRefresh.RefreshHand";
 		private final WeakReference<AutoRefresh> mAutoRefresh;
 		/**
 		 * Constructor

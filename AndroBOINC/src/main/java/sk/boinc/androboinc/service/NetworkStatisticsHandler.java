@@ -32,7 +32,7 @@ import android.util.Log;
 
 
 public class NetworkStatisticsHandler implements NetStats, OnSharedPreferenceChangeListener {
-	private static final String TAG = "NetworkStatisticsHandler";
+	private static final String TAG = "NetworkStatisticsHandle";
 
 	private static final int CHKPNT_THRES_SIZE = 100000;
 

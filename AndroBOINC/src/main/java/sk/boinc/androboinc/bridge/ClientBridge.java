@@ -52,7 +52,7 @@ public class ClientBridge implements ClientRequestHandler {
 	private static final String TAG = "ClientBridge";
 
 	public class BridgeReply {
-		private static final String TAG = "ClientBridge.BridgeReply";
+		private static final String TAG = "ClientBridge.BridgeRepl";
 		
 		private ClientId mClientId = null;
 		
