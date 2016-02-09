@@ -19,6 +19,8 @@
 
 package sk.boinc.androboinc.debug;
 
+import sk.boinc.androboinc.BuildConfig;
+
 
 public interface Logging {
 	/**
@@ -46,5 +48,5 @@ public interface Logging {
 	 * Logged events for debugging purpose. Any resources-expensive stuff should use this.
 	 * <p>Only turned on in debug builds, turned off at release builds.
 	 */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = BuildConfig.DEBUG;
 }

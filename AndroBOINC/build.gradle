@@ -6,7 +6,7 @@ android {
             // These are just dummy values here;
             // Create file signing.properties with real values for automatic signing
             // See signing.properties.template for details
-            storeFile     file(System.getenv('HOME') + "/.android/debug.keystore")
+            storeFile     file("~/.android/debug.keystore")
             storePassword "android"
             keyAlias      "androiddebugkey"
             keyPassword   "android"
@@ -24,12 +24,16 @@ android {
     }
     buildTypes {
         release {
+            buildConfigField 'boolean', 'DEBUG_INSERT_DELAYS', 'false'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             minifyEnabled false
             signingConfig signingConfigs.release
         }
         debug {
+            buildConfigField 'boolean', 'DEBUG_INSERT_DELAYS', 'true'
+            debuggable true
             applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
         }
     }
     productFlavors {
@@ -61,5 +65,3 @@ if (propFile.canRead()) {
 else {
     android.buildTypes.release.signingConfig = null
 }
-
-
