@@ -1,4 +1,4 @@
 /build
-gradle.properties
-signing.properties
+/gradle.properties
+/signing.properties
 
