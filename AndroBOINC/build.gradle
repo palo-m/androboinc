@@ -21,6 +21,8 @@ android {
         versionCode 10
         versionName "6.10.58.rc6"
         project.ext.set("archivesBaseName", archivesBaseName + "-" + defaultConfig.versionName);
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -41,6 +43,9 @@ android {
 }
 
 dependencies {
+    // Unit testing dependencies
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.0"
 }
 
 // Load signing configuration from external file
@@ -50,7 +55,7 @@ def propFile = file('signing.properties')
 if (propFile.canRead()) {
     props.load(new FileInputStream(propFile))
 
-    if (props!=null && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+    if ((props != null) && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
             props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
 
         android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
