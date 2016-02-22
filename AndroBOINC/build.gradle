@@ -27,12 +27,16 @@ android {
     buildTypes {
         release {
             buildConfigField 'boolean', 'DEBUG_INSERT_DELAYS', 'false'
+            buildConfigField 'boolean', 'DEBUG_PERFORMANCE', 'false'
+            buildConfigField 'boolean', 'DEBUG_DATA', 'false'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             minifyEnabled false
             signingConfig signingConfigs.release
         }
         debug {
             buildConfigField 'boolean', 'DEBUG_INSERT_DELAYS', 'true'
+            buildConfigField 'boolean', 'DEBUG_PERFORMANCE', 'false'
+            buildConfigField 'boolean', 'DEBUG_DATA', 'false'
             debuggable true
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'

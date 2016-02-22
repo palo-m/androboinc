@@ -19,7 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import android.util.Xml;
 import org.xml.sax.Attributes;
@@ -72,7 +72,7 @@ public class MessagesParser extends BaseParser {
 			}
 			catch (SAXException e) {
 				// Still some trouble, even after sanitizing the message bodies
-				if (Logging.DEBUG) {
+				if (BuildConfig.DEBUG) {
 					SAXParseException details = (SAXParseException)e;
 					Log.d(TAG, "Malformed XML: sytemId=" + details.getSystemId() + 
 							", publicId=" + details.getPublicId() + 
@@ -159,7 +159,7 @@ public class MessagesParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
+			Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}

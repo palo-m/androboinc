@@ -19,7 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import android.util.Xml;
 import org.xml.sax.Attributes;
@@ -55,7 +55,7 @@ public class ProjectsParser extends BaseParser {
 			return parser.getProjects();
 		}
 		catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
 			throw new InvalidDataReceivedException("Malformed XML while parsing <project>", e);
 		}
 	}
@@ -64,20 +64,16 @@ public class ProjectsParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("project")) {
-			if (Logging.INFO) {
-				if (mProject != null) {
-					// previous <project> not closed - dropping it!
-					Log.i(TAG, "Dropping unfinished <project> data");
-				}
+			if (mProject != null) {
+				// previous <project> not closed - dropping it!
+				Log.i(TAG, "Dropping unfinished <project> data");
 			}
 			mProject = new Project();
 		}
 		else if (localName.equalsIgnoreCase("gui_url")) {
-			if (Logging.INFO) {
-				if (mGuiUrl != null) {
-					// previous <gui_url> not closed - dropping it!
-					Log.i(TAG, "Dropping unfinished <gui_url> data");
-				}
+			if (mGuiUrl != null) {
+				// previous <gui_url> not closed - dropping it!
+				Log.i(TAG, "Dropping unfinished <gui_url> data");
 			}
 			mGuiUrl = new GuiUrl();
 		}
@@ -279,7 +275,7 @@ public class ProjectsParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
+			Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}

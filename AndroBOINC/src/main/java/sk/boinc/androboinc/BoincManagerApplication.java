@@ -19,7 +19,6 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.util.PreferenceName;
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -68,7 +67,7 @@ public class BoincManagerApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onCreate()");
 		PreferenceManager.setDefaultValues(this, R.xml.manage_client, false);
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		retrieveAppStatus();
@@ -77,12 +76,12 @@ public class BoincManagerApplication extends Application {
 	@Override
 	public void onTerminate() {
 		super.onTerminate();
-		if (Logging.DEBUG) Log.d(TAG, "onTerminate() - finished");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onTerminate() - finished");
 	}
 
 	@Override
 	public void onLowMemory() {
-		if (Logging.DEBUG) Log.d(TAG, "onLowMemory()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onLowMemory()");
 		// Let's free what we do not need essentially
 		mStringBuilder = null; // So garbage collector will free the memory
 		mReadBuffer = null;
@@ -97,10 +96,10 @@ public class BoincManagerApplication extends Application {
 			currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
 		}
 		catch (NameNotFoundException e) {
-			if (Logging.ERROR) Log.e(TAG, "Cannot retrieve application version");
+			Log.e(TAG, "Cannot retrieve application version");
 			return;
 		}
-		if (Logging.DEBUG) Log.d(TAG, "currentVersion=" + currentVersion + ", upgradeInfoShownVersion=" + upgradeInfoShownVersion);
+		if (BuildConfig.DEBUG) Log.d(TAG, "currentVersion=" + currentVersion + ", upgradeInfoShownVersion=" + upgradeInfoShownVersion);
 		if (upgradeInfoShownVersion == 0) {
 			mAppStatus = AppStatus.NEW_INSTALLED;
 		}
@@ -122,7 +121,7 @@ public class BoincManagerApplication extends Application {
 			currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
 		}
 		catch (NameNotFoundException e) {
-			if (Logging.ERROR) Log.e(TAG, "Cannot retrieve application version");
+			Log.e(TAG, "Cannot retrieve application version");
 			return;
 		}
 		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -140,7 +139,7 @@ public class BoincManagerApplication extends Application {
 			mStringBuilder.append(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
 		}
 		catch (NameNotFoundException e) {
-			if (Logging.ERROR) Log.e(TAG, "Cannot retrieve application version");
+			Log.e(TAG, "Cannot retrieve application version");
 			mStringBuilder.setLength(mStringBuilder.length() - 2); // Truncate " v" set above
 		}		
 		return mStringBuilder.toString();
@@ -235,7 +234,7 @@ public class BoincManagerApplication extends Application {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			if (Logging.ERROR) Log.e(TAG, "Error when reading raw resource " + resource);
+			Log.e(TAG, "Error when reading raw resource " + resource);
 		}
 		return mStringBuilder.toString();
 	}

@@ -32,9 +32,8 @@ import java.util.Vector;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import sk.boinc.androboinc.debug.Debugging;
-import sk.boinc.androboinc.debug.Logging;
-import sk.boinc.androboinc.debug.NetStats;
+import sk.boinc.androboinc.BuildConfig;
+
 import android.util.Log;
 import android.util.Xml;
 
@@ -162,7 +161,7 @@ public class RpcClient {
 	public void open(String address, int port) throws ConnectionFailedException {
 		if (isConnected()) {
 			// Already connected
-			if (Logging.ERROR) Log.e(TAG, "Attempt to connect when already connected");
+			Log.e(TAG, "Attempt to connect when already connected");
 			// We better close current connection and reconnect (address/port could be different)
 			close();
 		}
@@ -188,7 +187,7 @@ public class RpcClient {
 		if (mNetStats != null) {
 			mNetStats.connectionOpened();
 		}
-		if (Logging.DEBUG) Log.d(TAG, "open(" + address + ", " + port + ") - Connected successfully");
+		if (BuildConfig.DEBUG) Log.d(TAG, "open(" + address + ", " + port + ") - Connected successfully");
 	}
 
 	/**
@@ -203,20 +202,20 @@ public class RpcClient {
 			mInput.close();
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "input close failure", e);
+			Log.w(TAG, "input close failure", e);
 		}
 		try {
 			mOutput.close();
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "output close failure", e);
+			Log.w(TAG, "output close failure", e);
 		}
 		try {
 			mSocket.close();
-			if (Logging.DEBUG) Log.d(TAG, "close() - Socket closed");
+			if (BuildConfig.DEBUG) Log.d(TAG, "close() - Socket closed");
 		}
 		catch (IOException e) {
-			if (Logging.WARNING) Log.w(TAG, "socket close failure", e);
+			Log.w(TAG, "socket close failure", e);
 		}
 		finally {
 			mSocket = null;
@@ -263,10 +262,10 @@ public class RpcClient {
 			mRequest.setLength(0);
 			Xml.parse(auth2Rsp, new Auth2Parser(mRequest));
 			if (!mRequest.toString().equals("authorized")) {
-				if (Logging.DEBUG) Log.d(TAG, "authorize() - Failure");
+				if (BuildConfig.DEBUG) Log.d(TAG, "authorize() - Failure");
 				throw new AuthorizationFailedException();
 			}
-			if (Logging.DEBUG) Log.d(TAG, "authorize() - Successful");
+			if (BuildConfig.DEBUG) Log.d(TAG, "authorize() - Successful");
 		}
 		catch (IOException e) {
 			throw new ConnectionFailedException("Connection failed during authorization", e);
@@ -306,7 +305,7 @@ public class RpcClient {
 			return true;
 		}
 		catch (IOException e) {
-			if (Logging.DEBUG) Log.d(TAG, "connectionAlive(): disconnected", e);
+			if (BuildConfig.DEBUG) Log.d(TAG, "connectionAlive(): disconnected", e);
 			return false;
 		}
 	}
@@ -322,8 +321,8 @@ public class RpcClient {
 	 * @throws IOException if error occurs when sending the request
 	 */
 	private void sendRequest(String request) throws IOException {
-		if (Debugging.PERFORMANCE) Log.d(TAG, "mRequest.capacity() = " + mRequest.capacity());
-		if (Debugging.DATA) Log.d(TAG, "Sending request: \n" + request.toString());
+		if (BuildConfig.DEBUG_PERFORMANCE) Log.d(TAG, "mRequest.capacity() = " + mRequest.capacity());
+		if (BuildConfig.DEBUG_DATA) Log.d(TAG, "Sending request: \n" + request.toString());
 		mOutput.write("<boinc_gui_rpc_request>\n");
 		mOutput.write(request);
 		mOutput.write("</boinc_gui_rpc_request>\n\003");
@@ -341,10 +340,10 @@ public class RpcClient {
 	 */
 	private String receiveReply() throws IOException {
 		mResult.setLength(0);
-		if (Debugging.PERFORMANCE) Log.d(TAG, "mResult.capacity() = " + mResult.capacity());
+		if (BuildConfig.DEBUG_PERFORMANCE) Log.d(TAG, "mResult.capacity() = " + mResult.capacity());
 
 		long readStart;
-		if (Debugging.PERFORMANCE) readStart = System.nanoTime();
+		if (BuildConfig.DEBUG_PERFORMANCE) readStart = System.nanoTime();
 
 		// Speed is (with large data): ~ 45 KB/s for buffer size 1024
 		//                             ~ 90 KB/s for buffer size 2048
@@ -367,7 +366,7 @@ public class RpcClient {
 			throw new IOException("No data received");
 		}
 
-		if (Debugging.PERFORMANCE) {
+		if (BuildConfig.DEBUG_PERFORMANCE) {
 			float duration = (System.nanoTime() - readStart)/1000000000.0F;
 			long bytesCount = mResult.length();
 			if (duration == 0) duration = 0.001F;
@@ -379,7 +378,7 @@ public class RpcClient {
 			mNetStats.bytesReceived(mResult.length());
 		}
 
-		if (Debugging.DATA) {
+		if (BuildConfig.DEBUG_DATA) {
 			BufferedReader dbr = new BufferedReader(new StringReader(mResult.toString()), 1024);
 			String dl;
 			int ln = 0;

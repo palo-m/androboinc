@@ -19,7 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import android.util.Xml;
 import org.xml.sax.Attributes;
@@ -57,7 +57,7 @@ public class CcStatusParser extends BaseParser {
 			return parser.getCcStatus();
 		}
 		catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
 			throw new InvalidDataReceivedException("Invalid data while parsing <cc_status>");
 		}
 	}
@@ -66,11 +66,9 @@ public class CcStatusParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("cc_status")) {
-			if (Logging.INFO) { 
-				if (mCcStatus != null) {
-					// previous <cc_status> not closed - dropping it!
-					Log.i(TAG, "Dropping unfinished <cc_status> data");
-				}
+			if (mCcStatus != null) {
+				// previous <cc_status> not closed - dropping it!
+				Log.i(TAG, "Dropping unfinished <cc_status> data");
 			}
 			mCcStatus = new CcStatus();
 		}
@@ -175,7 +173,7 @@ public class CcStatusParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
+			Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}

@@ -19,11 +19,9 @@
 
 package edu.berkeley.boinc.lite;
 
+import android.util.Log;
 import java.security.MessageDigest;
 
-import sk.boinc.androboinc.debug.Logging;
-
-import android.util.Log;
 
 /**
  * Wrapper class for MD5 hash operations for BOINC purpose.
@@ -51,7 +49,7 @@ public class Md5 {
 			return sb.toString();
 		}
 		catch (Exception e) {
-			if (Logging.WARNING) Log.w(TAG, "Error when calculating MD5 hash");
+			Log.w(TAG, "Error when calculating MD5 hash");
 			return "";
 		}
 	}

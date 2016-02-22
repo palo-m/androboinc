@@ -29,7 +29,6 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
@@ -95,11 +94,11 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 		public SavedState() {
 			hostInfo = mHostInfo;
-			if (Logging.DEBUG) Log.d(TAG, "saved: hostInfo=" + hostInfo);
+			if (BuildConfig.DEBUG) Log.d(TAG, "saved: hostInfo=" + hostInfo);
 		}
 		public void restoreState(ManageClientActivity activity) {
 			activity.mHostInfo = hostInfo;
-			if (Logging.DEBUG) Log.d(TAG, "restored: mHostInfo=" + activity.mHostInfo);
+			if (BuildConfig.DEBUG) Log.d(TAG, "restored: mHostInfo=" + activity.mHostInfo);
 		}
 	}
 
@@ -109,7 +108,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
-			if (Logging.DEBUG) Log.d(TAG, "onServiceConnected()");
+			if (BuildConfig.DEBUG) Log.d(TAG, "onServiceConnected()");
 			if (mDelayedObserverRegistration) {
 				mConnectionManager.getConnectionManager().registerStatusObserver(ManageClientActivity.this);
 				mConnectionManager.getConnectionManager().registerDataReceiver(ManageClientActivity.this);
@@ -128,7 +127,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 			mConnectedClientHandler = null;
 			// This should not happen normally, because it's local service 
 			// running in the same process...
-			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
+			Log.w(TAG, "onServiceDisconnected()");
 			// We also reset client reference to prevent mess
 			mConnectedClient = null;
 			mSelectedClient = null;
@@ -136,13 +135,13 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 	};
 
 	private void doBindService() {
-		if (Logging.DEBUG) Log.d(TAG, "doBindService()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "doBindService()");
 		bindService(new Intent(ManageClientActivity.this, ConnectionManagerService.class),
 				mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private void doUnbindService() {
-		if (Logging.DEBUG) Log.d(TAG, "doUnbindService()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "doUnbindService()");
 		unbindService(mServiceConnection);
 		mConnectionManager = null;
 	}
@@ -283,7 +282,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 			}
 			else {
 				// Service not bound at the moment (too slow start? or disconnected itself?)
-				if (Logging.INFO) Log.i(TAG, "onResume() - Client selected, but service not yet available => binding again");
+				Log.i(TAG, "onResume() - Client selected, but service not yet available => binding again");
 				doBindService();
 			}
 		}
@@ -334,7 +333,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 	@Override
 	protected void onDestroy() {
-		if (Logging.DEBUG) Log.d(TAG, "onDestroy()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy()");
 		doUnbindService();
 		mScreenOrientation = null;
 		super.onDestroy();
@@ -466,7 +465,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 				pd.setMessage(getString(R.string.retrievingData));				
 				break;
 			default:
-				if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + mConnectProgressIndicator.toString());
+				Log.e(TAG, "Unhandled progress indicator: " + mConnectProgressIndicator.toString());
 			}
 			break;
 		case DIALOG_HOST_INFO:
@@ -510,7 +509,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (Logging.DEBUG) Log.d(TAG, "onActivityResult()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onActivityResult()");
 		switch (requestCode) {
 		case ACTIVITY_SELECT_HOST:
 			if (resultCode == RESULT_OK) {
@@ -548,13 +547,13 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 			setProgressBarIndeterminateVisibility(false);
 			break;
 		default:
-			if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + progress.toString());
+			Log.e(TAG, "Unhandled progress indicator: " + progress.toString());
 		}
 	}
 
 	@Override
 	public void clientConnected(ClientId clientId, VersionInfo clientVersion) {
-		if (Logging.DEBUG) Log.d(TAG, "clientConnected(clientId=\"" + clientId.getNickname() + "\", clientVersion=\"" + clientVersion.version + "\")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientConnected(clientId=\"" + clientId.getNickname() + "\", clientVersion=\"" + clientVersion.version + "\")");
 		setProgressBarIndeterminateVisibility(false);
 		mConnectedClient = clientId;
 		refreshClientName();
@@ -566,7 +565,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 	@Override
 	public void clientDisconnected(ClientId clientId, DisconnectCause cause) {
-		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected(clientId=\"" + clientId.getNickname() + "\", cause=" + cause.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientDisconnected(clientId=\"" + clientId.getNickname() + "\", cause=" + cause.toString() + ")");
 		mConnectedClientHandler = null;
 		mConnectedClient = null;
 		refreshClientName();
@@ -605,7 +604,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 	@Override
 	public void clientConnected(ClientRequestHandler requestHandler) {
-		if (Logging.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
 		mConnectedClientHandler = requestHandler;
 		mConnectedClient = mConnectedClientHandler.getClientId();
 		refreshClientName();
@@ -622,13 +621,13 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 		}
 		else {
 			// Received connected notification, but client is unknown!
-			if (Logging.ERROR) Log.e(TAG, "Client not connected despite notification");
+			Log.e(TAG, "Client not connected despite notification");
 		}
 	}
 
 	@Override
 	public void clientDisconnected() {
-		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientDisconnected()");
 		mConnectedClientHandler = null;
 		mConnectedClient = null;
 		refreshClientName();
@@ -638,7 +637,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 	@Override
 	public boolean updatedClientMode(ModeInfo modeInfo) {
-		if (Logging.DEBUG) Log.d(TAG, "Client run/network mode info updated, refreshing view");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Client run/network mode info updated, refreshing view");
 		mClientMode = modeInfo;
 		refreshClientMode();
 		dismissProgressDialog();
@@ -647,7 +646,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 	@Override
 	public boolean updatedHostInfo(HostInfo hostInfo) {
-		if (Logging.DEBUG) Log.d(TAG, "Host info received, displaying");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Host info received, displaying");
 		mHostInfo = hostInfo;
 		dismissProgressDialog();
 		if (mHostInfo != null) {
@@ -837,11 +836,11 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 			if (mSelectedClient.equals(mConnectedClient)) {
 				// The same client was selected, as the one already connected
 				// We will not change connection - reset mSelectedClient
-				if (Logging.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");
 				mSelectedClient = null;
 			}
 			else {
-				if (Logging.DEBUG) Log.d(TAG, "Selected new client: " + mSelectedClient.getNickname() + ", while already connected to: " + mConnectedClient.getNickname() + ", disconnecting it first");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Selected new client: " + mSelectedClient.getNickname() + ", while already connected to: " + mConnectedClient.getNickname() + ", disconnecting it first");
 				boincDisconnect();
 				// The boincConnect() will be triggered after the clientDisconnected() notification
 			}

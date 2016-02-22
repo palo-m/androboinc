@@ -30,7 +30,6 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.HostListDbAdapter;
@@ -115,15 +114,15 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 
 		public SavedState() {
 			initialDataAvailable = mInitialDataAvailable;
-			if (Logging.DEBUG) Log.d(TAG, "saved: initialDataAvailable=" + initialDataAvailable);
+			if (BuildConfig.DEBUG) Log.d(TAG, "saved: initialDataAvailable=" + initialDataAvailable);
 			connectProgressIndicator = mConnectProgressIndicator;
-			if (Logging.DEBUG) Log.d(TAG, "saved: connectProgressIndicator=" + connectProgressIndicator.toString());
+			if (BuildConfig.DEBUG) Log.d(TAG, "saved: connectProgressIndicator=" + connectProgressIndicator.toString());
 		}
 		public void restoreState(BoincManagerActivity activity) {
 			activity.mInitialDataAvailable = initialDataAvailable;
-			if (Logging.DEBUG) Log.d(TAG, "restored: mInitialDataAvailable=" + activity.mInitialDataAvailable);
+			if (BuildConfig.DEBUG) Log.d(TAG, "restored: mInitialDataAvailable=" + activity.mInitialDataAvailable);
 			activity.mConnectProgressIndicator = connectProgressIndicator;
-			if (Logging.DEBUG) Log.d(TAG, "restored: mConnectProgressIndicator=" + activity.mConnectProgressIndicator.toString());
+			if (BuildConfig.DEBUG) Log.d(TAG, "restored: mConnectProgressIndicator=" + activity.mConnectProgressIndicator.toString());
 		}
 	}
 
@@ -133,7 +132,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
-			if (Logging.DEBUG) Log.d(TAG, "onServiceConnected()");
+			if (BuildConfig.DEBUG) Log.d(TAG, "onServiceConnected()");
 			mConnectionManager.getConnectionManager().registerStatusObserver(BoincManagerActivity.this);
 			mConnectionManager.getConnectionManager().registerDataReceiver(BoincManagerActivity.this);
 			// If service is already connected to client, it will call back the clientConnected()
@@ -151,7 +150,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			mConnectedClientHandler = null;
 			// This should not happen normally, because it's local service 
 			// running in the same process...
-			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
+			Log.w(TAG, "onServiceDisconnected()");
 			// We also reset client reference to prevent mess
 			mConnectedClient = null;
 			mSelectedClient = null;
@@ -159,13 +158,13 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 	};
 
 	private void doBindService() {
-		if (Logging.DEBUG) Log.d(TAG, "doBindService()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "doBindService()");
 		bindService(new Intent(BoincManagerActivity.this, ConnectionManagerService.class),
 				mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private void doUnbindService() {
-		if (Logging.DEBUG) Log.d(TAG, "doUnbindService()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "doUnbindService()");
 		unbindService(mServiceConnection);
 		mConnectionManager = null;
 	}
@@ -173,7 +172,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onCreate()");
 
 		mApp = (BoincManagerApplication)getApplication();
 
@@ -239,7 +238,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 					HostListDbAdapter dbHelper = new HostListDbAdapter(this);
 					dbHelper.open();
 					mSelectedClient = dbHelper.fetchHost(autoConnectHost);
-					if (Logging.DEBUG) Log.d(TAG, "Will auto-connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
+					if (BuildConfig.DEBUG) Log.d(TAG, "Will auto-connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
 					dbHelper.close();
 				}
 			}
@@ -249,7 +248,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (Logging.DEBUG) Log.d(TAG, "onResume()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onResume()");
 		mBackPressedRecently = false;
 		mScreenOrientation.setOrientation();
 		// We are either starting up or returning from sub-activity, which
@@ -261,18 +260,18 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			mScreenAlwaysOn = screenAlwaysOn;
 			if (mScreenAlwaysOn) {
 				mWakeLock.acquire();
-				if (Logging.DEBUG) Log.d(TAG, "Acquired screen lock");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Acquired screen lock");
 			}
 			else {
 				mWakeLock.release();
-				if (Logging.DEBUG) Log.d(TAG, "Released screen lock");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Released screen lock");
 			}
 		}
 		if (mSelectedClient == null) {
 			ClientId clientId = getIntent().getParcelableExtra(ClientId.TAG);
 			if (clientId != null) {
 				mSelectedClient = clientId;
-				if (Logging.DEBUG) Log.d(TAG, "Intent triggers connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
+				if (BuildConfig.DEBUG) Log.d(TAG, "Intent triggers connect to " + mSelectedClient.getAddress() + ":" + mSelectedClient.getPort());
 			}
 		}
 		// Update name of connected client (or show "not connected")
@@ -304,7 +303,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			else {
 				// Service not bound at the moment (too slow start? or disconnected itself?)
 				// We trigger re-bind again (does not hurt if it's duplicate)
-				if (Logging.DEBUG) Log.d(TAG, "onResume() - Client selected, but service not yet available => binding again");
+				if (BuildConfig.DEBUG) Log.d(TAG, "onResume() - Client selected, but service not yet available => binding again");
 				doBindService();
 			}
 		}
@@ -318,7 +317,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (Logging.DEBUG) Log.d(TAG, "onPause()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onPause()");
 		mDialogsAllowed = false;
 		// If we did not perform deferred connect so far, we needn't do that anymore
 		mSelectedClient = null;
@@ -327,10 +326,10 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (Logging.DEBUG) Log.d(TAG, "onStop()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onStop()");
 		if (isFinishing()) {
 			// Activity is not only invisible, but someone requested it to finish
-			if (Logging.DEBUG) Log.d(TAG, "Activity is finishing NOW");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Activity is finishing NOW");
 			// Save currently selected tab, so it can be restored on next run
 			SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 			SharedPreferences.Editor editor = globalPrefs.edit();
@@ -354,7 +353,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (Logging.DEBUG) Log.d(TAG, "onDestroy()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy()");
 		removeDialog(DIALOG_CONNECT_PROGRESS);
 		if (mConnectionManager != null) {
 			mConnectionManager.getConnectionManager().unregisterDataReceiver(BoincManagerActivity.this);
@@ -366,7 +365,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 		if (mWakeLock.isHeld()) {
 			// We locked the screen previously - release it, as we are closing now
 			mWakeLock.release();
-			if (Logging.DEBUG) Log.d(TAG, "Released screen lock");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Released screen lock");
 		}
 		mWakeLock = null;
 		mScreenOrientation = null;
@@ -457,7 +456,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 		AlertDialog.Builder adBuilder;
 		switch (id) {
 		case DIALOG_CONNECT_PROGRESS:
-			if (Logging.DEBUG) Log.d(TAG, "onCreateDialog(DIALOG_CONNECT_PROGRESS)");
+			if (BuildConfig.DEBUG) Log.d(TAG, "onCreateDialog(DIALOG_CONNECT_PROGRESS)");
 			ProgressDialog dialog = new FixedProgressDialog(this);
             dialog.setIndeterminate(true);
 			dialog.setCancelable(true);
@@ -562,7 +561,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// Progress dialog is allowed since now
 							mDialogsAllowed = true;
-							if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+							if (BuildConfig.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 						}					
 					})
 				.setOnCancelListener(new OnCancelListener() {
@@ -570,7 +569,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 					public void onCancel(DialogInterface dialog) {
 						// Progress dialog is allowed since now
 						mDialogsAllowed = true;
-						if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+						if (BuildConfig.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 					}
 				})
         		.create();
@@ -595,7 +594,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// Progress dialog is allowed since now
 							mDialogsAllowed = true;
-							if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+							if (BuildConfig.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 						}					
 					})
 				.setOnCancelListener(new OnCancelListener() {
@@ -603,7 +602,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 					public void onCancel(DialogInterface dialog) {
 						// Progress dialog is allowed since now
 						mDialogsAllowed = true;
-						if (Logging.DEBUG) Log.d(TAG, "Progress dialog allowed again");
+						if (BuildConfig.DEBUG) Log.d(TAG, "Progress dialog allowed again");
 					}
 				})
         		.create();
@@ -672,7 +671,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 				break;
 			default:
 				pd.setMessage(getString(R.string.error));
-				if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + mConnectProgressIndicator.toString());
+				Log.e(TAG, "Unhandled progress indicator: " + mConnectProgressIndicator.toString());
 			}
 			break;
 		}
@@ -680,7 +679,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (Logging.DEBUG) Log.d(TAG, "onActivityResult()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onActivityResult()");
 		switch (requestCode) {
 		case ACTIVITY_SELECT_HOST:
 			if (resultCode == RESULT_OK) {
@@ -731,13 +730,13 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			setProgressBarIndeterminateVisibility(false);
 			break;
 		default:
-			if (Logging.ERROR) Log.e(TAG, "Unhandled progress indicator: " + progress.toString());
+			Log.e(TAG, "Unhandled progress indicator: " + progress.toString());
 		}
 	}
 
 	@Override
 	public void clientConnected(ClientId clientId, VersionInfo clientVersion) {
-		if (Logging.DEBUG) Log.d(TAG, "clientConnected(clientId=\"" + clientId.getNickname() + "\", clientVersion=\"" + clientVersion.version + "\")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientConnected(clientId=\"" + clientId.getNickname() + "\", clientVersion=\"" + clientVersion.version + "\")");
 		setProgressBarIndeterminateVisibility(false);
 		mConnectedClient = clientId;
 		mConnectedClientVersion = clientVersion;
@@ -749,7 +748,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 
 	@Override
 	public void clientDisconnected(ClientId clientId, DisconnectCause cause) {
-		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected(clientId=\"" + clientId.getNickname() + "\", cause=" + cause.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientDisconnected(clientId=\"" + clientId.getNickname() + "\", cause=" + cause.toString() + ")");
 		mConnectedClient = null;
 		mConnectedClientVersion = null;
 		mConnectedClientHandler = null;
@@ -787,13 +786,13 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 
 	@Override
 	public void clientConnected(ClientRequestHandler requestHandler) {
-		if (Logging.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
 		mConnectedClientHandler = requestHandler;
 	}
 
 	@Override
 	public void clientDisconnected() {
-		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientDisconnected()");
 		mConnectedClientHandler = null;
 		// Also update title
 		mConnectedClient = null;
@@ -839,7 +838,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 		if (mInitialDataRetrievalStarted) {
 			dismissProgressDialog();
 			mInitialDataRetrievalStarted = false;
-			if (Logging.DEBUG) Log.d(TAG, "Explicit initial data retrieval finished");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Explicit initial data retrieval finished");
 			mInitialDataAvailable = true;
 		}
 		return false;
@@ -849,7 +848,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 	private void updateTitle() {
 		if (mConnectedClient != null) {
 			// We are connected to host - update title to host nickname
-			if (Logging.DEBUG) Log.d(TAG, "Host nickname: " + mConnectedClient.getNickname());
+			if (BuildConfig.DEBUG) Log.d(TAG, "Host nickname: " + mConnectedClient.getNickname());
 			mSb.setLength(0);
 			mSb.append(mConnectedClient.getNickname());
 			if (mConnectedClientVersion != null) {
@@ -908,11 +907,11 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			if (mSelectedClient.equals(mConnectedClient)) {
 				// The same client was selected, as the one already connected
 				// We will not change connection - reset mSelectedClient
-				if (Logging.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Selected the same client as already connected: " + mSelectedClient.getNickname() + ", keeping existing connection");
 				mSelectedClient = null;
 			}
 			else {
-				if (Logging.DEBUG) Log.d(TAG, "Selected new client: " + mSelectedClient.getNickname() + ", while already connected to: " + mConnectedClient.getNickname() + ", disconnecting it first");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Selected new client: " + mSelectedClient.getNickname() + ", while already connected to: " + mConnectedClient.getNickname() + ", disconnecting it first");
 				boincDisconnect();
 				// The boincConnect() will be triggered after the clientDisconnected() notification
 			}
@@ -921,7 +920,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 
 	private void retrieveInitialData() {
 		if (mConnectedClientHandler != null) {
-			if (Logging.DEBUG) Log.d(TAG, "Explicit initial data retrieval starting");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Explicit initial data retrieval starting");
 			mConnectedClientHandler.updateTasks(null); // will get whole state
 			mConnectedClientHandler.updateTransfers(null);
 			mConnectedClientHandler.updateMessages(null);

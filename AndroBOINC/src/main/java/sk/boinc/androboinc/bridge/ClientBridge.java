@@ -19,6 +19,7 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.bridge.AutoRefresh.RequestType;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
@@ -31,8 +32,7 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.debug.Logging;
-import sk.boinc.androboinc.debug.NetStats;
+import edu.berkeley.boinc.lite.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;
 import android.os.ConditionVariable;
@@ -68,7 +68,7 @@ public class ClientBridge implements ClientRequestHandler {
 			// processed already, or waiting in queue to be processed
 			// We can start clearing of worker thread (will be also done as post,
 			// so it will be executed afterwards)
-			if (Logging.DEBUG) Log.d(TAG, "disconnecting(), stopping ClientBridgeWorkerThread");
+			if (BuildConfig.DEBUG) Log.d(TAG, "disconnecting(), stopping ClientBridgeWorkerThread");
 			mWorker.stopThread(null);
 			// Clean up periodic updater as well, because no more periodic updates will be needed
 			mAutoRefresh.cleanup();
@@ -83,7 +83,7 @@ public class ClientBridge implements ClientRequestHandler {
 		}
 
 		public void disconnected(final DisconnectCause cause) {
-			if (Logging.DEBUG) Log.d(TAG, "disconnected(cause=" + cause.toString() + ")");
+			if (BuildConfig.DEBUG) Log.d(TAG, "disconnected(cause=" + cause.toString() + ")");
 			// The worker thread was cleared completely 
 			mWorker = null;
 			mRemoteClient = null; // Should already be - here it is again for security
@@ -93,7 +93,7 @@ public class ClientBridge implements ClientRequestHandler {
 		}
 
 		public void delayedDisconnect(final DisconnectCause cause) {
-			if (Logging.DEBUG) Log.d(TAG, "delayedDisconnect(cause=" + cause.toString() + ")");
+			if (BuildConfig.DEBUG) Log.d(TAG, "delayedDisconnect(cause=" + cause.toString() + ")");
 			// The disconnection will continue autonomously;
 			// We must make sure nothing else is sent out
 			mReceivers.clear();
@@ -128,7 +128,7 @@ public class ClientBridge implements ClientRequestHandler {
 			while (it.hasNext()) {
 				ClientReplyReceiver receiver = it.next();
 				receiver.clientDisconnected();
-				if (Logging.DEBUG) Log.d(TAG, "Detached receiver: " + receiver.toString()); // see below clearing of all receivers
+				if (BuildConfig.DEBUG) Log.d(TAG, "Detached receiver: " + receiver.toString()); // see below clearing of all receivers
 			}
 			mReceivers.clear();
 		}
@@ -266,7 +266,7 @@ public class ClientBridge implements ClientRequestHandler {
 	 */
 	public ClientBridge(ClientBridgeCallback callback, Context context, NetStats netStats) throws RuntimeException {
 		mCallback = callback;
-		if (Logging.DEBUG) Log.d(TAG, "Starting ClientBridgeWorkerThread");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Starting ClientBridgeWorkerThread");
 		ConditionVariable lock = new ConditionVariable(false);
 		mAutoRefresh = new AutoRefresh(context, this);
 		mWorker = new ClientBridgeWorkerThread(lock, mBridgeReply, context, netStats);
@@ -274,10 +274,10 @@ public class ClientBridge implements ClientRequestHandler {
 		boolean runningOk = lock.block(2000); // Locking until new thread fully runs
 		if (!runningOk) {
 			// Too long time waiting for worker thread to be on-line - cancel it
-			if (Logging.ERROR) Log.e(TAG, "ClientBridgeWorkerThread did not start in 2 seconds");
+			Log.e(TAG, "ClientBridgeWorkerThread did not start in 2 seconds");
 			throw new RuntimeException("Worker thread cannot start");
 		}
-		if (Logging.DEBUG) Log.d(TAG, "ClientClientBridgeWorkerThread started successfully");
+		if (BuildConfig.DEBUG) Log.d(TAG, "ClientClientBridgeWorkerThread started successfully");
 	}
 
 	public void cleanup() {
@@ -293,7 +293,7 @@ public class ClientBridge implements ClientRequestHandler {
 	public void registerDataReceiver(ClientReplyReceiver receiver) {
 		// Another receiver wants to be notified - add him into collection of receivers
 		mReceivers.add(receiver);
-		if (Logging.DEBUG) Log.d(TAG, "Attached new receiver: " + receiver.toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "Attached new receiver: " + receiver.toString());
 		if (mConnected) {
 			// New receiver is attached while we are already connected
 			// Notify new receiver that we are connected, so it can fetch data
@@ -309,18 +309,18 @@ public class ClientBridge implements ClientRequestHandler {
 			// Remove it now
 			mAutoRefresh.unscheduleAutomaticRefresh(receiver);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "Detached receiver: " + receiver.toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "Detached receiver: " + receiver.toString());
 	}
 
 	public void connect(final ClientId remoteClient, final boolean retrieveInitialData) {
 		if (mRemoteClient != null) {
 			// already connected
-			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " while already connected to: " + mRemoteClient.getNickname());
+			Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " while already connected to: " + mRemoteClient.getNickname());
 			return;
 		}
 		if (mWorker == null) {
 			// After disconnect - it cannot be reused
-			if (Logging.ERROR) Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " after being cleaned up");
+			Log.e(TAG, "Request to connect to: " + remoteClient.getNickname() + " after being cleaned up");
 			return;
 		}
 		mBridgeReply.setClientId(remoteClient); // For bridge callback
@@ -329,7 +329,7 @@ public class ClientBridge implements ClientRequestHandler {
 	}
 
 	public void disconnect() {
-		if (Logging.DEBUG) Log.d(TAG, "disconnect()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "disconnect()");
 		if (mRemoteClient == null) return; // not connected
 		mWorker.disconnect();
 		mRemoteClient = null; // This will prevent further triggers towards worker thread

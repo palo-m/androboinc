@@ -19,11 +19,11 @@
 
 package sk.boinc.androboinc.service;
 
+import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.BoincManagerActivity;
 import sk.boinc.androboinc.R;
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
 import sk.boinc.androboinc.clientconnection.StatusNotifier;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.util.ClientId;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -54,7 +54,7 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 
 	public ConnectionStatusNotifier(Context context) {
 		if (context == null) throw new NullPointerException();
-		if (Logging.DEBUG) Log.d(TAG, "ConnectionStatusNotifier(context=" + context.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "ConnectionStatusNotifier(context=" + context.toString() + ")");
 		mContext = context;
 		mNotificationManager = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Cancel possible old notifications
@@ -63,7 +63,7 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 	}
 
 	public void cleanup() {
-		if (Logging.DEBUG) Log.d(TAG, "cleanup()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "cleanup()");
 		cancelConnected();
 		// We will keep disconnected notification
 	}
@@ -85,7 +85,7 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 	public void connected(ClientId host) {
 		String contentText = String.format(mContext.getString(R.string.notifyConnected), host.getNickname());
 		notifyConnected(contentText, null);
-		if (Logging.DEBUG) Log.d(TAG, "Shown connected notification");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Shown connected notification");
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		String contentText = String.format(mContext.getString(R.string.notifyConnected), host.getNickname());
 		String tickerText = String.format(mContext.getString(R.string.notifyConnNoFrontend), host.getNickname());
 		notifyConnected(contentText, tickerText);
-		if (Logging.DEBUG) Log.d(TAG, "Shown connectedNoFrontend notification");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Shown connectedNoFrontend notification");
 	}
 
 	private void notifyDisconnected(ClientId host, String contentText, boolean autoCancel) {
@@ -112,7 +112,7 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 			mDelayedTrigger = new Runnable() {
 				@Override
 				public void run() {
-					if (Logging.DEBUG) Log.d(TAG, "Auto-cancelling disconnected notification (normal disconnect)");
+					if (BuildConfig.DEBUG) Log.d(TAG, "Auto-cancelling disconnected notification (normal disconnect)");
 					mDelayedTrigger = null;
 					cancelDisconnected();
 				}
@@ -134,14 +134,14 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 			break;
 		}
 		notifyDisconnected(host, contentText, (cause == DisconnectCause.NORMAL));
-		if (Logging.DEBUG) Log.d(TAG, "Shown disconnected notification");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Shown disconnected notification");
 	}
 
 	@Override
 	public void disconnectedNoFrontend(ClientId host) {
 		String contentText = String.format(mContext.getString(R.string.notifyDiscNoFrontend), host.getNickname());
 		notifyDisconnected(host, contentText, false);
-		if (Logging.DEBUG) Log.d(TAG, "Shown disconnectedNoFrontend notification");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Shown disconnectedNoFrontend notification");
 	}
 
 	private void cancelConnected() {

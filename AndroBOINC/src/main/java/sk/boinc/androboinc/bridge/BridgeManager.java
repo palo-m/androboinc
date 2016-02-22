@@ -19,6 +19,7 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ConnectionManager;
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback;
@@ -27,8 +28,7 @@ import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.Disconnect
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.ProgressInd;
 import sk.boinc.androboinc.clientconnection.StatusNotifier;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.debug.Logging;
-import sk.boinc.androboinc.debug.NetStats;
+import edu.berkeley.boinc.lite.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;
 import android.os.Handler;
@@ -68,7 +68,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	 */
 	public BridgeManager(final Context context, final StatusNotifier notifier, final NetStats netStats) {
 		if (context == null) throw new NullPointerException();
-		if (Logging.DEBUG) Log.d(TAG, "BridgeManager()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "BridgeManager()");
 		mContext = context;
 		mNotifier = notifier;
 		mNetStats = netStats;
@@ -81,7 +81,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	 * immediately and release autonomously.
 	 */
 	public void cleanup() {
-		if (Logging.DEBUG) Log.d(TAG, "cleanup()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "cleanup()");
 		mDeferredConnect = null;
 		mDataReceivers.clear();
 		if (mClientBridge != null) {
@@ -123,7 +123,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 		if (mClientBridge != null) {
 			mClientBridge.registerDataReceiver(receiver);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "Attached new data receiver: " + receiver.toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "Attached new data receiver: " + receiver.toString());
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 		if (mClientBridge != null) {
 			mClientBridge.unregisterDataReceiver(receiver);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "Detached data receiver: " + receiver.toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "Detached data receiver: " + receiver.toString());
 
 	}
 
@@ -152,7 +152,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 		if (mClientBridge != null) {
 			observer.clientConnected(mClientId, mClientVersion);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "Attached new observer: " + observer.toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "Attached new observer: " + observer.toString());
 	}
 
 	/* (non-Javadoc)
@@ -161,7 +161,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	@Override
 	public void unregisterStatusObserver(final ConnectionManagerCallback observer) {
 		mStatusObservers.remove(observer);
-		if (Logging.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "Detached observer: " + observer.toString());
 	}
 
 	/* (non-Javadoc)
@@ -177,7 +177,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	 */
 	@Override
 	public void connect(final ConnectionManagerCallback callback, final ClientId host, final boolean retrieveInitialData) {
-		if (Logging.DEBUG) Log.d(TAG, "connect()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "connect()");
 		if (mClientBridge != null) {
 			// We are already connected
 			// First we will disconnect the current bridge.
@@ -228,12 +228,12 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	 */
 	@Override
 	public void disconnect(final ConnectionManagerCallback callback) {
-		if (Logging.DEBUG) Log.d(TAG, "disconnect()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "disconnect()");
 		if (mClientBridge != null) {
 			mClientBridge.disconnect();
 		}
 		else {
-			if (Logging.DEBUG) Log.d(TAG, "disconnect() - not connected");
+			if (BuildConfig.DEBUG) Log.d(TAG, "disconnect() - not connected");
 		}
 	}
 
@@ -243,7 +243,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	@Override
 	public void bridgeConnectionProgress(ProgressInd progress) {
 		// Just propagate progress indicator to observers
-		if (Logging.DEBUG) Log.d(TAG, "bridgeConnectionProgress()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "bridgeConnectionProgress()");
 		Iterator<ConnectionManagerCallback> it = mStatusObservers.iterator();
 		while (it.hasNext()) {
 			ConnectionManagerCallback observer = it.next();
@@ -256,7 +256,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	 */
 	@Override
 	public void bridgeConnected(final ClientId clientId, final VersionInfo clientVersion) {
-		if (Logging.DEBUG) Log.d(TAG, "bridgeConnected()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "bridgeConnected()");
 		if (mClientBridge == null) {
 			// cleanup done meanwhile
 			return;
@@ -278,7 +278,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	 */
 	@Override
 	public void bridgeDisconnected(final ClientId clientId, final DisconnectCause cause) {
-		if (Logging.DEBUG) Log.d(TAG, "bridgeDisconnected()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "bridgeDisconnected()");
 		if (mClientBridge == null) {
 			// cleanup done meanwhile
 			return;
@@ -306,29 +306,29 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 
 	@Override
 	public void onConnectivityAvailable(int connectivityType) {
-		if (Logging.DEBUG) Log.d(TAG, "onConnectivityAvailable(), connectivity type: " + connectivityType);
+		if (BuildConfig.DEBUG) Log.d(TAG, "onConnectivityAvailable(), connectivity type: " + connectivityType);
 		mConnectivityAvailable = true;
 		if (mClientBridge != null) {
-			if (Logging.DEBUG) Log.d(TAG, "onConnectivityAvailable() while connected to host " + mClientId.getNickname() + ", connectivity type: " + connectivityType);
+			if (BuildConfig.DEBUG) Log.d(TAG, "onConnectivityAvailable() while connected to host " + mClientId.getNickname() + ", connectivity type: " + connectivityType);
 			// TODO Handle connectivity restoration
 		}
 	}
 
 	@Override
 	public void onConnectivityUnavailable() {
-		if (Logging.DEBUG) Log.d(TAG, "onConnectivityUnavailable()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onConnectivityUnavailable()");
 		mConnectivityAvailable = false;
 		if (mClientBridge != null) {
-			if (Logging.DEBUG) Log.d(TAG, "onConnectivityUnavailable() while connected to host " + mClientId.getNickname());
+			if (BuildConfig.DEBUG) Log.d(TAG, "onConnectivityUnavailable() while connected to host " + mClientId.getNickname());
 			// TODO Handle connectivity loss
 		}
 	}
 
 	@Override
 	public void onConnectivityChangedType(int connectivityType) {
-		if (Logging.DEBUG) Log.d(TAG, "onConnectivityChangedType(), new connectivity type: " + connectivityType);
+		if (BuildConfig.DEBUG) Log.d(TAG, "onConnectivityChangedType(), new connectivity type: " + connectivityType);
 		if (mClientBridge != null) {
-			if (Logging.DEBUG) Log.d(TAG, "onConnectivityChangedType() while connected to host " + mClientId.getNickname() + ", new connectivity type: " + connectivityType);
+			if (BuildConfig.DEBUG) Log.d(TAG, "onConnectivityChangedType() while connected to host " + mClientId.getNickname() + ", new connectivity type: " + connectivityType);
 			// TODO Handle connectivity type change
 		}
 	}

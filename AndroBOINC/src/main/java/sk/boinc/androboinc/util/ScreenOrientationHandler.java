@@ -19,7 +19,7 @@
 
 package sk.boinc.androboinc.util;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -57,14 +57,14 @@ public class ScreenOrientationHandler implements OnSharedPreferenceChangeListene
 				return;
 			}
 			if (newOrientation == mChosenOrientation) return; // unchanged
-			if (Logging.DEBUG) Log.d(TAG, "Orientation setting changed from " + mChosenOrientation + " to " + newOrientation);
+			if (BuildConfig.DEBUG) Log.d(TAG, "Orientation setting changed from " + mChosenOrientation + " to " + newOrientation);
 			mChosenOrientation = newOrientation;
 		}
 	}
 
 	public void setOrientation() {
 		if (mChosenOrientation != mActivity.getRequestedOrientation()) {
-			if (Logging.DEBUG) Log.d(TAG, "Changing orientation for " + mActivity.toString());
+			if (BuildConfig.DEBUG) Log.d(TAG, "Changing orientation for " + mActivity.toString());
 			// mChosenOrientation can have only allowed values (see above)
 			//noinspection AndroidLintWrongConstant
 			mActivity.setRequestedOrientation(mChosenOrientation);

@@ -19,9 +19,9 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.util.PreferenceName;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -107,10 +107,10 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 						// do the auto-refresh anymore
 						// Nevertheless, this should never happen (cleanup() should make it sure)
 						// so we emit warning here...
-						if (Logging.WARNING) Log.w(TAG, "handleMessage(): after cleanup(), message ignored");
+						Log.w(TAG, "handleMessage(): after cleanup(), message ignored");
 						return;
 					}
-					if (Logging.DEBUG) Log.d(TAG, "handleMessage(): triggering automatic update (" + request.callback.toString() + "," + request.requestType.toString() + ")");
+					if (BuildConfig.DEBUG) Log.d(TAG, "handleMessage(): triggering automatic update (" + request.callback.toString() + "," + request.requestType.toString() + ")");
 					switch (request.requestType) {
 					case CLIENT_MODE:
 						clientBridge.updateClientMode(request.callback);
@@ -128,12 +128,12 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 						clientBridge.updateMessages(request.callback);
 						break;						
 					default:
-						if (Logging.ERROR) Log.e(TAG, "Unhandled request type: " + request.requestType.toString());					
+						Log.e(TAG, "Unhandled request type: " + request.requestType.toString());
 					}
 				}
 				else {
 					// Request removed meanwhile, but message was not removed
-					if (Logging.WARNING) Log.w(TAG, "Orphaned message received - update already removed: (" + request.callback.toString() + "," + request.requestType.toString() + ")");
+					Log.w(TAG, "Orphaned message received - update already removed: (" + request.callback.toString() + "," + request.requestType.toString() + ")");
 				}
 			}
 		}
@@ -149,7 +149,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 
 
 	public AutoRefresh(final Context context, final ClientRequestHandler clientRequestHandler) {
-		if (Logging.DEBUG) Log.d(TAG, "AutoRefresh()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "AutoRefresh()");
 		mRefreshHandler = new RefreshHandler(this);
 		mClientBridge = clientRequestHandler;
 		final ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -158,7 +158,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 		if (mConnectionType == NO_CONNECTIVITY) {
 			// This is the case when ni == null or cm == null
 			mAutoRefresh = 0;      // auto-refresh is disabled
-			if (Logging.INFO) Log.i(TAG, "Networking not active, disabled auto-refresh");
+			Log.i(TAG, "Networking not active, disabled auto-refresh");
 			// We will not register as preference change listener in this case
 		}
 		else {
@@ -168,22 +168,22 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 			if (mConnectionType == ConnectivityManager.TYPE_WIFI) {
 				// The current connection type is WiFi
 				mAutoRefresh = Integer.parseInt(globalPrefs.getString(PreferenceName.AUTO_UPDATE_WIFI, "0"));
-				if (Logging.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (WiFi)");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (WiFi)");
 			}
 			else if (mConnectionType == ConnectivityManager.TYPE_MOBILE) {
 				mAutoRefresh = Integer.parseInt(globalPrefs.getString(PreferenceName.AUTO_UPDATE_MOBILE, "0"));
-				if (Logging.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (Mobile)");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (Mobile)");
 			}
 			else {
 				mConnectionType = ConnectivityManager.TYPE_MOBILE;
 				mAutoRefresh = Integer.parseInt(globalPrefs.getString(PreferenceName.AUTO_UPDATE_MOBILE, "0"));
-				if (Logging.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (other connection, default to Mobile)");			
+				if (BuildConfig.DEBUG) Log.d(TAG, "Auto-refresh interval is set to: " + mAutoRefresh + " seconds (other connection, default to Mobile)");			
 			}
 		}
 	}
 
 	public void cleanup() {
-		if (Logging.DEBUG) Log.d(TAG, "cleanup()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "cleanup()");
 		if (mContext != null) {
 			// We are registered as preference change listener;
 			// Let's unregister now
@@ -192,7 +192,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 			mContext = null;
 		}
 		if (mRefreshHandler.hasMessages(RUN_UPDATE)) {
-			if (Logging.DEBUG) Log.d(TAG, "cleanup(): Removing messages from handler queue");
+			if (BuildConfig.DEBUG) Log.d(TAG, "cleanup(): Removing messages from handler queue");
 			mRefreshHandler.removeMessages(RUN_UPDATE);
 		}
 		mScheduledUpdates.clear();
@@ -207,11 +207,11 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		if (key.equals(PreferenceName.AUTO_UPDATE_WIFI) && (mConnectionType == ConnectivityManager.TYPE_WIFI)) {
 			mAutoRefresh = Integer.parseInt(sharedPreferences.getString(PreferenceName.AUTO_UPDATE_WIFI, "0"));
-			if (Logging.DEBUG) Log.d(TAG, "Auto-refresh interval for WiFi changed to: " + mAutoRefresh + " seconds");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Auto-refresh interval for WiFi changed to: " + mAutoRefresh + " seconds");
 		}
 		else if (key.equals(PreferenceName.AUTO_UPDATE_MOBILE) && (mConnectionType == ConnectivityManager.TYPE_MOBILE)) {
 			mAutoRefresh = Integer.parseInt(sharedPreferences.getString(PreferenceName.AUTO_UPDATE_MOBILE, "0"));
-			if (Logging.DEBUG) Log.d(TAG, "Auto-refresh interval for Mobile changed to: " + mAutoRefresh + " seconds");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Auto-refresh interval for Mobile changed to: " + mAutoRefresh + " seconds");
 		}
 	}
 
@@ -219,12 +219,12 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 		if (mAutoRefresh == 0) return;
 		UpdateRequest request = new UpdateRequest(callback, requestType);
 		if (mScheduledUpdates.contains(request)) {
-			if (Logging.DEBUG) Log.d(TAG, "Entry (" + request.callback.toString() + "," + request.requestType.toString() + ") already scheduled, removing the old schedule");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Entry (" + request.callback.toString() + "," + request.requestType.toString() + ") already scheduled, removing the old schedule");
 			removeAutomaticRefresh(request);
 		}
 		mScheduledUpdates.add(request);
 		mRefreshHandler.sendMessageDelayed(mRefreshHandler.obtainMessage(RUN_UPDATE, request), (mAutoRefresh * 1000));
-		if (Logging.DEBUG) Log.d(TAG, "Scheduled automatic refresh for (" + request.callback.toString() + "," + request.requestType.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "Scheduled automatic refresh for (" + request.callback.toString() + "," + request.requestType.toString() + ")");
 	}
 
 	public void unscheduleAutomaticRefresh(final ClientReplyReceiver callback) {
@@ -235,7 +235,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 			if (req.callback == callback) {
 				mRefreshHandler.removeMessages(RUN_UPDATE, req);
 				mScheduledUpdates.remove(req);
-				if (Logging.DEBUG) Log.d(TAG, "unscheduleAutomaticRefresh(): Removed schedule for entry (" + req.callback.toString() + "," + req.requestType.toString() + ")");
+				if (BuildConfig.DEBUG) Log.d(TAG, "unscheduleAutomaticRefresh(): Removed schedule for entry (" + req.callback.toString() + "," + req.requestType.toString() + ")");
 			}
 		}
 	}
@@ -247,7 +247,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 			if (req.equals(request)) {
 				// The same request - retrieve the original object, as it was the one
 				// which was used for posting the delayed message
-				if (Logging.DEBUG) Log.d(TAG, "mRefreshHandler.hasMessages(RUN_UPDATE, req)=" + mRefreshHandler.hasMessages(RUN_UPDATE, req));
+				if (BuildConfig.DEBUG) Log.d(TAG, "mRefreshHandler.hasMessages(RUN_UPDATE, req)=" + mRefreshHandler.hasMessages(RUN_UPDATE, req));
 				mRefreshHandler.removeMessages(RUN_UPDATE, req);
 				mScheduledUpdates.remove(req);
 				break;

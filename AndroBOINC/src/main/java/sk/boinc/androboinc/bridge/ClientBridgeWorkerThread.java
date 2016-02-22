@@ -19,6 +19,7 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.HostInfo;
 import sk.boinc.androboinc.clientconnection.MessageInfo;
@@ -29,8 +30,7 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.debug.Logging;
-import sk.boinc.androboinc.debug.NetStats;
+import edu.berkeley.boinc.lite.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;
 import android.os.ConditionVariable;
@@ -191,7 +191,7 @@ public class ClientBridgeWorkerThread extends Thread {
 
 	@Override
 	public void run() {
-		if (Logging.DEBUG) Log.d(TAG, "run() - Started " + Thread.currentThread().toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "run() - Started " + Thread.currentThread().toString());
 
 		// Prepare Looper in this thread, to receive messages
 		// "forever"
@@ -222,7 +222,7 @@ public class ClientBridgeWorkerThread extends Thread {
 
 		mHandler.cleanup();
 		mHandler = null;
-		if (Logging.DEBUG) Log.d(TAG, "run() - Finished " + Thread.currentThread().toString());
+		if (BuildConfig.DEBUG) Log.d(TAG, "run() - Finished " + Thread.currentThread().toString());
 	}
 
 	public void stopThread(ConditionVariable lock) {
@@ -230,7 +230,7 @@ public class ClientBridgeWorkerThread extends Thread {
 		mHandler.post(new Runnable() {
 			@Override
 			public void run() {
-				if (Logging.DEBUG) Log.d(TAG, "Quit message received, stopping " + Thread.currentThread().toString());
+				if (BuildConfig.DEBUG) Log.d(TAG, "Quit message received, stopping " + Thread.currentThread().toString());
 				Looper.myLooper().quit();
 			}
 		});

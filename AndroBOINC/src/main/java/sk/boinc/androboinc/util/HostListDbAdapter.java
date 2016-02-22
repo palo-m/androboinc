@@ -19,7 +19,7 @@
 
 package sk.boinc.androboinc.util;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -58,13 +58,13 @@ public class HostListDbAdapter {
 		}
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			if (Logging.INFO) Log.i(TAG, "Creating database, version " + DATABASE_VERSION);
+			Log.i(TAG, "Creating database, version " + DATABASE_VERSION);
 			db.execSQL(DATABASE_CREATE);
 		}
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			// No upgrade needed yet, default stuff used here:
-			if (Logging.WARNING) Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", destroying all old data");
+			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + ", destroying all old data");
 			db.execSQL(DATABASE_CLEAN);
 			onCreate(db);
 		}
@@ -95,7 +95,7 @@ public class HostListDbAdapter {
 	 * @throws SQLException if the database could be neither opened or created
 	 */
 	public HostListDbAdapter open() throws SQLException {
-		if (Logging.DEBUG) Log.d(String.valueOf(this), "open()");
+		if (BuildConfig.DEBUG) Log.d(String.valueOf(this), "open()");
 		mDbHelper = new DatabaseHelper(mCtx);
 		mDb = mDbHelper.getWritableDatabase();
 		return this;
@@ -105,7 +105,7 @@ public class HostListDbAdapter {
 	 * Close the database
 	 */
 	public void close() {
-		if (Logging.DEBUG) Log.d(String.valueOf(this), "close()");
+		if (BuildConfig.DEBUG) Log.d(String.valueOf(this), "close()");
 		if (mDbHelper != null) {
 			mDbHelper.close();
 			mDbHelper = null;

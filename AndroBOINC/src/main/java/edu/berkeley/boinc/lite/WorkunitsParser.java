@@ -19,7 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import android.util.Xml;
 import org.xml.sax.Attributes;
@@ -54,7 +54,7 @@ public class WorkunitsParser extends BaseParser {
 			return parser.getWorkunits();
 		}
 		catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
 			throw new InvalidDataReceivedException("Malformed XML while parsing <workunits>", e);
 		}
 	}
@@ -112,7 +112,7 @@ public class WorkunitsParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
+			Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}

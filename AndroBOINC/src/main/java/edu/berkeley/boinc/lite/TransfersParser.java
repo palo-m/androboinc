@@ -19,7 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import android.util.Xml;
 import org.xml.sax.Attributes;
@@ -54,7 +54,7 @@ public class TransfersParser extends BaseParser {
 			return parser.getTransfers();
 		}
 		catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
 			throw new InvalidDataReceivedException("Malformed XML while parsing <file_transfers>", e);
 		}
 	}
@@ -63,11 +63,9 @@ public class TransfersParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("file_transfer")) {
-			if (Logging.INFO) {
-				if (mTransfer != null) {
-					// previous <file_transfer> not closed - dropping it!
-					Log.i(TAG, "Dropping unfinished <file_transfer> data");
-				}
+			if (mTransfer != null) {
+				// previous <file_transfer> not closed - dropping it!
+				Log.i(TAG, "Dropping unfinished <file_transfer> data");
 			}
 			mTransfer = new Transfer();
 		}
@@ -168,7 +166,7 @@ public class TransfersParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
+			Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}

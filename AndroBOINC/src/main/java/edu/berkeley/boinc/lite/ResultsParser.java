@@ -19,7 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import android.util.Xml;
 import org.xml.sax.Attributes;
@@ -54,7 +54,7 @@ public class ResultsParser extends BaseParser {
 			Xml.parse(rpcResult, parser);
 			return parser.getResults();
 		} catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
 			throw new InvalidDataReceivedException("Malformed XML while parsing <results>", e);
 		}
 
@@ -64,11 +64,9 @@ public class ResultsParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("result")) {
-			if (Logging.INFO) {
-				if (mResult != null) {
-					// previous <result> not closed - dropping it!
-					Log.i(TAG, "Dropping unfinished <result> data");
-				}
+			if (mResult != null) {
+				// previous <result> not closed - dropping it!
+				Log.i(TAG, "Dropping unfinished <result> data");
 			}
 			mResult = new Result();
 		}
@@ -199,7 +197,7 @@ public class ResultsParser extends BaseParser {
 				mUnauthorized = true;
 			}
 		} catch (NumberFormatException e) {
-			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
+			Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false;
 	}

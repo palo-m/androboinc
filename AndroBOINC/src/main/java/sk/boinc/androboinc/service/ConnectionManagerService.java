@@ -19,9 +19,9 @@
 
 package sk.boinc.androboinc.service;
 
+import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.bridge.BridgeManager;
 import sk.boinc.androboinc.clientconnection.ConnectionManager;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.util.ClientId;
 import android.app.Service;
 import android.content.Intent;
@@ -57,7 +57,7 @@ public class ConnectionManagerService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		if (Logging.DEBUG) Log.d(TAG, "onBind()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onBind()");
 		// Just make sure the service is running:
 		startService(new Intent(this, ConnectionManagerService.class));
 		return mBinder;
@@ -76,11 +76,11 @@ public class ConnectionManagerService extends Service {
 				mHandler.removeCallbacks(mPendingNotification);
 				mPendingNotification = null;
 			}
-			if (Logging.DEBUG) Log.d(TAG, "onRebind() - cancelled stopping of the service");
+			if (BuildConfig.DEBUG) Log.d(TAG, "onRebind() - cancelled stopping of the service");
 		}
 		else {
 			// This is not expected
-			if (Logging.ERROR) Log.e(TAG, "onRebind() - mTerminateRunnable empty");
+			Log.e(TAG, "onRebind() - mTerminateRunnable empty");
 			// We just make sure the service is running
 			// If service is still running, it's kept running anyway
 			startService(new Intent(this, ConnectionManagerService.class));
@@ -97,7 +97,7 @@ public class ConnectionManagerService extends Service {
 				mTerminateRunnable = null;
 				// Stop service
 				stopSelf();
-				if (Logging.DEBUG) Log.d(TAG, "Stopped service");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Stopped service");
 			}
 		};
 		// Post the runnable to self - delayed by grace period
@@ -126,13 +126,13 @@ public class ConnectionManagerService extends Service {
 			gracePeriod = TERMINATE_GRACE_PERIOD_IDLE * 1000;
 		}
 		mHandler.postDelayed(mTerminateRunnable, gracePeriod);
-		if (Logging.DEBUG) Log.d(TAG, "onUnbind() - Started grace period to terminate self");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind() - Started grace period to terminate self");
 		return true;
 	}
 
 	@Override
 	public void onCreate() {
-		if (Logging.DEBUG) Log.d(TAG, "onCreate()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onCreate()");
 		// Notifications handler
 		mStatusNotifier = new ConnectionStatusNotifier(getApplicationContext());
 		// Create network statistics handler
@@ -145,7 +145,7 @@ public class ConnectionManagerService extends Service {
 
 	@Override
 	public void onDestroy() {
-		if (Logging.DEBUG) Log.d(TAG, "onDestroy()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy()");
 		// Clean-up connectivity monitoring
 		mConnectivityStatus.cleanup();
 		mConnectivityStatus = null;

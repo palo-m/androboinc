@@ -27,7 +27,6 @@ import sk.boinc.androboinc.clientconnection.ModeInfo;
 import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
-import sk.boinc.androboinc.debug.Logging;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
 import android.app.Activity;
@@ -72,11 +71,11 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 
 		public SavedState() {
 			messages = mMessages;
-			if (Logging.DEBUG) Log.d(TAG, "saved: messages.size()=" + messages.size());
+			if (BuildConfig.DEBUG) Log.d(TAG, "saved: messages.size()=" + messages.size());
 		}
 		public void restoreState(MessagesActivity activity) {
 			activity.mMessages = messages;
-			if (Logging.DEBUG) Log.d(TAG, "restored: mMessages.size()=" + activity.mMessages.size());
+			if (BuildConfig.DEBUG) Log.d(TAG, "restored: mMessages.size()=" + activity.mMessages.size());
 		}
 	}
 
@@ -146,7 +145,7 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mConnectionManager = ((ConnectionManagerService.LocalBinder)service).getService();
-			if (Logging.DEBUG) Log.d(TAG, "onServiceConnected()");
+			if (BuildConfig.DEBUG) Log.d(TAG, "onServiceConnected()");
 			mConnectionManager.getConnectionManager().registerDataReceiver(MessagesActivity.this);
 		}
 
@@ -156,18 +155,18 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 			mConnectedClientHandler = null;
 			// This should not happen normally, because it's local service 
 			// running in the same process...
-			if (Logging.WARNING) Log.w(TAG, "onServiceDisconnected()");
+			Log.w(TAG, "onServiceDisconnected()");
 		}
 	};
 
 	private void doBindService() {
-		if (Logging.DEBUG) Log.d(TAG, "doBindService()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "doBindService()");
 		getApplicationContext().bindService(new Intent(MessagesActivity.this, ConnectionManagerService.class),
 				mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private void doUnbindService() {
-		if (Logging.DEBUG) Log.d(TAG, "doUnbindService()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "doUnbindService()");
 		getApplicationContext().unbindService(mServiceConnection);
 	}
 
@@ -200,7 +199,7 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 		mRequestUpdates = true;
 		if (mConnectedClientHandler != null) {
 			// We are connected right now, request fresh data
-			if (Logging.DEBUG) Log.d(TAG, "onResume() - Starting refresh of data");
+			if (BuildConfig.DEBUG) Log.d(TAG, "onResume() - Starting refresh of data");
 			mConnectedClientHandler.updateMessages(this);
 		}
 		mViewUpdatesAllowed = true;
@@ -210,7 +209,7 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 			sortMessages();
 			((BaseAdapter)getListAdapter()).notifyDataSetChanged();
 			mViewDirty = false;
-			if (Logging.DEBUG) Log.d(TAG, "Delayed refresh of view was done now");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Delayed refresh of view was done now");
 		}
 	}
 
@@ -283,7 +282,7 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 
 	@Override
 	public void clientConnected(ClientRequestHandler requestHandler) {
-		if (Logging.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientConnected(requestHandler=" + requestHandler.toString() + ")");
 		mConnectedClientHandler = requestHandler;
 		if (mConnectedClientHandler != null) {
 			// Connected client is retrieved
@@ -295,7 +294,7 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 
 	@Override
 	public void clientDisconnected() {
-		if (Logging.DEBUG) Log.d(TAG, "clientDisconnected()");
+		if (BuildConfig.DEBUG) Log.d(TAG, "clientDisconnected()");
 		mConnectedClientHandler = null;
 		mMessages.clear();
 		((BaseAdapter)getListAdapter()).notifyDataSetChanged();
@@ -341,13 +340,13 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 			mMessages = messages;
 			if (mViewUpdatesAllowed) {
 				// We are visible, update the view with fresh data
-				if (Logging.DEBUG) Log.d(TAG, "Messages are updated, refreshing view");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Messages are updated, refreshing view");
 				sortMessages();
 				((BaseAdapter)getListAdapter()).notifyDataSetChanged();
 			}
 			else {
 				// We are not visible, do not perform costly tasks now
-				if (Logging.DEBUG) Log.d(TAG, "Messages are updated, but view refresh is delayed");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Messages are updated, but view refresh is delayed");
 				mViewDirty = true;
 			}
 		}

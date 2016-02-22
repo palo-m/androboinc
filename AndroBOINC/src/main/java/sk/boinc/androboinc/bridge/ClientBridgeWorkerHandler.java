@@ -19,6 +19,7 @@
 
 package sk.boinc.androboinc.bridge;
 
+import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.DisconnectCause;
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.ProgressInd;
@@ -29,9 +30,7 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.debug.Debugging;
-import sk.boinc.androboinc.debug.Logging;
-import sk.boinc.androboinc.debug.NetStats;
+import edu.berkeley.boinc.lite.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.PreferenceName;
 import edu.berkeley.boinc.lite.App;
@@ -115,7 +114,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mFormatter != null) mFormatter.cleanup();
 		mFormatter = null;
 		if (mRpcClient != null) {
-			if (Logging.WARNING) Log.w(TAG, "cleanup(): RpcClient still opened, closing it now");
+			Log.w(TAG, "cleanup(): RpcClient still opened, closing it now");
 			closeConnection();
 		}
 		synchronized (this) {
@@ -137,7 +136,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (mRpcClient != null) {
 			mRpcClient.close();
 			mRpcClient = null;
-			if (Logging.DEBUG) Log.d(TAG, "Connection closed");
+			if (BuildConfig.DEBUG) Log.d(TAG, "Connection closed");
 		}
 		mClientId = null;
 	}
@@ -151,7 +150,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	 * @param cause - the reason for disconnect.
 	 */
 	private void disconnect(DisconnectCause cause) {
-		if (Logging.DEBUG) Log.d(TAG, "disconnect(cause=" + cause.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "disconnect(cause=" + cause.toString() + ")");
 		if (mConnectionClosed) return;  // Already done (e.g. connection failure while disconnect is in queue)
 		mDisconnectCause = cause;
 		// Send notification to data receivers
@@ -183,28 +182,28 @@ public class ClientBridgeWorkerHandler extends Handler {
 	public void connect(ClientId client, boolean retrieveInitialData) {
 		if (mDisconnecting) return;  // Already in disconnect phase
 		try {
-			if (Logging.DEBUG) Log.d(TAG, "Opening connection to " + client.getNickname());
+			if (BuildConfig.DEBUG) Log.d(TAG, "Opening connection to " + client.getNickname());
 			notifyProgress(ProgressInd.CONNECTING);
 			RpcClient rpcClient = new RpcClient(mNetStats);
 			mNetStats = null; // Not needed here anymore
 			rpcClient.open(client.getAddress(), client.getPort());
 			mRpcClient = rpcClient;
-			if (Logging.DEBUG) Log.d(TAG, "Connected to " + client.getNickname());
-			if (Debugging.INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
+			if (BuildConfig.DEBUG) Log.d(TAG, "Connected to " + client.getNickname());
+			if (BuildConfig.DEBUG_INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
 			String password = client.getPassword();
 			if (!password.equals("")) {
 				// Password supplied, we need to authorize
 				if (mDisconnecting) return;  // already in disconnect phase
 				notifyProgress(ProgressInd.AUTHORIZATION_PENDING);
 				mRpcClient.authorize(password);
-				if (Logging.DEBUG) Log.d(TAG, "Authorized successfully");
-				if (Debugging.INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
+				if (BuildConfig.DEBUG) Log.d(TAG, "Authorized successfully");
+				if (BuildConfig.DEBUG_INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
 			}
 			edu.berkeley.boinc.lite.VersionInfo versionInfo = mRpcClient.exchangeVersions();
 			if (versionInfo != null) {
 				// Newer client, supports operation <exchange_versions>
 				mClientVersion = VersionInfoCreator.create(versionInfo);
-				if (Logging.DEBUG) Log.d(TAG, "connect(): client version " + mClientVersion.version);
+				if (BuildConfig.DEBUG) Log.d(TAG, "connect(): client version " + mClientVersion.version);
 			}
 			// We need host info to see if GPUs are present
 			// Note: The reply to <get_cc_state/> request (used in initialStateRetrieval()) 
@@ -212,7 +211,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			//       The reply to <get_host_info/> request contains GPU info.
 			edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
 			mGpuPresent = (boincHostInfo.g_ngpus > 0);
-			if (Logging.DEBUG) Log.d(TAG, "connect(): #GPUs=" + boincHostInfo.g_ngpus + ", mGpuPresent=" + mGpuPresent);
+			if (BuildConfig.DEBUG) Log.d(TAG, "connect(): #GPUs=" + boincHostInfo.g_ngpus + ", mGpuPresent=" + mGpuPresent);
 			if (retrieveInitialData) {
 				// Before we reply, we also retrieve the complete state
 				// It can be time consuming, but it is very useful in typical usage;
@@ -237,17 +236,17 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyConnected(client, mClientVersion);
 		}
 		catch (ConnectionFailedException e) {
-			if (Logging.WARNING) Log.w(TAG, "Connection failed in connect(): " + e.getMessage());
+			Log.w(TAG, "Connection failed in connect(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECT_FAILURE);
 		}
 		catch (AuthorizationFailedException e) {
-			if (Logging.WARNING) Log.w(TAG, "Authorization failed in connect(): " + e.getMessage());
+			Log.w(TAG, "Authorization failed in connect(): " + e.getMessage());
 			DisconnectCause cause = (client.getPassword().equals("")) ? 
 					DisconnectCause.AUTH_FAIL_NO_PWD : DisconnectCause.AUTH_FAIL_WRONG_PWD;
 			disconnect(cause);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.WARNING) Log.w(TAG, "Error in connect(): " + e.getMessage());
+			Log.w(TAG, "Error in connect(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -317,7 +316,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.DEBUG) Log.d(TAG, "Canceled updateClientMode(" + callback.toString() + ")");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Canceled updateClientMode(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -334,8 +333,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in updateClientMode(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in updateClientMode()");
+			Log.w(TAG, "Error in updateClientMode(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -345,7 +343,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.DEBUG) Log.d(TAG, "Canceled updateHostInfo(" + callback.toString() + ")");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Canceled updateHostInfo(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -358,8 +356,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in updateHostInfo(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in updateHostInfo()");
+			Log.w(TAG, "Error in updateHostInfo(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -369,7 +366,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.DEBUG) Log.d(TAG, "Canceled updateProjects(" + callback.toString() + ")");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Canceled updateProjects(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -381,8 +378,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in updateProjects(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in updateProjects()");
+			Log.w(TAG, "Error in updateProjects(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -392,7 +388,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.DEBUG) Log.d(TAG, "Canceled updateTasks(" + callback.toString() + ")");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Canceled updateTasks(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -423,8 +419,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in updateTasks(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in updateTasks()");
+			Log.w(TAG, "Error in updateTasks(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -434,7 +429,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.DEBUG) Log.d(TAG, "Canceled updateTransfers(" + callback.toString() + ")");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Canceled updateTransfers(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -446,8 +441,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in updateTransfers(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in updateTransfers()");
+			Log.w(TAG, "Error in updateTransfers(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -457,7 +451,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		synchronized (mUpdateCancel) {
 			if (mUpdateCancel.contains(callback)) {
 				// This update was canceled meanwhile
-				if (Logging.DEBUG) Log.d(TAG, "Canceled updateMessages(" + callback.toString() + ")");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Canceled updateMessages(" + callback.toString() + ")");
 				return;
 			}
 		}
@@ -485,8 +479,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in updateMessages(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in updateMessages()");
+			Log.w(TAG, "Error in updateMessages(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -499,8 +492,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
+			Log.w(TAG, "Error in runBenchmarks(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -516,8 +508,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			updateClientMode(callback);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
+			Log.w(TAG, "Error in setRunMode(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -533,8 +524,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			updateClientMode(callback);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
+			Log.w(TAG, "Error in setNetworkMode(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -550,8 +540,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			updateClientMode(callback);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in runBenchmarks(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in runBenchmarks()");
+			Log.w(TAG, "Error in setGpuMode(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -570,7 +559,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 				connectionAlive = mRpcClient.connectionAlive();
 				if (!connectionAlive) {
 					// The socket is already closed on the other side
-					if (Logging.DEBUG) Log.d(TAG, "shutdownCore(), socket closed after " + i + " seconds since trigger");
+					if (BuildConfig.DEBUG) Log.d(TAG, "shutdownCore(), socket closed after " + i + " seconds since trigger");
 					break;
 				}
 				Thread.sleep(1000);
@@ -579,13 +568,12 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 		catch (InterruptedException e) {
 			// Interrupted while sleep, we better close socket now
-			if (Logging.DEBUG) Log.d(TAG, "interrupted sleep in shutdownCore()", e);
+			if (BuildConfig.DEBUG) Log.d(TAG, "interrupted sleep in shutdownCore()", e);
 			connectionAlive = false;
 		}
 		catch (RpcClientFailedException e) {
 			// The connection could be lost before client was able receive command 
-			if (Logging.DEBUG) Log.d(TAG, "Error in shutdownCore()", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in shutdownCore()");
+			Log.w(TAG, "Error in shutdownCore(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 		if (!connectionAlive) {
@@ -606,8 +594,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			notifyProgress(ProgressInd.XFER_FINISHED);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
+			Log.w(TAG, "Error in doNetworkCommunication(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -623,8 +610,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			updateProjects(callback);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
+			Log.w(TAG, "Error in projectOperation(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -640,8 +626,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			updateTasks(callback);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
+			Log.w(TAG, "Error in taskOperation(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -657,8 +642,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			updateTransfers(callback);
 		}
 		catch (RpcClientFailedException e) {
-			if (Logging.DEBUG) Log.w(TAG, "Error in doNetworkCommunication(): ", e);
-			else if (Logging.WARNING) Log.w(TAG, "Error in doNetworkCommunication()");
+			Log.w(TAG, "Error in transferOperation(): " + e.getMessage());
 			disconnect(DisconnectCause.CONNECTION_DROP);
 		}
 	}
@@ -752,7 +736,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	}
 
 	private void dataSetProjects(Vector<Project> projects) {
-		if (Logging.DEBUG) Log.d(TAG, "dataSetProjects(): Begin update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataSetProjects(): Begin update");
 		mProjects.clear();
 		Iterator<Project> pi;
 		// First calculate sum of all resource shares, to get base
@@ -768,7 +752,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			ProjectInfo project = ProjectInfoCreator.create(prj, totalResources, mFormatter);
 			mProjects.put(prj.master_url, project);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "dataSetProjects(): End update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataSetProjects(): End update");
 	}
 
 	private void dataSetApps(Vector<App> apps) {
@@ -781,7 +765,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 	}
 
 	private void dataSetTasks(Vector<Workunit> workunits, Vector<Result> results) {
-		if (Logging.DEBUG) Log.d(TAG, "dataSetTasks(): Begin update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataSetTasks(): Begin update");
 		mTasks.clear();
 		mActiveTasks.clear();
 		// First, parse workunits, to create auxiliary map of workunits
@@ -797,17 +781,17 @@ public class ClientBridgeWorkerHandler extends Handler {
 			Result result = ri.next();
 			ProjectInfo pi = mProjects.get(result.project_url);
 			if (pi == null) {
-				if (Logging.WARNING) Log.w(TAG, "No project info for WU=" + result.name + " (project_url: " + result.project_url + "), skipping WU");
+				Log.w(TAG, "No project info for WU=" + result.name + " (project_url: " + result.project_url + "), skipping WU");
 				continue;
 			}
 			Workunit workunit = mWorkunits.get(result.wu_name);
 			if (workunit == null) {
-				if (Logging.WARNING) Log.w(TAG, "No workunit info for WU=" + result.name + " (wu_name: " + result.wu_name + "), skipping WU");
+				Log.w(TAG, "No workunit info for WU=" + result.name + " (wu_name: " + result.wu_name + "), skipping WU");
 				continue;
 			}
 			App app = mApps.get(workunit.app_name);
 			if (app == null) {
-				if (Logging.WARNING) Log.w(TAG, "No application info for WU=" + result.name + " (app_name: " + workunit.app_name + "), skipping WU");
+				Log.w(TAG, "No application info for WU=" + result.name + " (app_name: " + workunit.app_name + "), skipping WU");
 				continue;
 			}
 			TaskInfo task = TaskInfoCreator.create(result, workunit, pi, app, mFormatter);
@@ -817,11 +801,11 @@ public class ClientBridgeWorkerHandler extends Handler {
 				mActiveTasks.add(result.name);
 			}
 		}
-		if (Logging.DEBUG) Log.d(TAG, "dataSetTasks(): End update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataSetTasks(): End update");
 	}
 
 	private void dataSetTransfers(Vector<Transfer> transfers) {
-		if (Logging.DEBUG) Log.d(TAG, "dataSetTransfers(): Begin update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataSetTransfers(): Begin update");
 		mTransfers.clear();
 		Iterator<Transfer> ti = transfers.iterator();
 		while (ti.hasNext()) {
@@ -832,17 +816,17 @@ public class ClientBridgeWorkerHandler extends Handler {
 				projectName = proj.project;
 			}
 			else {
-				if (Logging.WARNING) Log.w(TAG, "No project for WU=" + transfer.name + " (project_url: " + transfer.project_url + "), setting dummy");
+				Log.w(TAG, "No project for WU=" + transfer.name + " (project_url: " + transfer.project_url + "), setting dummy");
 				projectName = "???";
 			}
 			TransferInfo transferInfo = TransferInfoCreator.create(transfer, projectName, mFormatter);
 			mTransfers.add(transferInfo);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "dataSetTransfers(): End update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataSetTransfers(): End update");
 	}
 
 	private boolean dataUpdateTasks(Vector<Result> results) {
-		if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): Begin update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateTasks(): Begin update");
 		// Auxiliary set, to know which tasks were updated and which not
 		Set<String> oldTaskNames = new HashSet<String>(mTasks.keySet());
 		mActiveTasks.clear(); // We will build new record of active tasks
@@ -854,7 +838,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			if (task == null) {
 				// Maybe new workunit wad downloaded meanwhile, so we have
 				// its result part, but not workunit part
-				if (Logging.DEBUG) Log.d(TAG, "Task not found while trying dataUpdateTasks() - needs full updateCcState() update");
+				if (BuildConfig.DEBUG) Log.d(TAG, "Task not found while trying dataUpdateTasks() - needs full updateCcState() update");
 				return false;
 			}
 			task = TaskInfoCreator.update(task, result, mFormatter);
@@ -871,28 +855,28 @@ public class ClientBridgeWorkerHandler extends Handler {
 		// e.g. those uploaded and reported successfully
 		// We should remove them now
 		if (oldTaskNames.size() > 0) {
-			if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): " + oldTaskNames.size() + " obsolete tasks detected");
+			if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateTasks(): " + oldTaskNames.size() + " obsolete tasks detected");
 			Iterator<String> it = oldTaskNames.iterator();
 			while (it.hasNext()) {
 				String obsoleteName = it.next();
 				mTasks.remove(obsoleteName);
-				if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): removed " + obsoleteName);
+				if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateTasks(): removed " + obsoleteName);
 			}
 		}
-		if (Logging.DEBUG) Log.d(TAG, "dataUpdateTasks(): End update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateTasks(): End update");
 		return true;
 	}
 
 	private void dataUpdateMessages(Vector<Message> messages) {
 		if (messages == null) return;
-		if (Logging.DEBUG) Log.d(TAG, "dataUpdateMessages(): Begin update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateMessages(): Begin update");
 		Iterator<Message> mi = messages.iterator();
 		while (mi.hasNext()) {
 			edu.berkeley.boinc.lite.Message msg = mi.next();
 			MessageInfo message = MessageInfoCreator.create(msg, mFormatter);
 			mMessages.put(msg.seqno, message);
 		}
-		if (Logging.DEBUG) Log.d(TAG, "dataUpdateMessages(): End update");
+		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateMessages(): End update");
 	}
 
 	private final Vector<ProjectInfo> getProjects() {

@@ -19,8 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Debugging;
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,7 +54,7 @@ public class XmlSanitizer {
 	 */
 	public static String sanitize(final String input, final String tag) {
 		Pattern p = Pattern.compile("<" + tag + ">(.+?)</" + tag + ">", Pattern.DOTALL);
-		if (Logging.DEBUG) Log.d(TAG, "sanitize(): Using pattern \"" + p.pattern() + "\"");
+		if (BuildConfig.DEBUG) Log.d(TAG, "sanitize(): Using pattern \"" + p.pattern() + "\"");
 		Matcher m = p.matcher(input);
 		StringBuffer sb = new StringBuffer();
 		if (!m.find()) {
@@ -69,7 +68,7 @@ public class XmlSanitizer {
 			pos = m.end(1);
 		}
 		sb = sb.append(input, pos, input.length());
-		if (Debugging.DATA) {
+		if (BuildConfig.DEBUG_DATA) {
 			Log.d(TAG, "Sanitized string: ");
 			BufferedReader dbr = new BufferedReader(new StringReader(sb.toString()), 1024);
 			String dl;

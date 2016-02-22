@@ -19,7 +19,7 @@
 
 package edu.berkeley.boinc.lite;
 
-import sk.boinc.androboinc.debug.Logging;
+import sk.boinc.androboinc.BuildConfig;
 import android.util.Log;
 import android.util.Xml;
 import org.xml.sax.Attributes;
@@ -52,7 +52,7 @@ public class VersionInfoParser extends BaseParser {
 			return parser.getVersionInfo();
 		}
 		catch (SAXException e) {
-			if (Logging.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
 			throw new InvalidDataReceivedException("Malformed XML while parsing <server_version>", e);
 		}		
 	}
@@ -61,11 +61,9 @@ public class VersionInfoParser extends BaseParser {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		if (localName.equalsIgnoreCase("server_version")) {
-			if (Logging.INFO) { 
-				if (mVersionInfo != null) {
-					// previous <server_version> not closed - dropping it!
-					Log.i(TAG, "Dropping unfinished <server_version> data");
-				}
+			if (mVersionInfo != null) {
+				// previous <server_version> not closed - dropping it!
+				Log.i(TAG, "Dropping unfinished <server_version> data");
 			}
 			mVersionInfo = new VersionInfo();
 		}
@@ -111,7 +109,7 @@ public class VersionInfoParser extends BaseParser {
 			}
 		}
 		catch (NumberFormatException e) {
-			if (Logging.INFO) Log.i(TAG, "Exception when decoding " + localName);
+			Log.i(TAG, "Exception when decoding " + localName);
 		}
 		mElementStarted = false; // to be clean for next one
 	}
