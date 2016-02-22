@@ -22,7 +22,6 @@ package sk.boinc.androboinc;
 import sk.boinc.androboinc.util.PreferenceName;
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.util.Linkify;
@@ -51,7 +50,7 @@ public class BoincManagerApplication extends Application {
 
 	public static final int DEFAULT_PORT = 31416;
 
-	public static enum AppStatus {
+	public enum AppStatus {
 		NORMAL,
 		NEW_INSTALLED,
 		UPGRADED
@@ -91,14 +90,7 @@ public class BoincManagerApplication extends Application {
 	private void retrieveAppStatus() {
 		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int upgradeInfoShownVersion = globalPrefs.getInt(PreferenceName.UPGRADE_INFO_SHOWN_VERSION, 0);
-		int currentVersion = 0;
-		try {
-			currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-		}
-		catch (NameNotFoundException e) {
-			Log.e(TAG, "Cannot retrieve application version");
-			return;
-		}
+		int currentVersion = BuildConfig.VERSION_CODE;
 		if (BuildConfig.DEBUG) Log.d(TAG, "currentVersion=" + currentVersion + ", upgradeInfoShownVersion=" + upgradeInfoShownVersion);
 		if (upgradeInfoShownVersion == 0) {
 			mAppStatus = AppStatus.NEW_INSTALLED;
@@ -116,14 +108,7 @@ public class BoincManagerApplication extends Application {
 	}
 
 	public void upgradeInfoShown() {
-		int currentVersion = 0;
-		try {
-			currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-		}
-		catch (NameNotFoundException e) {
-			Log.e(TAG, "Cannot retrieve application version");
-			return;
-		}
+		int currentVersion = BuildConfig.VERSION_CODE;
 		SharedPreferences globalPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = globalPrefs.edit();
 		editor.putInt(PreferenceName.UPGRADE_INFO_SHOWN_VERSION, currentVersion).commit();
@@ -135,13 +120,7 @@ public class BoincManagerApplication extends Application {
 		mStringBuilder.setLength(0);
 		mStringBuilder.append(getString(R.string.app_name));
 		mStringBuilder.append(" v");
-		try {
-			mStringBuilder.append(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-		}
-		catch (NameNotFoundException e) {
-			Log.e(TAG, "Cannot retrieve application version");
-			mStringBuilder.setLength(mStringBuilder.length() - 2); // Truncate " v" set above
-		}		
+		mStringBuilder.append(BuildConfig.VERSION_NAME);
 		return mStringBuilder.toString();
 	}
 
@@ -216,7 +195,7 @@ public class BoincManagerApplication extends Application {
 	}
 
 	public String readRawText(final int resource) {
-		InputStream inputStream = null;
+		InputStream inputStream;
 		if (mReadBuffer == null) mReadBuffer = new char[READ_BUF_SIZE];
 		if (mStringBuilder == null) mStringBuilder = new StringBuilder(LICENSE_TEXT_SIZE);
 		mStringBuilder.ensureCapacity(LICENSE_TEXT_SIZE);
