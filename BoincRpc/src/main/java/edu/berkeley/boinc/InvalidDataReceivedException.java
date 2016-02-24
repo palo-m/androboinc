@@ -17,21 +17,29 @@
  * 
  */
 
-package sk.boinc.androboinc.bridge;
-
-import sk.boinc.androboinc.clientconnection.ModeInfo;
-import edu.berkeley.boinc.CcStatus;
+package edu.berkeley.boinc;
 
 
-public class ModeInfoCreator {
-	public static ModeInfo create(final CcStatus ccStatus) {
-		// Consistency checks, so the data received from remote client are those that we can process
-		if ( (ccStatus.task_mode > 3) || (ccStatus.task_mode < 1) ) {
-			return null;
-		}
-		if ( (ccStatus.network_mode > 3) || (ccStatus.network_mode < 1) ) {
-			return null;
-		}
-		return new ModeInfo(ccStatus.task_mode, ccStatus.gpu_mode, ccStatus.network_mode);
+/**
+ * This exception is thrown when invalid or unexpected data is received
+ * during RpcClient call 
+ */
+public class InvalidDataReceivedException extends RpcClientFailedException {
+	private static final long serialVersionUID = -4865117105470215454L; // Generated
+
+	public InvalidDataReceivedException() {
+		super("Invalid data received");
+	}
+
+	public InvalidDataReceivedException(String detailMessage) {
+		super(detailMessage);
+	}
+
+	public InvalidDataReceivedException(String detailMessage, Throwable throwable) {
+		super(detailMessage, throwable);
+	}
+
+	public InvalidDataReceivedException(Throwable throwable) {
+		super("Invalid data received", throwable);
 	}
 }

@@ -20,7 +20,7 @@
 package sk.boinc.androboinc.service;
 
 import sk.boinc.androboinc.BuildConfig;
-import edu.berkeley.boinc.lite.NetStats;
+import edu.berkeley.boinc.NetStats;
 import sk.boinc.androboinc.util.NetStatsStorage;
 import sk.boinc.androboinc.util.PreferenceName;
 import android.content.Context;

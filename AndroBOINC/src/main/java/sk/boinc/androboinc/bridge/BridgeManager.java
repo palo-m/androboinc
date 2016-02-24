@@ -28,7 +28,7 @@ import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.Disconnect
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback.ProgressInd;
 import sk.boinc.androboinc.clientconnection.StatusNotifier;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import edu.berkeley.boinc.lite.NetStats;
+import edu.berkeley.boinc.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import android.content.Context;
 import android.os.Handler;

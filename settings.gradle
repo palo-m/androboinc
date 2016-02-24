@@ -1,1 +1,1 @@
-include ':AndroBOINC'
+include ':BoincRpc', ':AndroBOINC'

@@ -22,7 +22,7 @@ package sk.boinc.androboinc.bridge;
 import sk.boinc.androboinc.R;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import android.content.res.Resources;
-import edu.berkeley.boinc.lite.Transfer;
+import edu.berkeley.boinc.Transfer;
 
 
 public class TransferInfoCreator {

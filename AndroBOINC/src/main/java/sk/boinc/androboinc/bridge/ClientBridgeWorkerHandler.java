@@ -30,21 +30,21 @@ import sk.boinc.androboinc.clientconnection.ProjectInfo;
 import sk.boinc.androboinc.clientconnection.TaskInfo;
 import sk.boinc.androboinc.clientconnection.TransferInfo;
 import sk.boinc.androboinc.clientconnection.VersionInfo;
-import edu.berkeley.boinc.lite.NetStats;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.PreferenceName;
-import edu.berkeley.boinc.lite.App;
-import edu.berkeley.boinc.lite.AuthorizationFailedException;
-import edu.berkeley.boinc.lite.CcState;
-import edu.berkeley.boinc.lite.CcStatus;
-import edu.berkeley.boinc.lite.ConnectionFailedException;
-import edu.berkeley.boinc.lite.Message;
-import edu.berkeley.boinc.lite.Project;
-import edu.berkeley.boinc.lite.Result;
-import edu.berkeley.boinc.lite.RpcClient;
-import edu.berkeley.boinc.lite.RpcClientFailedException;
-import edu.berkeley.boinc.lite.Transfer;
-import edu.berkeley.boinc.lite.Workunit;
+import edu.berkeley.boinc.App;
+import edu.berkeley.boinc.AuthorizationFailedException;
+import edu.berkeley.boinc.CcState;
+import edu.berkeley.boinc.CcStatus;
+import edu.berkeley.boinc.ConnectionFailedException;
+import edu.berkeley.boinc.Message;
+import edu.berkeley.boinc.NetStats;
+import edu.berkeley.boinc.Project;
+import edu.berkeley.boinc.Result;
+import edu.berkeley.boinc.RpcClient;
+import edu.berkeley.boinc.RpcClientFailedException;
+import edu.berkeley.boinc.Transfer;
+import edu.berkeley.boinc.Workunit;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -199,7 +199,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 				if (BuildConfig.DEBUG) Log.d(TAG, "Authorized successfully");
 				if (BuildConfig.DEBUG_INSERT_DELAYS) { try { Thread.sleep(1000); } catch (InterruptedException e) {} }
 			}
-			edu.berkeley.boinc.lite.VersionInfo versionInfo = mRpcClient.exchangeVersions();
+			edu.berkeley.boinc.VersionInfo versionInfo = mRpcClient.exchangeVersions();
 			if (versionInfo != null) {
 				// Newer client, supports operation <exchange_versions>
 				mClientVersion = VersionInfoCreator.create(versionInfo);
@@ -209,7 +209,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 			// Note: The reply to <get_cc_state/> request (used in initialStateRetrieval()) 
 			//       contains <host_info> but that one is WITHOUT <coproc> info.
 			//       The reply to <get_host_info/> request contains GPU info.
-			edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
+			edu.berkeley.boinc.HostInfo boincHostInfo = mRpcClient.getHostInfo();
 			mGpuPresent = (boincHostInfo.g_ngpus > 0);
 			if (BuildConfig.DEBUG) Log.d(TAG, "connect(): #GPUs=" + boincHostInfo.g_ngpus + ", mGpuPresent=" + mGpuPresent);
 			if (retrieveInitialData) {
@@ -349,7 +349,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		}
 		try {
 			notifyProgress(ProgressInd.XFER_STARTED);
-			edu.berkeley.boinc.lite.HostInfo boincHostInfo = mRpcClient.getHostInfo();
+			edu.berkeley.boinc.HostInfo boincHostInfo = mRpcClient.getHostInfo();
 			final HostInfo hostInfo = HostInfoCreator.create(boincHostInfo, mFormatter);
 			// Finally, send reply back to the calling thread (that is UI thread)
 			updatedHostInfo(callback, hostInfo);
@@ -872,7 +872,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateMessages(): Begin update");
 		Iterator<Message> mi = messages.iterator();
 		while (mi.hasNext()) {
-			edu.berkeley.boinc.lite.Message msg = mi.next();
+			edu.berkeley.boinc.Message msg = mi.next();
 			MessageInfo message = MessageInfoCreator.create(msg, mFormatter);
 			mMessages.put(msg.seqno, message);
 		}

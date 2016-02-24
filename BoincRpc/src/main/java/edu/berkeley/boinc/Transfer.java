@@ -17,21 +17,19 @@
  * 
  */
 
-package sk.boinc.androboinc.bridge;
-
-import sk.boinc.androboinc.clientconnection.ModeInfo;
-import edu.berkeley.boinc.CcStatus;
+package edu.berkeley.boinc;
 
 
-public class ModeInfoCreator {
-	public static ModeInfo create(final CcStatus ccStatus) {
-		// Consistency checks, so the data received from remote client are those that we can process
-		if ( (ccStatus.task_mode > 3) || (ccStatus.task_mode < 1) ) {
-			return null;
-		}
-		if ( (ccStatus.network_mode > 3) || (ccStatus.network_mode < 1) ) {
-			return null;
-		}
-		return new ModeInfo(ccStatus.task_mode, ccStatus.gpu_mode, ccStatus.network_mode);
-	}
+public class Transfer {
+	public String name;
+	public String project_url;
+	public boolean is_upload;
+	public long nbytes;
+	public boolean xfer_active;
+	public int status;
+	public long next_request_time;
+    public long time_so_far;
+	public long bytes_xferred;
+    public float xfer_speed;
+	public long project_backoff;
 }

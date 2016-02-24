@@ -47,9 +47,10 @@ android {
 }
 
 dependencies {
+    releaseCompile project(path: ':BoincRpc', configuration: 'release')
+    debugCompile project(path: ':BoincRpc', configuration: 'debug')
     // Unit testing dependencies
     testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.0"
 }
 
 // Load signing configuration from external file

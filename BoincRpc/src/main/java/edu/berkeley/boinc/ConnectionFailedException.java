@@ -17,21 +17,29 @@
  * 
  */
 
-package sk.boinc.androboinc.bridge;
-
-import sk.boinc.androboinc.clientconnection.ModeInfo;
-import edu.berkeley.boinc.CcStatus;
+package edu.berkeley.boinc;
 
 
-public class ModeInfoCreator {
-	public static ModeInfo create(final CcStatus ccStatus) {
-		// Consistency checks, so the data received from remote client are those that we can process
-		if ( (ccStatus.task_mode > 3) || (ccStatus.task_mode < 1) ) {
-			return null;
-		}
-		if ( (ccStatus.network_mode > 3) || (ccStatus.network_mode < 1) ) {
-			return null;
-		}
-		return new ModeInfo(ccStatus.task_mode, ccStatus.gpu_mode, ccStatus.network_mode);
+/**
+ * This exception is thrown when network socked connection fails
+ * during RpcClient call 
+ */
+public class ConnectionFailedException extends RpcClientFailedException {
+	private static final long serialVersionUID = -5573178298141519280L; // Generated
+
+	public ConnectionFailedException() {
+		super("Connection failed");
+	}
+
+	public ConnectionFailedException(String detailMessage) {
+		super(detailMessage);
+	}
+
+	public ConnectionFailedException(String detailMessage, Throwable throwable) {
+		super(detailMessage, throwable);
+	}
+
+	public ConnectionFailedException(Throwable throwable) {
+		super("Connection failed", throwable);
 	}
 }

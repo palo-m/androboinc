@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+    publishNonDefault true
+
+    defaultConfig {
+        minSdkVersion 3
+        targetSdkVersion 23
+        versionCode 10
+        versionName "6.10.58"
+    }
+    buildTypes {
+        release {
+            buildConfigField 'boolean', 'DEBUG_DATA', 'false'
+            buildConfigField 'boolean', 'DEBUG_PERFORMANCE', 'false'
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            buildConfigField 'boolean', 'DEBUG_DATA', 'false'
+            buildConfigField 'boolean', 'DEBUG_PERFORMANCE', 'false'
+            debuggable true
+        }
+    }
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+    }
+}
+
+dependencies {
+    // Unit testing dependencies
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.0"
+}

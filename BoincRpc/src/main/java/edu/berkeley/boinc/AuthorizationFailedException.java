@@ -17,21 +17,28 @@
  * 
  */
 
-package sk.boinc.androboinc.bridge;
-
-import sk.boinc.androboinc.clientconnection.ModeInfo;
-import edu.berkeley.boinc.CcStatus;
+package edu.berkeley.boinc;
 
 
-public class ModeInfoCreator {
-	public static ModeInfo create(final CcStatus ccStatus) {
-		// Consistency checks, so the data received from remote client are those that we can process
-		if ( (ccStatus.task_mode > 3) || (ccStatus.task_mode < 1) ) {
-			return null;
-		}
-		if ( (ccStatus.network_mode > 3) || (ccStatus.network_mode < 1) ) {
-			return null;
-		}
-		return new ModeInfo(ccStatus.task_mode, ccStatus.gpu_mode, ccStatus.network_mode);
+/**
+ * This exception is thrown when authentication fails
+ */
+public class AuthorizationFailedException extends RpcClientFailedException {
+	private static final long serialVersionUID = 7752615754130475737L; // Generated
+
+	public AuthorizationFailedException() {
+		super("Authorization Failed");
+	}
+
+	public AuthorizationFailedException(String detailMessage) {
+		super(detailMessage);
+	}
+
+	public AuthorizationFailedException(String detailMessage, Throwable throwable) {
+		super(detailMessage, throwable);
+	}
+
+	public AuthorizationFailedException(Throwable throwable) {
+		super("Authorization Failed", throwable);
 	}
 }

@@ -20,7 +20,7 @@
 package sk.boinc.androboinc.bridge;
 
 import sk.boinc.androboinc.clientconnection.MessageInfo;
-import edu.berkeley.boinc.lite.Message;
+import edu.berkeley.boinc.Message;
 
 
 public class MessageInfoCreator {
