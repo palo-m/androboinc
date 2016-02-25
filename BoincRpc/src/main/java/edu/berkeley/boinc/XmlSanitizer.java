@@ -43,7 +43,6 @@ public class XmlSanitizer {
 	 * <li>{@code "<l1><l2>See <l3>data</l3> for more</l2></l1>"} for sanitize(input, "l3")</li>
 	 * <li>{@code "<l1><l2>See &lt;l3&gt;data&lt;/l3&gt; for more</l2></l1>"} for sanitize(input, "l2")</li>
 	 * <li>{@code "<l1>&lt;l2&gt;See &lt;l3&gt;data&lt;/l3&gt; for more&lt;/l2&gt;</l1>"} for sanitize(input, "l1")</li>
-	 * <li></li>
 	 * </ul>
 	 * This method currently works only for simple tags (no attributes).
 	 * 
@@ -95,7 +94,7 @@ public class XmlSanitizer {
 	public static String escapeXml(final String s) {
 		if (s == null) return "";
 		String result;
-		result = s.replaceAll("&","&quot;");
+		result = s.replaceAll("&","&amp;");
 		result = result.replaceAll("<","&lt;");
 		result = result.replaceAll(">","&gt;");
 		result = result.replaceAll("\"","&quot;");
@@ -117,7 +116,7 @@ public class XmlSanitizer {
 		result = result.replaceAll("&gt;",">");
 		result = result.replaceAll("&quot;","\"");
 		result = result.replaceAll("&apos;","'");
-		result = result.replaceAll("&quot;","&");
+		result = result.replaceAll("&amp;","&");
 		return result;
 	}
 }
