@@ -27,32 +27,57 @@ import org.junit.runner.RunWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class MessageCountParserTest {
+public class VersionInfoParserTest {
 
     @Test
     public void parseNormal() {
         final String received =
                 "<boinc_gui_rpc_reply>\n" +
-                "<seqno>12741</seqno>\n" +
+                "<server_version>\n" +
+                "   <major>7</major>\n" +
+                "   <minor>4</minor>\n" +
+                "   <release>23</release>\n" +
+                "</server_version>\n" +
                 "</boinc_gui_rpc_reply>\n";
-        int seqNo;
+        VersionInfo versionInfo = null;
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            versionInfo = VersionInfoParser.parse(received);
         }
         catch (AuthorizationFailedException e) {
-            seqNo = -1;
             fail("AuthorizationFailedException unexpected");
         }
         catch (InvalidDataReceivedException e) {
-            seqNo = -2;
             fail("InvalidDataReceivedException unexpected");
         }
-        assertThat(seqNo, is(equalTo(12741)));
+        assertThat(versionInfo.major, is(equalTo(7)));
+        assertThat(versionInfo.minor, is(equalTo(4)));
+        assertThat(versionInfo.release, is(equalTo(23)));
+        assertFalse(versionInfo.prerelease);
+    }
+
+    @Test
+    public void emptyAnswer() {
+        final String received =
+                "<boinc_gui_rpc_reply>\n" +
+                "</boinc_gui_rpc_reply>\n";
+        VersionInfo versionInfo = null;
+        try {
+            versionInfo = VersionInfoParser.parse(received);
+        }
+        catch (AuthorizationFailedException e) {
+            fail("AuthorizationFailedException unexpected");
+        }
+        catch (InvalidDataReceivedException e) {
+            fail("InvalidDataReceivedException unexpected");
+        }
+        assertNull(versionInfo);
     }
 
     @Test
@@ -61,10 +86,10 @@ public class MessageCountParserTest {
                 "<boinc_gui_rpc_reply>\n" +
                 "<unauthorized/>\n" +
                 "</boinc_gui_rpc_reply>\n";
-        int seqNo = -999;
+        VersionInfo versionInfo = null;
         String errorMsg = "";
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            versionInfo = VersionInfoParser.parse(received);
             fail("Successful parsing unexpected, AuthorizationFailedException should be thrown instead");
         }
         catch (AuthorizationFailedException e) {
@@ -75,19 +100,23 @@ public class MessageCountParserTest {
             fail("InvalidDataReceivedException unexpected, AuthorizationFailedException should be thrown instead");
         }
         assertThat(errorMsg, is(equalTo("Authorization Failed")));
-        assertThat(seqNo, is(equalTo(-999)));
+        assertNull(versionInfo);
     }
 
     @Test
     public void invalidData() {
         final String received =
                 "<boinc_gui_rpc_reply>\n" +
-                "<seqno>12741</seqno>\n" +
+                "<server_version>\n" +
+                "   <major>7</major>\n" +
+                "   <minor>4</minor>\n" +
+                "   <release>23</release>\n" +
+                "</server_version>\n" +
                 "</boinc_gui_rpc_reply";
-        int seqNo = -999;
+        VersionInfo versionInfo = null;
         String errorMsg = "";
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            versionInfo = VersionInfoParser.parse(received);
             fail("Successful parsing unexpected, InvalidDataReceivedException should be thrown instead");
         }
         catch (AuthorizationFailedException e) {
@@ -97,18 +126,21 @@ public class MessageCountParserTest {
         catch (InvalidDataReceivedException e) {
             errorMsg = e.getMessage();
         }
-        assertThat(errorMsg, is(equalTo("Malformed XML while parsing <seqno>")));
-        assertThat(seqNo, is(equalTo(-999)));
+        assertThat(errorMsg, is(equalTo("Malformed XML while parsing <server_version>")));
+        assertNull(versionInfo);
     }
 
     @Test
     public void elementNotPresent() {
         final String received =
                 "<boinc_gui_rpc_reply>\n" +
+                "<core_client_major_version>7</core_client_major_version>\n" +
+                "<core_client_minor_version>4</core_client_minor_version>\n" +
+                "<core_client_release>23</core_client_release>\n" +
                 "</boinc_gui_rpc_reply>\n";
-        int seqNo = -999;
+        VersionInfo versionInfo = null;
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            versionInfo = VersionInfoParser.parse(received);
         }
         catch (AuthorizationFailedException e) {
             fail("AuthorizationFailedException unexpected");
@@ -116,6 +148,6 @@ public class MessageCountParserTest {
         catch (InvalidDataReceivedException e) {
             fail("InvalidDataReceivedException unexpected");
         }
-        assertThat(seqNo, is(equalTo(-1)));
+        assertNull(versionInfo);
     }
 }

@@ -32,7 +32,7 @@ public class CcStatusParser extends BaseParser {
 	private boolean mUnauthorized = false;
 
 	
-	public final CcStatus getCcStatus() throws RpcClientFailedException {
+	public final CcStatus getCcStatus() throws AuthorizationFailedException, InvalidDataReceivedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
 		if (null == mCcStatus) throw new InvalidDataReceivedException();
 		return mCcStatus;
@@ -49,7 +49,7 @@ public class CcStatusParser extends BaseParser {
 	 *     or does not contain valid {@code <cc_status>} tag</li>
 	 * </ul>
 	 */
-	public static CcStatus parse(String rpcResult) throws RpcClientFailedException {
+	public static CcStatus parse(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
 		try {
 			CcStatusParser parser = new CcStatusParser();
 			Xml.parse(rpcResult, parser);
@@ -57,7 +57,7 @@ public class CcStatusParser extends BaseParser {
 		}
 		catch (SAXException e) {
 			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			throw new InvalidDataReceivedException("Invalid data while parsing <cc_status>");
+			throw new InvalidDataReceivedException("Malformed XML while parsing <cc_status>");
 		}
 	}
 
