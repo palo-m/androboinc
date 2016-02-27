@@ -1,0 +1,247 @@
+<boinc_gui_rpc_reply>
+<projects>
+<project>
+    <master_url>http://wuprop.boinc-af.org/</master_url>
+    <project_name>WUProp@Home</project_name>
+    <symstore></symstore>
+    <user_name>Test1</user_name>
+    <team_name>TestTeam</team_name>
+    <host_venue>home</host_venue>
+    <email_hash>ee8295d2acaeba9d524badbcb0f9c3dc</email_hash>
+    <cross_project_id>fa07b2a43f4d50b6147908fd5bc84413</cross_project_id>
+    <external_cpid>699379e08988924ad7eb8f0addcbddae</external_cpid>
+    <cpid_time>1291182512.000000</cpid_time>
+    <user_total_credit>739160.640681</user_total_credit>
+    <user_expavg_credit>588.897256</user_expavg_credit>
+    <user_create_time>1291182512.000000</user_create_time>
+    <rpc_seqno>54280</rpc_seqno>
+    <userid>3060</userid>
+    <teamid>751</teamid>
+    <hostid>15982</hostid>
+    <host_total_credit>94459.589717</host_total_credit>
+    <host_expavg_credit>46.815763</host_expavg_credit>
+    <host_create_time>1300609224.000000</host_create_time>
+    <nrpc_failures>0</nrpc_failures>
+    <master_fetch_failures>0</master_fetch_failures>
+    <min_rpc_time>1456406331.797230</min_rpc_time>
+    <next_rpc_time>1456409924.797230</next_rpc_time>
+    <rec>0.004598</rec>
+    <rec_time>1456409427.477241</rec_time>
+    <resource_share>0.010000</resource_share>
+    <desired_disk_usage>0.000000</desired_disk_usage>
+    <duration_correction_factor>1.000000</duration_correction_factor>
+    <sched_rpc_pending>1</sched_rpc_pending>
+    <send_time_stats_log>0</send_time_stats_log>
+    <send_job_log>0</send_job_log>
+    <njobs_success>1122</njobs_success>
+    <njobs_error>1</njobs_error>
+    <elapsed_time>24249332.619133</elapsed_time>
+    <dont_use_dcf/>
+    <non_cpu_intensive/>
+    <rsc_backoff_time>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_time>
+    <rsc_backoff_interval>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_interval>
+<gui_urls>
+
+    <gui_url>
+        <name>Your account</name>
+        <description>View your account information and credit totals</description>
+        <url>http://wuprop.boinc-af.org/home.php</url>
+    </gui_url>
+    <ifteam>
+        <gui_url>
+            <name>Team</name>
+            <description>Info about BOINC.SK</description>
+            <url>http://wuprop.boinc-af.org/team_display.php?teamid=751</url>
+        </gui_url>
+    </ifteam>
+    <gui_url>
+        <name>Forum</name>
+        <description>Get help about WUProp@home</description>
+        <url>http://wuprop.boinc-af.org/forum_index.php</url>
+    </gui_url>
+    <gui_url>
+        <name>Results</name>
+        <description>View data collected by the project</description>
+        <url>http://wuprop.boinc-af.org/results.html</url>
+    </gui_url>
+</gui_urls>
+    <sched_priority>-0.000101</sched_priority>
+    <last_rpc_time>1456406324.797230</last_rpc_time>
+    <project_files_downloaded_time>0.000000</project_files_downloaded_time>
+    <venue>home</venue>
+    <project_dir>/local/boinc-client/projects/wuprop.boinc-af.org</project_dir>
+</project>
+<project>
+    <master_url>http://www.worldcommunitygrid.org/</master_url>
+    <project_name>World Community Grid</project_name>
+    <symstore></symstore>
+    <user_name>Palo M.</user_name>
+    <team_name>BOINC.SK</team_name>
+    <host_venue>home</host_venue>
+    <email_hash>ee8295d2acaeba9d524badbcb0f9c3dc</email_hash>
+    <cross_project_id>fa07b2a43f4d50b6147908fd5bc84413</cross_project_id>
+    <external_cpid></external_cpid>
+    <cpid_time>1138889423.000000</cpid_time>
+    <user_total_credit>32667955.277421</user_total_credit>
+    <user_expavg_credit>12688.155962</user_expavg_credit>
+    <user_create_time>1138889423.000000</user_create_time>
+    <rpc_seqno>42872</rpc_seqno>
+    <userid>186339</userid>
+    <teamid>6293</teamid>
+    <hostid>1538122</hostid>
+    <host_total_credit>2136389.130008</host_total_credit>
+    <host_expavg_credit>1344.771599</host_expavg_credit>
+    <host_create_time>1300604791.000000</host_create_time>
+    <nrpc_failures>0</nrpc_failures>
+    <master_fetch_failures>0</master_fetch_failures>
+    <min_rpc_time>1456402096.062290</min_rpc_time>
+    <next_rpc_time>1456661174.862290</next_rpc_time>
+    <rec>1812.776362</rec>
+    <rec_time>1456409427.477241</rec_time>
+    <resource_share>50.000000</resource_share>
+    <desired_disk_usage>0.000000</desired_disk_usage>
+    <duration_correction_factor>1.000000</duration_correction_factor>
+    <sched_rpc_pending>0</sched_rpc_pending>
+    <send_time_stats_log>0</send_time_stats_log>
+    <send_job_log>0</send_job_log>
+    <njobs_success>8574</njobs_success>
+    <njobs_error>6</njobs_error>
+    <elapsed_time>83618772.307507</elapsed_time>
+    <dont_use_dcf/>
+    <rsc_backoff_time>
+        <name>CPU</name>
+        <value>1456377398.349502</value>
+    </rsc_backoff_time>
+    <rsc_backoff_interval>
+        <name>CPU</name>
+        <value>600.000000</value>
+    </rsc_backoff_interval>
+<gui_urls>
+
+   <gui_url>
+      <name>Research Overview</name>
+      <description>Learn about the projects hosted at World Community Grid</description>
+      <url>http://www.worldcommunitygrid.org/research/viewAllProjects.do</url>
+   </gui_url>
+   <gui_url>
+      <name>News and Updates</name>
+      <description>The latest information about World Community Grid and its research projects</description>
+      <url>http://www.worldcommunitygrid.org/about_us/displayNews.do</url>
+   </gui_url>
+   <gui_url>
+      <name>My Contribution</name>
+      <description>Your statistics and settings</description>
+      <url>http://www.worldcommunitygrid.org/ms/viewMyMemberPage.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Results Status</name>
+      <description>View the status of your assigned work</description>
+      <url>http://www.worldcommunitygrid.org/ms/viewBoincResults.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Device Profiles</name>
+      <description>Update your device settings</description>
+      <url>http://www.worldcommunitygrid.org/ms/device/viewProfiles.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Forums</name>
+      <description>Visit the World Community Grid forums</description>
+      <url>http://www.worldcommunitygrid.org/forumLogin.do</url>
+   </gui_url>
+   <gui_url>
+      <name>Help</name>
+      <description>Search for help in our help system</description>
+      <url>http://www.worldcommunitygrid.org/help/viewHelp.do</url>
+   </gui_url>
+</gui_urls>
+    <sched_priority>-1.554826</sched_priority>
+    <last_rpc_time>1456401974.862290</last_rpc_time>
+    <project_files_downloaded_time>0.000000</project_files_downloaded_time>
+    <venue>home</venue>
+    <project_dir>/local/boinc-client/projects/www.worldcommunitygrid.org</project_dir>
+</project>
+<project>
+    <master_url>http://pogs.theskynet.org/pogs/</master_url>
+    <project_name>pogs</project_name>
+    <symstore></symstore>
+    <user_name>Palo M.</user_name>
+    <team_name>BOINC.SK</team_name>
+    <host_venue>home</host_venue>
+    <email_hash>ee8295d2acaeba9d524badbcb0f9c3dc</email_hash>
+    <cross_project_id>fa07b2a43f4d50b6147908fd5bc84413</cross_project_id>
+    <external_cpid>699379e08988924ad7eb8f0addcbddae</external_cpid>
+    <cpid_time>1382061949.000000</cpid_time>
+    <user_total_credit>28532546.266993</user_total_credit>
+    <user_expavg_credit>9359.906571</user_expavg_credit>
+    <user_create_time>1382061949.000000</user_create_time>
+    <rpc_seqno>36116</rpc_seqno>
+    <userid>9823</userid>
+    <teamid>658</teamid>
+    <hostid>18194</hostid>
+    <host_total_credit>3538878.109999</host_total_credit>
+    <host_expavg_credit>755.555612</host_expavg_credit>
+    <host_create_time>1382452206.000000</host_create_time>
+    <nrpc_failures>0</nrpc_failures>
+    <master_fetch_failures>0</master_fetch_failures>
+    <min_rpc_time>1456403657.145227</min_rpc_time>
+    <next_rpc_time>0.000000</next_rpc_time>
+    <rec>260.008959</rec>
+    <rec_time>1456409427.477241</rec_time>
+    <resource_share>10.000000</resource_share>
+    <desired_disk_usage>0.000000</desired_disk_usage>
+    <duration_correction_factor>1.000000</duration_correction_factor>
+    <sched_rpc_pending>0</sched_rpc_pending>
+    <send_time_stats_log>0</send_time_stats_log>
+    <send_job_log>0</send_job_log>
+    <njobs_success>1778</njobs_success>
+    <njobs_error>1</njobs_error>
+    <elapsed_time>21769828.528409</elapsed_time>
+    <dont_use_dcf/>
+    <rsc_backoff_time>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_time>
+    <rsc_backoff_interval>
+        <name>CPU</name>
+        <value>0.000000</value>
+    </rsc_backoff_interval>
+<gui_urls>
+
+
+    <gui_url>
+        <name>Message boards</name>
+        <description>Correspond with other users on the pogs message boards</description>
+        <url>http://pogs.theskynet.org/pogs/forum_index.php</url>
+    </gui_url>
+    <gui_url>
+        <name>Your account</name>
+        <description>View your account information</description>
+        <url>http://pogs.theskynet.org/pogs/home.php</url>
+    </gui_url>
+    <gui_url>
+        <name>Your tasks</name>
+        <description>View the last week or so of computational work</description>
+        <url>http://pogs.theskynet.org/pogs/results.php?userid=9823</url>
+    </gui_url>
+    <ifteam>
+        <gui_url>
+            <name>Your team</name>
+            <description>View information about your team: BOINC.SK</description>
+            <url>http://pogs.theskynet.org/pogs/team_display.php?teamid=658</url>
+        </gui_url>
+    </ifteam>
+</gui_urls>
+    <sched_priority>-4.435054</sched_priority>
+    <last_rpc_time>1456403650.145227</last_rpc_time>
+    <project_files_downloaded_time>0.000000</project_files_downloaded_time>
+    <venue>home</venue>
+    <project_dir>/local/boinc-client/projects/pogs.theskynet.org_pogs</project_dir>
+</project>
+</projects>
+</boinc_gui_rpc_reply>

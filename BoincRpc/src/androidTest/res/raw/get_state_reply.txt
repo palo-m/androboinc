@@ -1,3 +1,4 @@
+<boinc_gui_rpc_reply>
 <client_state>
 <host_info>
     <timezone>28800</timezone>
@@ -2847,3 +2848,4 @@
 </global_preferences>
 <host_venue>home</host_venue>
 </client_state>
+</boinc_gui_rpc_reply>

@@ -19,16 +19,12 @@
 
 package edu.berkeley.boinc;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
+import android.test.suitebuilder.annotation.MediumTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import edu.berkeley.boinc.testutil.TestSupport;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -36,36 +32,13 @@ import static org.junit.Assert.*;
 
 
 @RunWith(AndroidJUnit4.class)
-@SmallTest
+@MediumTest
 public class CcStateParserTest {
 
-    private String readResource(int resourceId, int maxSize) {
-        InputStream stream = InstrumentationRegistry.getInstrumentation().getContext().getResources().openRawResource(resourceId);
-        assertNotNull(stream);
-        StringBuilder sb = new StringBuilder();
-        String strLine;
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            while ((strLine = reader.readLine()) != null) {
-                sb.append(strLine);
-                sb.append("\n");
-            }
-        }
-        catch (IOException e) {
-            fail("IOException");
-        }
-        if (maxSize > 0) {
-            if (sb.length() > maxSize) {
-                sb.setLength(maxSize);
-            }
-        }
-        return sb.toString();
-    }
-    //*
     @Test
     public void parseNormal() {
-        final String received = readResource(edu.berkeley.boinc.test.R.raw.client_state, 0);
-        assertThat(received.length(), is(equalTo(98918)));
+        final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_state_reply);
+        assertThat(received.length(), is(equalTo(98963)));
         CcState ccState = null;
         try {
             ccState = CcStateParser.parse(received);
@@ -94,7 +67,6 @@ public class CcStateParserTest {
         assertNotNull(ccState.results);
         assertThat(ccState.results.size(), is(equalTo(5)));
     }
-    //*/
 
     @Test
     public void emptyAnswer() {
@@ -143,7 +115,7 @@ public class CcStateParserTest {
 
     @Test
     public void invalidData() {
-        final String received = readResource(edu.berkeley.boinc.test.R.raw.client_state, 96590 /* 98916 */);
+        final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_state_reply, 98961);
         CcState ccState = null;
         String errorMsg = "";
         try {
