@@ -25,21 +25,21 @@ package edu.berkeley.boinc;
  * during RpcClient call 
  */
 public class InvalidDataReceivedException extends RpcClientFailedException {
-	private static final long serialVersionUID = -4865117105470215454L; // Generated
+    private static final long serialVersionUID = -4865117105470215454L; // Generated
 
-	public InvalidDataReceivedException() {
-		super("Invalid data received");
-	}
+    public InvalidDataReceivedException() {
+        super("Invalid data received");
+    }
 
-	public InvalidDataReceivedException(String detailMessage) {
-		super(detailMessage);
-	}
+    public InvalidDataReceivedException(String detailMessage) {
+        super(detailMessage);
+    }
 
-	public InvalidDataReceivedException(String detailMessage, Throwable throwable) {
-		super(detailMessage, throwable);
-	}
+    public InvalidDataReceivedException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
 
-	public InvalidDataReceivedException(Throwable throwable) {
-		super("Invalid data received", throwable);
-	}
+    public InvalidDataReceivedException(Throwable throwable) {
+        super("Invalid data received", throwable);
+    }
 }

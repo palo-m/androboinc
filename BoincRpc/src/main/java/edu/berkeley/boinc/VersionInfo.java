@@ -21,19 +21,19 @@ package edu.berkeley.boinc;
 
 
 public class VersionInfo {
-	// all attributes are public for simple access
-	public int     major = 0;
-	public int     minor = 0;
-	public int     release = 0;
-	public boolean prerelease = false;
+    // all attributes are public for simple access
+    public int     major = 0;
+    public int     minor = 0;
+    public int     release = 0;
+    public boolean prerelease = false;
 
-	public boolean greater_than(VersionInfo vi) {
-		if (major > vi.major) return true;
-		else if (major < vi.major) return false;
-		else if (minor > vi.minor) return true;
-		else if (minor < vi.minor) return false;
-		else if (release > vi.release) return true;
-		else return false;
-	}
+    public boolean greater_than(VersionInfo vi) {
+        if (major > vi.major) return true;
+        else if (major < vi.major) return false;
+        else if (minor > vi.minor) return true;
+        else if (minor < vi.minor) return false;
+        else if (release > vi.release) return true;
+        else return false;
+    }
 
 }

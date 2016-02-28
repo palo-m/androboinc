@@ -21,7 +21,7 @@ package edu.berkeley.boinc;
 
 
 public class GuiUrl {
-	public String name;
-	public String description;
-	public String url;
+    public String name;
+    public String description;
+    public String url;
 }

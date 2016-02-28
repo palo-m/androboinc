@@ -29,28 +29,28 @@ import java.security.MessageDigest;
  * @author Palo M.
  */
 public class Md5 {
-	public static final String TAG = "Md5";
+    public static final String TAG = "Md5";
 
-	/**
-	 * Hashes the input string
-	 * 
-	 * @param text The text to be hashed
-	 * @return The hash of the input converted to string
-	 */
-	public final static String hash(String text) {
-		try {
-			MessageDigest md5 = MessageDigest.getInstance("MD5");
-			md5.update(text.getBytes("iso-8859-1"), 0, text.length());
-			byte[] md5hash = md5.digest();
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < md5hash.length; ++i) {
-				sb.append(String.format("%02x", md5hash[i]));
-			}
-			return sb.toString();
-		}
-		catch (Exception e) {
-			Log.w(TAG, "Error when calculating MD5 hash");
-			return "";
-		}
-	}
+    /**
+     * Hashes the input string
+     *
+     * @param text The text to be hashed
+     * @return The hash of the input converted to string
+     */
+    public final static String hash(String text) {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(text.getBytes("iso-8859-1"), 0, text.length());
+            byte[] md5hash = md5.digest();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < md5hash.length; ++i) {
+                sb.append(String.format("%02x", md5hash[i]));
+            }
+            return sb.toString();
+        }
+        catch (Exception e) {
+            Log.w(TAG, "Error when calculating MD5 hash");
+            return "";
+        }
+    }
 }

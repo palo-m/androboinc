@@ -21,41 +21,41 @@ package edu.berkeley.boinc;
 
 
 public class Result {
-	public String  name = "";
-	public String  wu_name = "";
-	public String  project_url = "";
-	public int     version_num;
+    public String  name = "";
+    public String  wu_name = "";
+    public String  project_url = "";
+    public int     version_num;
 //	public String  plan_class;
-	public long    report_deadline;
-	public long    received_time;
+    public long    report_deadline;
+    public long    received_time;
 //	public boolean ready_to_report;
 //	public boolean got_server_ack;
-	public double  final_cpu_time;
-	public double  final_elapsed_time;
-	public int     state;
+    public double  final_cpu_time;
+    public double  final_elapsed_time;
+    public int     state;
 //	public int     scheduler_state;
 //	public int     exit_status;
 //	public int     signal;
 //	public String  stderr_out;
-	public boolean suspended_via_gui;
-	public boolean project_suspended_via_gui;
+    public boolean suspended_via_gui;
+    public boolean project_suspended_via_gui;
 //	public boolean coproc_missing;
 //	public boolean gpu_mem_wait;
 
-	// the following defined if active
-	public boolean active_task;
-	public int     active_task_state;
-	public int     app_version_num;
+    // the following defined if active
+    public boolean active_task;
+    public int     active_task_state;
+    public int     app_version_num;
 //	public int     slot;
 //	public int     pid;
-	public double  checkpoint_cpu_time;
-	public double  current_cpu_time;
-	public float   fraction_done;
-	public double  elapsed_time;
-	public double  swap_size;
-	public double  working_set_size_smoothed;
-	/** actually, estimated elapsed time remaining */
-	public double  estimated_cpu_time_remaining;
+    public double  checkpoint_cpu_time;
+    public double  current_cpu_time;
+    public float   fraction_done;
+    public double  elapsed_time;
+    public double  swap_size;
+    public double  working_set_size_smoothed;
+    /** actually, estimated elapsed time remaining */
+    public double  estimated_cpu_time_remaining;
 //	public boolean supports_graphics;
 //	public int     graphics_mode_acked;
 //	public boolean too_large;
@@ -65,6 +65,6 @@ public class Result {
 //	/** only present if graphics_exec_path is */
 //	public String  slot_path;
 
-	public String  resources = null;
+    public String  resources = null;
 
 }

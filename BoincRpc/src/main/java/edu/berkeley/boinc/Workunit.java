@@ -21,7 +21,7 @@ package edu.berkeley.boinc;
 
 
 public class Workunit {
-	public String name = "";
-	public String app_name = "";
-	public int version_num;
+    public String name = "";
+    public String app_name = "";
+    public int version_num;
 }

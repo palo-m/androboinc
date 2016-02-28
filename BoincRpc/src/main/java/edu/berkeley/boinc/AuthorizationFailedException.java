@@ -24,21 +24,21 @@ package edu.berkeley.boinc;
  * This exception is thrown when authentication fails
  */
 public class AuthorizationFailedException extends RpcClientFailedException {
-	private static final long serialVersionUID = 7752615754130475737L; // Generated
+    private static final long serialVersionUID = 7752615754130475737L; // Generated
 
-	public AuthorizationFailedException() {
-		super("Authorization Failed");
-	}
+    public AuthorizationFailedException() {
+        super("Authorization Failed");
+    }
 
-	public AuthorizationFailedException(String detailMessage) {
-		super(detailMessage);
-	}
+    public AuthorizationFailedException(String detailMessage) {
+        super(detailMessage);
+    }
 
-	public AuthorizationFailedException(String detailMessage, Throwable throwable) {
-		super(detailMessage, throwable);
-	}
+    public AuthorizationFailedException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
 
-	public AuthorizationFailedException(Throwable throwable) {
-		super("Authorization Failed", throwable);
-	}
+    public AuthorizationFailedException(Throwable throwable) {
+        super("Authorization Failed", throwable);
+    }
 }

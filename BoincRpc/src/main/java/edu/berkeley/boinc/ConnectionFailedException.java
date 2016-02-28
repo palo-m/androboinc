@@ -25,21 +25,21 @@ package edu.berkeley.boinc;
  * during RpcClient call 
  */
 public class ConnectionFailedException extends RpcClientFailedException {
-	private static final long serialVersionUID = -5573178298141519280L; // Generated
+    private static final long serialVersionUID = -5573178298141519280L; // Generated
 
-	public ConnectionFailedException() {
-		super("Connection failed");
-	}
+    public ConnectionFailedException() {
+        super("Connection failed");
+    }
 
-	public ConnectionFailedException(String detailMessage) {
-		super(detailMessage);
-	}
+    public ConnectionFailedException(String detailMessage) {
+        super(detailMessage);
+    }
 
-	public ConnectionFailedException(String detailMessage, Throwable throwable) {
-		super(detailMessage, throwable);
-	}
+    public ConnectionFailedException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
 
-	public ConnectionFailedException(Throwable throwable) {
-		super("Connection failed", throwable);
-	}
+    public ConnectionFailedException(Throwable throwable) {
+        super("Connection failed", throwable);
+    }
 }

@@ -21,9 +21,9 @@ package edu.berkeley.boinc;
 
 
 public class Message {
-	public String project = "";
-	public int    priority;
-	public int    seqno;
-	public long   timestamp;
-	public String body;
+    public String project = "";
+    public int    priority;
+    public int    seqno;
+    public long   timestamp;
+    public String body;
 }

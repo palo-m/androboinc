@@ -24,13 +24,13 @@ package edu.berkeley.boinc;
  * Signals the general error during RpcClient call
  */
 public class RpcClientFailedException extends Exception {
-	private static final long serialVersionUID = -583791893859959955L; // Generated
+    private static final long serialVersionUID = -583791893859959955L; // Generated
 
-	public RpcClientFailedException(String detailMessage) {
-		super(detailMessage);
-	}
+    public RpcClientFailedException(String detailMessage) {
+        super(detailMessage);
+    }
 
-	public RpcClientFailedException(String detailMessage, Throwable throwable) {
-		super(detailMessage, throwable);
-	}
+    public RpcClientFailedException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
 }

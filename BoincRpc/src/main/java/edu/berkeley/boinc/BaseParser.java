@@ -25,53 +25,53 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class BaseParser extends DefaultHandler {
 
-	protected StringBuilder mCurrentElement = new StringBuilder();
-	protected boolean mElementStarted = false;
-	protected boolean mUnauthorized = false;
+    protected StringBuilder mCurrentElement = new StringBuilder();
+    protected boolean mElementStarted = false;
+    protected boolean mUnauthorized = false;
 
 
-	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
-		super.characters(ch, start, length);
-		if (mElementStarted) {
-			// put it into StringBuilder
-			if (mCurrentElement.length() == 0) {
-				// still empty - trim leading white-spaces
-				int newStart = start;
-				int newLength = length;
-				for ( ; newLength > 0; ++newStart, --newLength) {
-					if (!Character.isWhitespace(ch[newStart])) {
-						// First non-white-space character
-						mCurrentElement.append(ch, newStart, newLength);
-						break;
-					}
-				}
-			}
-			else {
-				// Non-empty - add everything
-				mCurrentElement.append(ch, start, length);
-			}
-		}
-	}
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        super.characters(ch, start, length);
+        if (mElementStarted) {
+            // put it into StringBuilder
+            if (mCurrentElement.length() == 0) {
+                // still empty - trim leading white-spaces
+                int newStart = start;
+                int newLength = length;
+                for ( ; newLength > 0; ++newStart, --newLength) {
+                    if (!Character.isWhitespace(ch[newStart])) {
+                        // First non-white-space character
+                        mCurrentElement.append(ch, newStart, newLength);
+                        break;
+                    }
+                }
+            }
+            else {
+                // Non-empty - add everything
+                mCurrentElement.append(ch, start, length);
+            }
+        }
+    }
 
-	@Override
-	public void endElement(String uri, String localName, String qName) throws SAXException {
-		super.endElement(uri, localName, qName);
-		if (localName.equalsIgnoreCase("unauthorized")) {
-			// We received <unauthorized/>
-			mUnauthorized = true;
-		}
-	}
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        super.endElement(uri, localName, qName);
+        if (localName.equalsIgnoreCase("unauthorized")) {
+            // We received <unauthorized/>
+            mUnauthorized = true;
+        }
+    }
 
-	protected void trimEnd() {
-		int length = mCurrentElement.length();
-		// Trim trailing spaces
-		for (int i = length - 1; i >= 0; --i) {
-			if (!Character.isWhitespace(mCurrentElement.charAt(i))) {
-				// All trailing white-spaces are skipped, i is position of last character
-				mCurrentElement.setLength(i+1);
-				break;
-			}
-		}
-	}
+    protected void trimEnd() {
+        int length = mCurrentElement.length();
+        // Trim trailing spaces
+        for (int i = length - 1; i >= 0; --i) {
+            if (!Character.isWhitespace(mCurrentElement.charAt(i))) {
+                // All trailing white-spaces are skipped, i is position of last character
+                mCurrentElement.setLength(i+1);
+                break;
+            }
+        }
+    }
 }

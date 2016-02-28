@@ -21,23 +21,23 @@ package edu.berkeley.boinc;
 
 
 public class CcStatus {
-	// all attributes are public for simple access
-	/** Current mode - always/auto/never */
-	public int     task_mode           	  = -1;
-	/** Permanent version of mode - always/auto/never */
-	public int     task_mode_perm         = -1;
-	/** time until task_mode_perm becomes actual task_mode */
-	public double  task_mode_delay        =  0;
+    // all attributes are public for simple access
+    /** Current mode - always/auto/never */
+    public int     task_mode           	  = -1;
+    /** Permanent version of mode - always/auto/never */
+    public int     task_mode_perm         = -1;
+    /** time until task_mode_perm becomes actual task_mode */
+    public double  task_mode_delay        =  0;
 //	public int     task_suspend_reason    = -1;
     public int     gpu_mode               = -1;
     public int     gpu_mode_perm          = -1;
-	public double  gpu_mode_delay         =  0;
+    public double  gpu_mode_delay         =  0;
 //  public int     gpu_suspend_reason     = -1;
-	public int     network_mode           = -1;
-	public int     network_mode_perm      = -1;
-	public double  network_mode_delay     =  0;
+    public int     network_mode           = -1;
+    public int     network_mode_perm      = -1;
+    public double  network_mode_delay     =  0;
 //	public int     network_suspend_reason = -1;
-	public int     network_status         = -1;
+    public int     network_status         = -1;
 //	public boolean ams_password_error = false;
 //	public boolean manager_must_quit  = false;
 //	public boolean disallow_attach    = false;

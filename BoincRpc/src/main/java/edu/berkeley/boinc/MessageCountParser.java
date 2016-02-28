@@ -26,79 +26,79 @@ import org.xml.sax.SAXException;
 
 
 public class MessageCountParser extends BaseParser {
-	private static final String TAG = "MessageCountParser";
+    private static final String TAG = "MessageCountParser";
 
-	private int mSeqno = -1;
-	private boolean mInReply = false;
+    private int mSeqno = -1;
+    private boolean mInReply = false;
 
-	// Disable direct instantiation of this class
-	private MessageCountParser() {}
+    // Disable direct instantiation of this class
+    private MessageCountParser() {}
 
-	public final int seqno() throws AuthorizationFailedException {
-		if (mUnauthorized) throw new AuthorizationFailedException();
-		return mSeqno;
-	}
+    public final int seqno() throws AuthorizationFailedException {
+        if (mUnauthorized) throw new AuthorizationFailedException();
+        return mSeqno;
+    }
 
-	/**
-	 * Parse the RPC result (seqno) and generate corresponding vector
-	 * 
-	 * @param rpcResult String returned by RPC call of core client
-	 * @return number of messages
-	 * @throws AuthorizationFailedException in case of unauthorized
-	 * @throws InvalidDataReceivedException in case XML cannot be parsed
-	 */
-	public static int getSeqno(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
-		try {
-			MessageCountParser parser = new MessageCountParser();
-			Xml.parse(rpcResult, parser);
-			return parser.seqno();
-		}
-		catch (SAXException e) {
-			if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
-			throw new InvalidDataReceivedException("Malformed XML while parsing <seqno>", e);
-		}		
+    /**
+     * Parse the RPC result (seqno) and generate corresponding vector
+     *
+     * @param rpcResult String returned by RPC call of core client
+     * @return number of messages
+     * @throws AuthorizationFailedException in case of unauthorized
+     * @throws InvalidDataReceivedException in case XML cannot be parsed
+     */
+    public static int getSeqno(String rpcResult) throws AuthorizationFailedException, InvalidDataReceivedException {
+        try {
+            MessageCountParser parser = new MessageCountParser();
+            Xml.parse(rpcResult, parser);
+            return parser.seqno();
+        }
+        catch (SAXException e) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "Malformed XML:\n" + rpcResult);
+            throw new InvalidDataReceivedException("Malformed XML while parsing <seqno>", e);
+        }
 
-	}
+    }
 
-	@Override
-	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		super.startElement(uri, localName, qName, attributes);
-		if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
-			mInReply = true;
-		}
-		else {
-			// Another element, hopefully primitive and not constructor
-			// (although unknown constructor does not hurt, because there will be primitive start anyway)
-			mElementStarted = true;
-			mCurrentElement.setLength(0);
-		}
-	}
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        super.startElement(uri, localName, qName, attributes);
+        if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
+            mInReply = true;
+        }
+        else {
+            // Another element, hopefully primitive and not constructor
+            // (although unknown constructor does not hurt, because there will be primitive start anyway)
+            mElementStarted = true;
+            mCurrentElement.setLength(0);
+        }
+    }
 
-	// Method characters(char[] ch, int start, int length) is implemented by BaseParser,
-	// filling mCurrentElement (including stripping of leading whitespaces)
-	//@Override
-	//public void characters(char[] ch, int start, int length) throws SAXException { }
+    // Method characters(char[] ch, int start, int length) is implemented by BaseParser,
+    // filling mCurrentElement (including stripping of leading whitespaces)
+    //@Override
+    //public void characters(char[] ch, int start, int length) throws SAXException { }
 
-	@Override
-	public void endElement(String uri, String localName, String qName) throws SAXException {
-		super.endElement(uri, localName, qName);
-		try {
-			if (mInReply) {
-				// We are inside <boinc_gui_rpc_reply>
-				if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
-					mInReply = false;
-				}
-				else {
-					trimEnd();
-					if (localName.equalsIgnoreCase("seqno")) {
-						mSeqno = Integer.parseInt(mCurrentElement.toString());
-					}
-				}
-			}
-		}
-		catch (NumberFormatException e) {
-			Log.i(TAG, "Exception when decoding " + localName);
-		}
-		mElementStarted = false;
-	}
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        super.endElement(uri, localName, qName);
+        try {
+            if (mInReply) {
+                // We are inside <boinc_gui_rpc_reply>
+                if (localName.equalsIgnoreCase("boinc_gui_rpc_reply")) {
+                    mInReply = false;
+                }
+                else {
+                    trimEnd();
+                    if (localName.equalsIgnoreCase("seqno")) {
+                        mSeqno = Integer.parseInt(mCurrentElement.toString());
+                    }
+                }
+            }
+        }
+        catch (NumberFormatException e) {
+            Log.i(TAG, "Exception when decoding " + localName);
+        }
+        mElementStarted = false;
+    }
 }

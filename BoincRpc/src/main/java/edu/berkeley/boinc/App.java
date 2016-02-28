@@ -21,10 +21,10 @@ package edu.berkeley.boinc;
 
 
 public class App {
-	public String name = "";
-	public String user_friendly_name = "";
+    public String name = "";
+    public String user_friendly_name = "";
 
-	public final String getName() {
-		return user_friendly_name.equals("") ? name : user_friendly_name;
-	}
+    public final String getName() {
+        return user_friendly_name.equals("") ? name : user_friendly_name;
+    }
 }
