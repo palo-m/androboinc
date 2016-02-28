@@ -27,6 +27,7 @@ public class BaseParser extends DefaultHandler {
 
 	protected StringBuilder mCurrentElement = new StringBuilder();
 	protected boolean mElementStarted = false;
+	protected boolean mUnauthorized = false;
 
 
 	@Override
@@ -50,6 +51,15 @@ public class BaseParser extends DefaultHandler {
 				// Non-empty - add everything
 				mCurrentElement.append(ch, start, length);
 			}
+		}
+	}
+
+	@Override
+	public void endElement(String uri, String localName, String qName) throws SAXException {
+		super.endElement(uri, localName, qName);
+		if (localName.equalsIgnoreCase("unauthorized")) {
+			// We received <unauthorized/>
+			mUnauthorized = true;
 		}
 	}
 

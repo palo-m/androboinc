@@ -28,7 +28,6 @@ import org.xml.sax.SAXException;
 public class VersionInfoParser extends BaseParser {
 	private static final String TAG = "VersionInfoParser";
 	private VersionInfo mVersionInfo = null;
-	private boolean mUnauthorized = false;
 
 	public final VersionInfo getVersionInfo() throws AuthorizationFailedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
@@ -101,10 +100,6 @@ public class VersionInfoParser extends BaseParser {
 						mVersionInfo.release = Integer.parseInt(mCurrentElement.toString());
 					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// The <server_version> was not present so far and we received <unauthorized/>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

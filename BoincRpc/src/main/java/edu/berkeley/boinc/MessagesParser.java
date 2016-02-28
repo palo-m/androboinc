@@ -35,7 +35,6 @@ public class MessagesParser extends BaseParser {
 
 	private Vector<Message> mMessages = new Vector<Message>();
 	private Message mMessage = null;
-	private boolean mUnauthorized = false;
 
 	public final Vector<Message> getMessages() throws AuthorizationFailedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
@@ -151,10 +150,6 @@ public class MessagesParser extends BaseParser {
 						mMessage.body = mCurrentElement.toString();
 					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// There is <unauthorized/> outside <msg>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

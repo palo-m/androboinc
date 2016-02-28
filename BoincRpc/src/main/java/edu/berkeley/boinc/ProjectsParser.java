@@ -32,7 +32,6 @@ public class ProjectsParser extends BaseParser {
 	private Vector<Project> mProjects = new Vector<Project>();
 	private Project mProject = null;
 	private GuiUrl mGuiUrl = null;
-	private boolean mUnauthorized = false;
 
 	public final Vector<Project> getProjects() throws AuthorizationFailedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
@@ -267,10 +266,6 @@ public class ProjectsParser extends BaseParser {
 //						mProject.no_ati_pref = !trimmed.equals("0");
 //					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// There is <unauthorized/> outside <project>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

@@ -30,7 +30,6 @@ public class MessageCountParser extends BaseParser {
 
 	private int mSeqno = -1;
 	private boolean mInReply = false;
-	private boolean mUnauthorized = false;
 
 	// Disable direct instantiation of this class
 	private MessageCountParser() {}
@@ -93,10 +92,6 @@ public class MessageCountParser extends BaseParser {
 					trimEnd();
 					if (localName.equalsIgnoreCase("seqno")) {
 						mSeqno = Integer.parseInt(mCurrentElement.toString());
-					}
-					else if (localName.equalsIgnoreCase("unauthorized")) {
-						// There is <unauthorized/> inside <boinc_gui_rpc_reply>
-						mUnauthorized = true;
 					}
 				}
 			}

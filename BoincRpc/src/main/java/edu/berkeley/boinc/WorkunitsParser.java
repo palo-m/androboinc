@@ -31,7 +31,6 @@ public class WorkunitsParser extends BaseParser {
 
 	private Vector<Workunit> mWorkunits = new Vector<Workunit>();
 	private Workunit mWorkunit = null;
-	private boolean mUnauthorized = false;
 
 	public final Vector<Workunit> getWorkunits() throws AuthorizationFailedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
@@ -104,10 +103,6 @@ public class WorkunitsParser extends BaseParser {
 						mWorkunit.version_num = Integer.parseInt(mCurrentElement.toString());
 					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// There is <unauthorized/> outside <workunit>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

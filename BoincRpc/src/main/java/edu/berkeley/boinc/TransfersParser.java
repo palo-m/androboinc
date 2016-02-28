@@ -31,7 +31,6 @@ public class TransfersParser extends BaseParser {
 
 	private Vector<Transfer> mTransfers = new Vector<Transfer>();
 	private Transfer mTransfer = null;
-	private boolean mUnauthorized = false;
 
 	public final Vector<Transfer> getTransfers() throws AuthorizationFailedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
@@ -158,10 +157,6 @@ public class TransfersParser extends BaseParser {
 						mTransfer.project_backoff = (long)Double.parseDouble(mCurrentElement.toString());
 					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// There is <unauthorized/> outside <file_transfer>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

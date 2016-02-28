@@ -40,8 +40,7 @@ public class CcStateParser extends BaseParser {
 	private boolean mInWorkunit = false;
 	private ResultsParser mResultsParser = new ResultsParser();
 	private boolean mInResult = false;
-	private boolean mUnauthorized = false;
-	
+
 	public final CcState getCcState() throws AuthorizationFailedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
 		return mCcState;
@@ -231,10 +230,6 @@ public class CcStateParser extends BaseParser {
 					mVersionInfo.release = Integer.parseInt(mCurrentElement.toString());
 				}
 				mElementStarted = false;
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// Not inside <app> and we received <unauthorized/>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

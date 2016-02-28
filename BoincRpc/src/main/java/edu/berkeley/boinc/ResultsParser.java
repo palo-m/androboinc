@@ -32,7 +32,6 @@ public class ResultsParser extends BaseParser {
 	private Vector<Result> mResults = new Vector<Result>();
 	private Result mResult = null;
 	private boolean mInActiveTask = false;
-	private boolean mUnauthorized = false;
 
 	public Vector<Result> getResults() throws AuthorizationFailedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
@@ -190,10 +189,6 @@ public class ResultsParser extends BaseParser {
 						}
 					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// There is <unauthorized/> outside <result>
-				mUnauthorized = true;
 			}
 		} catch (NumberFormatException e) {
 			Log.i(TAG, "Exception when decoding " + localName);

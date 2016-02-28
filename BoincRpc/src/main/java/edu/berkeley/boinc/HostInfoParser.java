@@ -30,7 +30,6 @@ public class HostInfoParser extends BaseParser {
 
 	private HostInfo mHostInfo = null;
 	private boolean  mInCoprocX = false;
-	private boolean mUnauthorized = false;
 
 	public final HostInfo getHostInfo() throws AuthorizationFailedException, InvalidDataReceivedException {
 		if (mUnauthorized) throw new AuthorizationFailedException();
@@ -163,10 +162,6 @@ public class HostInfoParser extends BaseParser {
 						mHostInfo.os_version = mCurrentElement.toString();
 					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// The <host_info> was not present so far and we received <unauthorized/>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {

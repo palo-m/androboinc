@@ -29,7 +29,6 @@ public class CcStatusParser extends BaseParser {
 	private static final String TAG = "CcStatusParser";
 
 	private CcStatus mCcStatus;
-	private boolean mUnauthorized = false;
 
 	
 	public final CcStatus getCcStatus() throws AuthorizationFailedException, InvalidDataReceivedException {
@@ -165,10 +164,6 @@ public class CcStatusParser extends BaseParser {
 //						}
 //					}
 				}
-			}
-			else if (localName.equalsIgnoreCase("unauthorized")) {
-				// The <cc_status> was not present so far and we received <unauthorized/>
-				mUnauthorized = true;
 			}
 		}
 		catch (NumberFormatException e) {
