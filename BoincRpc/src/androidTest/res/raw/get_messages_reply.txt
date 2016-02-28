@@ -1,0 +1,454 @@
+<boinc_gui_rpc_reply>
+<msgs>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12692</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456395487</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>2</pri>
+ <seqno>12693</seqno>
+ <body>
+Computation for task 123625.9+343405_area27054047_0 finished
+</body>
+ <time>1456397767</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12694</seqno>
+ <body>
+Starting task 123625.9+343405_area27054014_0
+</body>
+ <time>1456397767</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12695</seqno>
+ <body>
+Started upload of 123625.9+343405_area27054047_0_0
+</body>
+ <time>1456397769</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12696</seqno>
+ <body>
+Finished upload of 123625.9+343405_area27054047_0_0
+</body>
+ <time>1456397788</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12697</seqno>
+ <body>
+Sending scheduler request: To report completed tasks.
+</body>
+ <time>1456397791</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12698</seqno>
+ <body>
+Reporting 1 completed tasks
+</body>
+ <time>1456397791</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12699</seqno>
+ <body>
+Not requesting tasks: don't need (not highest priority project)
+</body>
+ <time>1456397791</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12700</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456397795</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12701</seqno>
+ <body>
+Sending scheduler request: Requested by project.
+</body>
+ <time>1456399090</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12702</seqno>
+ <body>
+Not requesting tasks: non CPU intensive
+</body>
+ <time>1456399090</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12703</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456399095</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12704</seqno>
+ <body>
+Started upload of FAH2_000060_avx17260_000022_0001_023_0_r856542112_3
+</body>
+ <time>1456401646</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12705</seqno>
+ <body>
+Started upload of FAH2_000060_avx17260_000022_0001_023_0_r856542112_13
+</body>
+ <time>1456401646</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12706</seqno>
+ <body>
+Sending scheduler request: To send trickle-up message.
+</body>
+ <time>1456401646</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12707</seqno>
+ <body>
+Not requesting tasks: don't need (not highest priority project)
+</body>
+ <time>1456401646</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12708</seqno>
+ <body>
+Finished upload of FAH2_000060_avx17260_000022_0001_023_0_r856542112_13
+</body>
+ <time>1456401651</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12709</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456401662</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12710</seqno>
+ <body>
+Finished upload of FAH2_000060_avx17260_000022_0001_023_0_r856542112_3
+</body>
+ <time>1456401665</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12711</seqno>
+ <body>
+Started upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_6
+</body>
+ <time>1456401967</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12712</seqno>
+ <body>
+Started upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_16
+</body>
+ <time>1456401967</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12713</seqno>
+ <body>
+Sending scheduler request: To send trickle-up message.
+</body>
+ <time>1456401969</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12714</seqno>
+ <body>
+Not requesting tasks: don't need (not highest priority project)
+</body>
+ <time>1456401969</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12715</seqno>
+ <body>
+Finished upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_6
+</body>
+ <time>1456401973</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12716</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456401974</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12717</seqno>
+ <body>
+Finished upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_16
+</body>
+ <time>1456401977</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12718</seqno>
+ <body>
+Sending scheduler request: Requested by project.
+</body>
+ <time>1456402700</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12719</seqno>
+ <body>
+Not requesting tasks: non CPU intensive
+</body>
+ <time>1456402700</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12720</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456402706</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12721</seqno>
+ <body>
+Computation for task 123625.9+343405_area27053933_0 finished
+</body>
+ <time>1456403621</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12722</seqno>
+ <body>
+Starting task 123625.9+343405_area27054059_1
+</body>
+ <time>1456403621</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12723</seqno>
+ <body>
+Started upload of 123625.9+343405_area27053933_0_0
+</body>
+ <time>1456403623</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12724</seqno>
+ <body>
+Finished upload of 123625.9+343405_area27053933_0_0
+</body>
+ <time>1456403639</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12725</seqno>
+ <body>
+Sending scheduler request: To report completed tasks.
+</body>
+ <time>1456403641</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12726</seqno>
+ <body>
+Reporting 1 completed tasks
+</body>
+ <time>1456403641</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12727</seqno>
+ <body>
+Not requesting tasks: don't need (not highest priority project)
+</body>
+ <time>1456403641</time>
+</msg>
+<msg>
+ <project>pogs</project>
+ <pri>1</pri>
+ <seqno>12728</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456403650</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12729</seqno>
+ <body>
+Sending scheduler request: Requested by project.
+</body>
+ <time>1456406311</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12730</seqno>
+ <body>
+Not requesting tasks: non CPU intensive
+</body>
+ <time>1456406311</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12731</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456406324</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12732</seqno>
+ <body>
+Sending scheduler request: Requested by project.
+</body>
+ <time>1456409928</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12733</seqno>
+ <body>
+Not requesting tasks: non CPU intensive
+</body>
+ <time>1456409928</time>
+</msg>
+<msg>
+ <project>WUProp@Home</project>
+ <pri>1</pri>
+ <seqno>12734</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456409932</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12735</seqno>
+ <body>
+Started upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_7
+</body>
+ <time>1456409996</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12736</seqno>
+ <body>
+Started upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_17
+</body>
+ <time>1456409996</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12737</seqno>
+ <body>
+Sending scheduler request: To send trickle-up message.
+</body>
+ <time>1456409998</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12738</seqno>
+ <body>
+Not requesting tasks: don't need (not highest priority project)
+</body>
+ <time>1456409998</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12739</seqno>
+ <body>
+Finished upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_17
+</body>
+ <time>1456410007</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>1</pri>
+ <seqno>12740</seqno>
+ <body>
+Finished upload of FAH2_avx38708-ls_000089_0013_034_wcgfahb00040000_1_r1607865037_7
+</body>
+ <time>1456410008</time>
+</msg>
+<msg>
+ <project>World Community Grid</project>
+ <pri>3</pri>
+ <seqno>12741</seqno>
+ <body>
+Scheduler request completed
+</body>
+ <time>1456410012</time>
+</msg>
+</msgs>
+</boinc_gui_rpc_reply>

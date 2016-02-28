@@ -1,0 +1,1281 @@
+<boinc_gui_rpc_reply>
+<results>
+<result>
+    <name>110355.5+373030_area26987221_1</name>
+    <wu_name>110355.5+373030_area26987221</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456776412.000000</report_deadline>
+    <received_time>1456171613.892053</received_time>
+    <estimated_cpu_time_remaining>6404.006892</estimated_cpu_time_remaining>
+<active_task>
+    <active_task_state>0</active_task_state>
+    <app_version_num>402</app_version_num>
+    <slot>3</slot>
+    <pid>0</pid>
+    <scheduler_state>1</scheduler_state>
+    <checkpoint_cpu_time>9711.279000</checkpoint_cpu_time>
+    <fraction_done>0.590909</fraction_done>
+    <current_cpu_time>9711.279000</current_cpu_time>
+    <elapsed_time>9826.891117</elapsed_time>
+    <swap_size>82063360.000000</swap_size>
+    <working_set_size>40103936.000000</working_set_size>
+    <working_set_size_smoothed>40103936.000000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+</active_task>
+</result>
+<result>
+    <name>110355.5+373030_area26987200_1</name>
+    <wu_name>110355.5+373030_area26987200</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456776412.000000</report_deadline>
+    <received_time>1456171613.892053</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>110355.5+373030_area26987206_0</name>
+    <wu_name>110355.5+373030_area26987206</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456776412.000000</report_deadline>
+    <received_time>1456171613.892053</received_time>
+    <estimated_cpu_time_remaining>17145.116192</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>110355.5+373030_area26987236_1</name>
+    <wu_name>110355.5+373030_area26987236</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456776412.000000</report_deadline>
+    <received_time>1456171613.892053</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>125436.8+265604_area27025616_1</name>
+    <wu_name>125436.8+265604_area27025616</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456845772.000000</report_deadline>
+    <received_time>1456240973.543981</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>125436.8+265604_area27025583_1</name>
+    <wu_name>125436.8+265604_area27025583</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456845772.000000</report_deadline>
+    <received_time>1456240973.543981</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>125436.8+265604_area27025652_1</name>
+    <wu_name>125436.8+265604_area27025652</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456845772.000000</report_deadline>
+    <received_time>1456240973.543981</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>115230.5+453937_area27006827_0</name>
+    <wu_name>115230.5+453937_area27006827</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456855574.000000</report_deadline>
+    <received_time>1456250775.755915</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>115230.5+453937_area27006944_1</name>
+    <wu_name>115230.5+453937_area27006944</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456855574.000000</report_deadline>
+    <received_time>1456250775.755915</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>115230.5+453937_area27006881_1</name>
+    <wu_name>115230.5+453937_area27006881</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456855574.000000</report_deadline>
+    <received_time>1456250775.755915</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>115230.5+453937_area27006947_0</name>
+    <wu_name>115230.5+453937_area27006947</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456855574.000000</report_deadline>
+    <received_time>1456250775.755915</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>115230.5+453937_area27006941_1</name>
+    <wu_name>115230.5+453937_area27006941</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456855574.000000</report_deadline>
+    <received_time>1456250775.755915</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>103450.5+004035_area27039096_1</name>
+    <wu_name>103450.5+004035_area27039096</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456866141.000000</report_deadline>
+    <received_time>1456261342.363915</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>103450.5+004035_area27039072_0</name>
+    <wu_name>103450.5+004035_area27039072</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456866141.000000</report_deadline>
+    <received_time>1456261342.363915</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>103450.5+004035_area27039030_0</name>
+    <wu_name>103450.5+004035_area27039030</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456866141.000000</report_deadline>
+    <received_time>1456261342.363915</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>083110.1+093619_area27015168_1</name>
+    <wu_name>083110.1+093619_area27015168</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456870493.000000</report_deadline>
+    <received_time>1456265694.359914</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>FAH2_000075_avx17680_000099_0046_013_0</name>
+    <wu_name>FAH2_000075_avx17680_000099_0046_013</wu_name>
+    <version_num>715</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.worldcommunitygrid.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456617504.000000</report_deadline>
+    <received_time>1456271908.579913</received_time>
+    <estimated_cpu_time_remaining>487.628218</estimated_cpu_time_remaining>
+    <edf_scheduled/>
+<active_task>
+    <active_task_state>1</active_task_state>
+    <app_version_num>715</app_version_num>
+    <slot>6</slot>
+    <pid>5056</pid>
+    <scheduler_state>2</scheduler_state>
+    <checkpoint_cpu_time>66350.780000</checkpoint_cpu_time>
+    <fraction_done>0.992840</fraction_done>
+    <current_cpu_time>66545.040000</current_cpu_time>
+    <elapsed_time>67239.363522</elapsed_time>
+    <swap_size>202452992.000000</swap_size>
+    <working_set_size>74428416.000000</working_set_size>
+    <working_set_size_smoothed>74428416.000000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+   <graphics_exec_path>/local/boinc-client/projects/www.worldcommunitygrid.org/wcgrid_fahb_gfx_prod_linux_64.x86.7.15</graphics_exec_path>
+   <slot_path>/local/boinc-client/slots/6</slot_path>
+</active_task>
+</result>
+<result>
+    <name>083611.1+383205_area27046923_1</name>
+    <wu_name>083611.1+383205_area27046923</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456882467.000000</report_deadline>
+    <received_time>1456277668.203916</received_time>
+    <estimated_cpu_time_remaining>15467.744075</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>FAH2_avx101124-ls_000037_0014_040_0</name>
+    <wu_name>FAH2_avx101124-ls_000037_0014_040</wu_name>
+    <version_num>715</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.worldcommunitygrid.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456624291.000000</report_deadline>
+    <received_time>1456278692.435946</received_time>
+    <estimated_cpu_time_remaining>57170.322303</estimated_cpu_time_remaining>
+    <edf_scheduled/>
+<active_task>
+    <active_task_state>1</active_task_state>
+    <app_version_num>715</app_version_num>
+    <slot>4</slot>
+    <pid>5057</pid>
+    <scheduler_state>2</scheduler_state>
+    <checkpoint_cpu_time>43543.520000</checkpoint_cpu_time>
+    <fraction_done>0.160550</fraction_done>
+    <current_cpu_time>43582.800000</current_cpu_time>
+    <elapsed_time>44044.730273</elapsed_time>
+    <swap_size>134807552.000000</swap_size>
+    <working_set_size>73629696.000000</working_set_size>
+    <working_set_size_smoothed>73629696.000000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+   <graphics_exec_path>/local/boinc-client/projects/www.worldcommunitygrid.org/wcgrid_fahb_gfx_prod_linux_64.x86.7.15</graphics_exec_path>
+   <slot_path>/local/boinc-client/slots/4</slot_path>
+</active_task>
+</result>
+<result>
+    <name>083611.1+383205_area27046337_0</name>
+    <wu_name>083611.1+383205_area27046337</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456886729.000000</report_deadline>
+    <received_time>1456281930.155915</received_time>
+    <estimated_cpu_time_remaining>10311.829639</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>123625.9+343405_area27053750_1</name>
+    <wu_name>123625.9+343405_area27053750</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456899675.000000</report_deadline>
+    <received_time>1456294876.191914</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>120414.1+500821_area27054745_1</name>
+    <wu_name>120414.1+500821_area27054745</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456901611.000000</report_deadline>
+    <received_time>1456296811.827169</received_time>
+    <estimated_cpu_time_remaining>17677.422894</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>124858.0+071514_area27057154_0</name>
+    <wu_name>124858.0+071514_area27057154</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456910933.000000</report_deadline>
+    <received_time>1456306134.071912</received_time>
+    <estimated_cpu_time_remaining>10311.829639</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>FAH2_000061_avx17285_000044_0035_029_1</name>
+    <wu_name>FAH2_000061_avx17285_000044_0035_029</wu_name>
+    <version_num>715</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.worldcommunitygrid.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456654555.000000</report_deadline>
+    <received_time>1456308956.055938</received_time>
+    <estimated_cpu_time_remaining>56804.763623</estimated_cpu_time_remaining>
+    <edf_scheduled/>
+<active_task>
+    <active_task_state>1</active_task_state>
+    <app_version_num>715</app_version_num>
+    <slot>5</slot>
+    <pid>5059</pid>
+    <scheduler_state>2</scheduler_state>
+    <checkpoint_cpu_time>29608.560000</checkpoint_cpu_time>
+    <fraction_done>0.164900</fraction_done>
+    <current_cpu_time>29945.840000</current_cpu_time>
+    <elapsed_time>30284.943648</elapsed_time>
+    <swap_size>131289088.000000</swap_size>
+    <working_set_size>70791168.000000</working_set_size>
+    <working_set_size_smoothed>70791168.000000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+   <graphics_exec_path>/local/boinc-client/projects/www.worldcommunitygrid.org/wcgrid_fahb_gfx_prod_linux_64.x86.7.15</graphics_exec_path>
+   <slot_path>/local/boinc-client/slots/5</slot_path>
+</active_task>
+</result>
+<result>
+    <name>FAH2_000066_avx17379_000006_0038_020_0</name>
+    <wu_name>FAH2_000066_avx17379_000006_0038_020</wu_name>
+    <version_num>715</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.worldcommunitygrid.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456655842.000000</report_deadline>
+    <received_time>1456310244.056052</received_time>
+    <estimated_cpu_time_remaining>64909.036607</estimated_cpu_time_remaining>
+    <edf_scheduled/>
+<active_task>
+    <active_task_state>1</active_task_state>
+    <app_version_num>715</app_version_num>
+    <slot>2</slot>
+    <pid>29494</pid>
+    <scheduler_state>2</scheduler_state>
+    <checkpoint_cpu_time>2729.531000</checkpoint_cpu_time>
+    <fraction_done>0.046920</fraction_done>
+    <current_cpu_time>3201.168000</current_cpu_time>
+    <elapsed_time>3239.650701</elapsed_time>
+    <swap_size>131158016.000000</swap_size>
+    <working_set_size>70508544.000000</working_set_size>
+    <working_set_size_smoothed>70508543.625000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+   <graphics_exec_path>/local/boinc-client/projects/www.worldcommunitygrid.org/wcgrid_fahb_gfx_prod_linux_64.x86.7.15</graphics_exec_path>
+   <slot_path>/local/boinc-client/slots/2</slot_path>
+</active_task>
+</result>
+<result>
+    <name>101123.9+454407_area27071566_1</name>
+    <wu_name>101123.9+454407_area27071566</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456945288.000000</report_deadline>
+    <received_time>1456340489.157776</received_time>
+    <estimated_cpu_time_remaining>7424.796437</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>080853.1+393519_area27074807_0</name>
+    <wu_name>080853.1+393519_area27074807</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456950637.000000</report_deadline>
+    <received_time>1456345837.943923</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>080853.1+393519_area27078137_0</name>
+    <wu_name>080853.1+393519_area27078137</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456955737.000000</report_deadline>
+    <received_time>1456350937.919935</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>FAH2_avx38753-ls_000061_0005_040_wcgfahb00020000_0</name>
+    <wu_name>FAH2_avx38753-ls_000061_0005_040_wcgfahb00020000</wu_name>
+    <version_num>715</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.worldcommunitygrid.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456707552.000000</report_deadline>
+    <received_time>1456361952.635913</received_time>
+    <estimated_cpu_time_remaining>68104.499735</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>165922.7+410232_area27084177_0</name>
+    <wu_name>165922.7+410232_area27084177</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456971270.000000</report_deadline>
+    <received_time>1456366471.635937</received_time>
+    <estimated_cpu_time_remaining>15592.071751</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>090554.4+471045_area27089471_1</name>
+    <wu_name>090554.4+471045_area27089471</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456980118.000000</report_deadline>
+    <received_time>1456375319.319914</received_time>
+    <estimated_cpu_time_remaining>15654.235590</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>090554.4+471045_area27091587_1</name>
+    <wu_name>090554.4+471045_area27091587</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456995860.000000</report_deadline>
+    <received_time>1456391061.667940</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>090554.4+471045_area27091590_0</name>
+    <wu_name>090554.4+471045_area27091590</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456995860.000000</report_deadline>
+    <received_time>1456391061.667940</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>090554.4+471045_area27091584_0</name>
+    <wu_name>090554.4+471045_area27091584</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456995860.000000</report_deadline>
+    <received_time>1456391061.667940</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>090554.4+471045_area27091596_1</name>
+    <wu_name>090554.4+471045_area27091596</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456995860.000000</report_deadline>
+    <received_time>1456391061.667940</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>090554.4+471045_area27091551_1</name>
+    <wu_name>090554.4+471045_area27091551</wu_name>
+    <version_num>402</version_num>
+    <plan_class></plan_class>
+    <project_url>http://pogs.theskynet.org/pogs/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456995860.000000</report_deadline>
+    <received_time>1456391061.667940</received_time>
+    <estimated_cpu_time_remaining>5218.078658</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>FAH2_avx38784-ls_000009_0003_040_0</name>
+    <wu_name>FAH2_avx38784-ls_000009_0003_040</wu_name>
+    <version_num>715</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.worldcommunitygrid.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456753048.000000</report_deadline>
+    <received_time>1456407450.979919</received_time>
+    <estimated_cpu_time_remaining>68058.499353</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>data_collect_v4_1454745134_479021_0</name>
+    <wu_name>data_collect_v4_1454745134_479021</wu_name>
+    <version_num>419</version_num>
+    <plan_class>nci</plan_class>
+    <project_url>http://wuprop.boinc-af.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457277807.000000</report_deadline>
+    <received_time>1456413808.059933</received_time>
+    <estimated_cpu_time_remaining>3040.176303</estimated_cpu_time_remaining>
+<active_task>
+    <active_task_state>1</active_task_state>
+    <app_version_num>419</app_version_num>
+    <slot>1</slot>
+    <pid>5060</pid>
+    <scheduler_state>2</scheduler_state>
+    <checkpoint_cpu_time>14.768920</checkpoint_cpu_time>
+    <fraction_done>0.855956</fraction_done>
+    <current_cpu_time>14.792920</current_cpu_time>
+    <elapsed_time>18065.666158</elapsed_time>
+    <swap_size>99217408.000000</swap_size>
+    <working_set_size>20652032.000000</working_set_size>
+    <working_set_size_smoothed>20652032.000000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+</active_task>
+</result>
+<result>
+    <name>FAH2_000075_avx17680_000090_0054_013_0</name>
+    <wu_name>FAH2_000075_avx17680_000090_0054_013</wu_name>
+    <version_num>715</version_num>
+    <plan_class></plan_class>
+    <project_url>http://www.worldcommunitygrid.org/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1456834636.000000</report_deadline>
+    <received_time>1456489039.457981</received_time>
+    <estimated_cpu_time_remaining>68058.499353</estimated_cpu_time_remaining>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14869294_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14869294</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457531946.000000</report_deadline>
+    <received_time>1456495149.269988</received_time>
+    <estimated_cpu_time_remaining>58.417855</estimated_cpu_time_remaining>
+<active_task>
+    <active_task_state>1</active_task_state>
+    <app_version_num>102</app_version_num>
+    <slot>0</slot>
+    <pid>6967</pid>
+    <scheduler_state>2</scheduler_state>
+    <checkpoint_cpu_time>2.144133</checkpoint_cpu_time>
+    <fraction_done>0.634375</fraction_done>
+    <current_cpu_time>2.396149</current_cpu_time>
+    <elapsed_time>84.732026</elapsed_time>
+    <swap_size>132796416.000000</swap_size>
+    <working_set_size>69984256.000000</working_set_size>
+    <working_set_size_smoothed>69795184.000000</working_set_size_smoothed>
+    <page_fault_rate>0.000000</page_fault_rate>
+    <bytes_sent>0.000000</bytes_sent>
+    <bytes_received>0.000000</bytes_received>
+</active_task>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14800223_2</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14800223</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457532088.000000</report_deadline>
+    <received_time>1456495290.074011</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14870704_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14870704</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457532158.000000</report_deadline>
+    <received_time>1456495359.685993</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14871628_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14871628</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457532299.000000</report_deadline>
+    <received_time>1456495501.941987</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14872684_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14872684</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457532459.000000</report_deadline>
+    <received_time>1456495662.261983</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14873140_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14873140</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457532534.000000</report_deadline>
+    <received_time>1456495735.994012</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14874100_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14874100</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457532676.000000</report_deadline>
+    <received_time>1456495877.238001</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14875333_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14875333</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457532880.000000</report_deadline>
+    <received_time>1456496081.073986</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14865585_2</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14865585</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533021.000000</report_deadline>
+    <received_time>1456496222.677988</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14876685_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14876685</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533090.000000</report_deadline>
+    <received_time>1456496291.337980</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14877438_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14877438</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533228.000000</report_deadline>
+    <received_time>1456496428.609984</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14878335_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14878335</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533365.000000</report_deadline>
+    <received_time>1456496566.039613</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14879163_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14879163</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533503.000000</report_deadline>
+    <received_time>1456496704.377982</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14880971_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14880971</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533792.000000</report_deadline>
+    <received_time>1456496994.906004</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14880966_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14880966</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533792.000000</report_deadline>
+    <received_time>1456496994.906004</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14881771_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14881771</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457533933.000000</report_deadline>
+    <received_time>1456497136.153994</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14422334_2</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14422334</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457534072.000000</report_deadline>
+    <received_time>1456497276.774008</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14883514_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14883514</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457534210.000000</report_deadline>
+    <received_time>1456497411.490008</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14662026_1</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14662026</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457534349.000000</report_deadline>
+    <received_time>1456497549.709986</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14885656_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14885656</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457534555.000000</report_deadline>
+    <received_time>1456497758.569991</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14565287_2</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14565287</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457534695.000000</report_deadline>
+    <received_time>1456497895.881998</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14886932_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14886932</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457534764.000000</report_deadline>
+    <received_time>1456497965.641984</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14887761_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14887761</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457534903.000000</report_deadline>
+    <received_time>1456498105.906015</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14861764_1</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14861764</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457535042.000000</report_deadline>
+    <received_time>1456498243.197507</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14890021_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14890021</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457535260.000000</report_deadline>
+    <received_time>1456498462.474000</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14890404_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14890404</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457535330.000000</report_deadline>
+    <received_time>1456498531.153991</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14891382_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14891382</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457535469.000000</report_deadline>
+    <received_time>1456498669.453986</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14892662_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14892662</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457535675.000000</report_deadline>
+    <received_time>1456498876.277984</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14893103_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14893103</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457535744.000000</report_deadline>
+    <received_time>1456498944.921981</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14893892_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14893892</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457535882.000000</report_deadline>
+    <received_time>1456499082.945988</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14883277_2</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14883277</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536019.000000</report_deadline>
+    <received_time>1456499221.213993</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14895475_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14895475</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536157.000000</report_deadline>
+    <received_time>1456499358.433989</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14896307_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14896307</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536295.000000</report_deadline>
+    <received_time>1456499495.681626</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14897146_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14897146</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536432.000000</report_deadline>
+    <received_time>1456499632.966540</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14573696_2</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14573696</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536643.000000</report_deadline>
+    <received_time>1456499844.097985</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14898827_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14898827</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536712.000000</report_deadline>
+    <received_time>1456499914.797985</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14899669_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14899669</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536851.000000</report_deadline>
+    <received_time>1456500054.045998</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14900560_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14900560</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457536990.000000</report_deadline>
+    <received_time>1456500191.269988</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14901291_0</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14901291</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457537128.000000</report_deadline>
+    <received_time>1456500329.457981</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+<result>
+    <name>de_80_DR8_Rev_8_5_00004_1453826701_14889994_3</name>
+    <wu_name>de_80_DR8_Rev_8_5_00004_1453826701_14889994</wu_name>
+    <version_num>102</version_num>
+    <plan_class>opencl_amd_ati</plan_class>
+    <project_url>http://milkyway.cs.rpi.edu/milkyway/</project_url>
+    <final_cpu_time>0.000000</final_cpu_time>
+    <final_elapsed_time>0.000000</final_elapsed_time>
+    <exit_status>0</exit_status>
+    <state>2</state>
+    <report_deadline>1457537267.000000</report_deadline>
+    <received_time>1456500467.674017</received_time>
+    <estimated_cpu_time_remaining>159.775329</estimated_cpu_time_remaining>
+    <resources>0.873 CPUs + 1 AMD/ATI GPU</resources>
+</result>
+</results>
+</boinc_gui_rpc_reply>

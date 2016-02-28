@@ -1,0 +1,294 @@
+<boinc_gui_rpc_reply>
+<file_transfers>
+<file_transfer>
+    <project_url>http://wuprop.boinc-af.org/</project_url>
+    <project_name>WUProp@Home</project_name>
+    <name>data_collect_v4_1454745134_512096_0_0</name>
+    <nbytes>70211.000000</nbytes>
+    <max_nbytes>50000000.000000</max_nbytes>
+    <status>1</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543231.237237</first_request_time>
+        <next_request_time>1456543231.237237</next_request_time>
+        <time_so_far>11.045853</time_so_far>
+        <last_bytes_xferred>49152.000000</last_bytes_xferred>
+        <is_upload>1</is_upload>
+    </persistent_file_xfer>
+    <file_xfer>
+        <bytes_xferred>65536.000000</bytes_xferred>
+        <file_offset>0.000000</file_offset>
+        <xfer_speed>7243.123531</xfer_speed>
+        <url>http://wuprop.boinc-af.org/wuproj_cgi/file_upload_handler</url>
+    </file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>GW_BBH2.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>1.123449</time_so_far>
+        <last_bytes_xferred>5872.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+    <file_xfer>
+        <bytes_xferred>15049.000000</bytes_xferred>
+        <file_offset>0.000000</file_offset>
+        <xfer_speed>11297.681883</xfer_speed>
+        <url>http://einstein.phys.uwm.edu/simple_gui_icons/GW_BBH2.jpg</url>
+    </file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>LIGO_Hanford.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>1.123449</time_so_far>
+        <last_bytes_xferred>4567.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+    <file_xfer>
+        <bytes_xferred>14857.000000</bytes_xferred>
+        <file_offset>0.000000</file_offset>
+        <xfer_speed>10906.333227</xfer_speed>
+        <url>http://einstein.phys.uwm.edu/simple_gui_icons/LIGO_Hanford.jpg</url>
+    </file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>LIGO_Livingston.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>LIGO_laser.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>LIGO_optics.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>LIGO_schematic.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>LIGO_seisisol.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>LIGO_vacuum.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Parkes_full.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Pulsars_J2007.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Pulsars_Manhattan.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Pulsars_crab_opt.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Pulsars_crab_xr.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Pulsars_schem1.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Pulsars_schem2.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+<file_transfer>
+    <project_url>http://einstein.phys.uwm.edu/</project_url>
+    <project_name>Einstein@Home</project_name>
+    <name>Pulsars_vela.jpg</name>
+    <nbytes>0.000000</nbytes>
+    <max_nbytes>0.000000</max_nbytes>
+    <status>0</status>
+    <persistent_file_xfer>
+        <num_retries>0</num_retries>
+        <first_request_time>1456543420.861750</first_request_time>
+        <next_request_time>1456543420.861750</next_request_time>
+        <time_so_far>0.000000</time_so_far>
+        <last_bytes_xferred>0.000000</last_bytes_xferred>
+        <is_upload>0</is_upload>
+    </persistent_file_xfer>
+</file_transfer>
+</file_transfers>
+</boinc_gui_rpc_reply>

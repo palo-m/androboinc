@@ -81,6 +81,27 @@ public class VersionInfoParserTest {
     }
 
     @Test
+    public void elementNotPresent() {
+        final String received =
+                "<boinc_gui_rpc_reply>\n" +
+                "<core_client_major_version>7</core_client_major_version>\n" +
+                "<core_client_minor_version>4</core_client_minor_version>\n" +
+                "<core_client_release>23</core_client_release>\n" +
+                "</boinc_gui_rpc_reply>\n";
+        VersionInfo versionInfo = null;
+        try {
+            versionInfo = VersionInfoParser.parse(received);
+        }
+        catch (AuthorizationFailedException e) {
+            fail("AuthorizationFailedException unexpected");
+        }
+        catch (InvalidDataReceivedException e) {
+            fail("InvalidDataReceivedException unexpected");
+        }
+        assertNull(versionInfo);
+    }
+
+    @Test
     public void unauthorized() {
         final String received =
                 "<boinc_gui_rpc_reply>\n" +
@@ -127,27 +148,6 @@ public class VersionInfoParserTest {
             errorMsg = e.getMessage();
         }
         assertThat(errorMsg, is(equalTo("Malformed XML while parsing <server_version>")));
-        assertNull(versionInfo);
-    }
-
-    @Test
-    public void elementNotPresent() {
-        final String received =
-                "<boinc_gui_rpc_reply>\n" +
-                "<core_client_major_version>7</core_client_major_version>\n" +
-                "<core_client_minor_version>4</core_client_minor_version>\n" +
-                "<core_client_release>23</core_client_release>\n" +
-                "</boinc_gui_rpc_reply>\n";
-        VersionInfo versionInfo = null;
-        try {
-            versionInfo = VersionInfoParser.parse(received);
-        }
-        catch (AuthorizationFailedException e) {
-            fail("AuthorizationFailedException unexpected");
-        }
-        catch (InvalidDataReceivedException e) {
-            fail("InvalidDataReceivedException unexpected");
-        }
         assertNull(versionInfo);
     }
 }

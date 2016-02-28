@@ -1,0 +1,91 @@
+<boinc_gui_rpc_reply>
+<host_info>
+    <timezone>28800</timezone>
+    <domain_name>machine3</domain_name>
+    <ip_addr>192.168.0.3</ip_addr>
+    <host_cpid>a8c15a2da71502bb52c8d4a5025e70b6</host_cpid>
+    <p_ncpus>4</p_ncpus>
+    <p_vendor>GenuineIntel</p_vendor>
+    <p_model>Intel(R) Core(TM)2 Quad CPU    Q6600  @ 2.40GHz [Family 6 Model 15 Stepping 11]</p_model>
+    <p_features>fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good nopl aperfmperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm lahf_lm dtherm tpr_shadow vnmi flexpriority</p_features>
+    <p_fpops>2227719169.069331</p_fpops>
+    <p_iops>12828645195.720629</p_iops>
+    <p_membw>1000000000.000000</p_membw>
+    <p_calculated>1456151145.533448</p_calculated>
+    <p_vm_extensions_disabled>0</p_vm_extensions_disabled>
+    <m_nbytes>4150296576.000000</m_nbytes>
+    <m_cache>4194304.000000</m_cache>
+    <m_swap>5999947776.000000</m_swap>
+    <d_total>131933581312.000000</d_total>
+    <d_free>67023462400.000000</d_free>
+    <os_name>Linux</os_name>
+    <os_version>3.2.0-4-amd64</os_version>
+    <coprocs>
+<coproc_ati>
+   <count>1</count>
+   <name>ATI Radeon HD 4700/4800 (RV740/RV770)</name>
+   <available_ram>1040187392.000000</available_ram>
+   <have_cal>1</have_cal>
+   <have_opencl>1</have_opencl>
+   <peak_flops>2400000000000.000000</peak_flops>
+   <CALVersion>1.4.1734</CALVersion>
+   <target>5</target>
+   <localRAM>1024</localRAM>
+   <uncachedRemoteRAM>1731</uncachedRemoteRAM>
+   <cachedRemoteRAM>491</cachedRemoteRAM>
+   <engineClock>750</engineClock>
+   <memoryClock>900</memoryClock>
+   <wavefrontSize>64</wavefrontSize>
+   <numberOfSIMD>10</numberOfSIMD>
+   <doublePrecision>1</doublePrecision>
+   <pitch_alignment>256</pitch_alignment>
+   <surface_alignment>256</surface_alignment>
+   <maxResource1DWidth>8192</maxResource1DWidth>
+   <maxResource2DWidth>8192</maxResource2DWidth>
+   <maxResource2DHeight>8192</maxResource2DHeight>
+    <atirt_detected/>
+   <coproc_opencl>
+      <name>ATI Radeon HD 4700/4800 (RV740/RV770)</name>
+      <vendor>Advanced Micro Devices, Inc.</vendor>
+      <vendor_id>4098</vendor_id>
+      <available>1</available>
+      <half_fp_config>0</half_fp_config>
+      <single_fp_config>62</single_fp_config>
+      <double_fp_config>63</double_fp_config>
+      <endian_little>1</endian_little>
+      <execution_capabilities>1</execution_capabilities>
+      <extensions>cl_khr_fp64 cl_amd_fp64 cl_khr_gl_sharing cl_amd_device_attribute_query</extensions>
+      <global_mem_size>1073741824</global_mem_size>
+      <local_mem_size>16384</local_mem_size>
+      <max_clock_frequency>750</max_clock_frequency>
+      <max_compute_units>10</max_compute_units>
+      <opencl_platform_version>OpenCL 1.2 AMD-APP (937.2)</opencl_platform_version>
+      <opencl_device_version>OpenCL 1.0 AMD-APP (937.2)</opencl_device_version>
+      <opencl_driver_version>CAL 1.4.1734</opencl_driver_version>
+   </coproc_opencl>
+</coproc_ati>
+    </coprocs>
+<opencl_cpu_prop>
+   <platform_vendor>Advanced Micro Devices, Inc.</platform_vendor>
+   <opencl_cpu_info>
+      <name>AMD Phenom(tm) II X4 965 Processor</name>
+      <vendor>AuthenticAMD</vendor>
+      <vendor_id>4098</vendor_id>
+      <available>1</available>
+      <half_fp_config>0</half_fp_config>
+      <single_fp_config>191</single_fp_config>
+      <double_fp_config>63</double_fp_config>
+      <endian_little>1</endian_little>
+      <execution_capabilities>3</execution_capabilities>
+      <extensions>cl_khr_fp64 cl_amd_fp64 cl_khr_global_int32_base_atomics cl_khr_global_int32_extended_atomics cl_khr_local_int32_base_atomics cl_khr_local_int32_extended_atomics cl_khr_int64_base_atomics cl_khr_int64_extended_atomics cl_khr_byte_addressable_store cl_khr_gl_sharing cl_ext_device_fission cl_amd_device_attribute_query cl_amd_vec3 cl_amd_printf cl_amd_media_ops cl_amd_popcnt</extensions>
+      <global_mem_size>4156575744</global_mem_size>
+      <local_mem_size>32768</local_mem_size>
+      <max_clock_frequency>2200</max_clock_frequency>
+      <max_compute_units>4</max_compute_units>
+      <opencl_platform_version>OpenCL 1.2 AMD-APP (937.2)</opencl_platform_version>
+      <opencl_device_version>OpenCL 1.2 AMD-APP (937.2)</opencl_device_version>
+      <opencl_driver_version>2.0 (sse2)</opencl_driver_version>
+   </opencl_cpu_info>
+</opencl_cpu_prop>
+</host_info>
+</boinc_gui_rpc_reply>

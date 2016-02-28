@@ -26,44 +26,59 @@ import org.junit.runner.RunWith;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class MessageCountParserTest {
+public class SimpleReplyParserTest {
 
     @Test
-    public void parseNormal() {
+    public void parseNormalPositive() {
         final String received =
                 "<boinc_gui_rpc_reply>\n" +
-                "<seqno>12741</seqno>\n" +
+                "<success/>\n" +
                 "</boinc_gui_rpc_reply>\n";
-        int seqNo;
+        boolean success = false;
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            success = SimpleReplyParser.isSuccess(received);
         }
         catch (AuthorizationFailedException e) {
-            seqNo = -1;
             fail("AuthorizationFailedException unexpected");
         }
         catch (InvalidDataReceivedException e) {
-            seqNo = -2;
             fail("InvalidDataReceivedException unexpected");
         }
-        assertThat(seqNo, is(equalTo(12741)));
+        assertTrue(success);
+    }
+
+    @Test
+    public void parseNormalNegative() {
+        final String received =
+                "<boinc_gui_rpc_reply>\n" +
+                "<failure/>\n" +
+                "</boinc_gui_rpc_reply>\n";
+        boolean success = false;
+        try {
+            success = SimpleReplyParser.isSuccess(received);
+        }
+        catch (AuthorizationFailedException e) {
+            fail("AuthorizationFailedException unexpected");
+        }
+        catch (InvalidDataReceivedException e) {
+            fail("InvalidDataReceivedException unexpected");
+        }
+        assertFalse(success);
     }
 
     @Test
     public void emptyAnswer() {
         final String received =
                 "<boinc_gui_rpc_reply>\n" +
-                "<seqno></seqno>\n" +
                 "</boinc_gui_rpc_reply>\n";
-        int seqNo = -999;
+        boolean success = false;
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            success = SimpleReplyParser.isSuccess(received);
         }
         catch (AuthorizationFailedException e) {
             fail("AuthorizationFailedException unexpected");
@@ -71,7 +86,7 @@ public class MessageCountParserTest {
         catch (InvalidDataReceivedException e) {
             fail("InvalidDataReceivedException unexpected");
         }
-        assertThat(seqNo, is(equalTo(-1)));
+        assertFalse(success);
     }
 
     @Test
@@ -82,9 +97,9 @@ public class MessageCountParserTest {
                 "<core_client_minor_version>4</core_client_minor_version>\n" +
                 "<core_client_release>23</core_client_release>\n" +
                 "</boinc_gui_rpc_reply>\n";
-        int seqNo = -999;
+        boolean success = false;
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            success = SimpleReplyParser.isSuccess(received);
         }
         catch (AuthorizationFailedException e) {
             fail("AuthorizationFailedException unexpected");
@@ -92,7 +107,7 @@ public class MessageCountParserTest {
         catch (InvalidDataReceivedException e) {
             fail("InvalidDataReceivedException unexpected");
         }
-        assertThat(seqNo, is(equalTo(-1)));
+        assertFalse(success);
     }
 
     @Test
@@ -101,10 +116,10 @@ public class MessageCountParserTest {
                 "<boinc_gui_rpc_reply>\n" +
                 "<unauthorized/>\n" +
                 "</boinc_gui_rpc_reply>\n";
-        int seqNo = -999;
+        boolean success = false;
         String errorMsg = "";
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            success = SimpleReplyParser.isSuccess(received);
             fail("Successful parsing unexpected, AuthorizationFailedException should be thrown instead");
         }
         catch (AuthorizationFailedException e) {
@@ -115,19 +130,19 @@ public class MessageCountParserTest {
             fail("InvalidDataReceivedException unexpected, AuthorizationFailedException should be thrown instead");
         }
         assertThat(errorMsg, is(equalTo("Authorization Failed")));
-        assertThat(seqNo, is(equalTo(-999)));
+        assertFalse(success);
     }
 
     @Test
     public void invalidData() {
         final String received =
                 "<boinc_gui_rpc_reply>\n" +
-                "<seqno>12741</seqno>\n" +
+                "<succcess/>\n" +
                 "</boinc_gui_rpc_reply";
-        int seqNo = -999;
+        boolean success = false;
         String errorMsg = "";
         try {
-            seqNo = MessageCountParser.getSeqno(received);
+            success = SimpleReplyParser.isSuccess(received);
             fail("Successful parsing unexpected, InvalidDataReceivedException should be thrown instead");
         }
         catch (AuthorizationFailedException e) {
@@ -137,7 +152,7 @@ public class MessageCountParserTest {
         catch (InvalidDataReceivedException e) {
             errorMsg = e.getMessage();
         }
-        assertThat(errorMsg, is(equalTo("Malformed XML while parsing <seqno>")));
-        assertThat(seqNo, is(equalTo(-999)));
+        assertThat(errorMsg, is(equalTo("Malformed XML while parsing simple reply")));
+        assertFalse(success);
     }
 }

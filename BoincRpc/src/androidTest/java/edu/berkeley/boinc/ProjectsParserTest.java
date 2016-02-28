@@ -20,13 +20,12 @@
 package edu.berkeley.boinc;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
+import android.test.suitebuilder.annotation.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Vector;
-
 import edu.berkeley.boinc.testutil.TestSupport;
+import java.util.Vector;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,7 +33,7 @@ import static org.junit.Assert.*;
 
 
 @RunWith(AndroidJUnit4.class)
-@MediumTest
+@SmallTest
 public class ProjectsParserTest {
 
     @Test
@@ -118,6 +117,28 @@ public class ProjectsParserTest {
                 "<boinc_gui_rpc_reply>\n" +
                 "<projects>\n" +
                 "</projects>\n" +
+                "</boinc_gui_rpc_reply>\n";
+        Vector<Project> projects = null;
+        try {
+            projects = ProjectsParser.parse(received);
+        }
+        catch (AuthorizationFailedException e) {
+            fail("AuthorizationFailedException unexpected");
+        }
+        catch (InvalidDataReceivedException e) {
+            fail("InvalidDataReceivedException unexpected");
+        }
+        assertNotNull(projects);
+        assertTrue(projects.isEmpty());
+    }
+
+    @Test
+    public void elementNotPresent() {
+        final String received =
+                "<boinc_gui_rpc_reply>\n" +
+                "<core_client_major_version>7</core_client_major_version>\n" +
+                "<core_client_minor_version>4</core_client_minor_version>\n" +
+                "<core_client_release>23</core_client_release>\n" +
                 "</boinc_gui_rpc_reply>\n";
         Vector<Project> projects = null;
         try {
