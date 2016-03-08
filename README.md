@@ -7,8 +7,8 @@ The project can be built directly by Gradle (useful for machine-builds) or impor
 
 1. Install Android SDK
 
-   See [[https://developer.android.com/sdk/installing/index.html?pkg=tools]].
-   Don't forget to make sure [system requirements](https://developer.android.com/sdk/index.html#Requirements) are met.
+   See https://developer.android.com/sdk/installing/index.html?pkg=tools
+   Don't forget to make sure that the [system requirements](https://developer.android.com/sdk/index.html#Requirements) are met.
 
 2. Clone the repository
 
@@ -38,7 +38,7 @@ The project can be built directly by Gradle (useful for machine-builds) or impor
 
 1. Install Android Studio
 
-   See [[https://developer.android.com/sdk/index.html]]
+   See https://developer.android.com/sdk/index.html
 
 2. Import project into Android Studio
 

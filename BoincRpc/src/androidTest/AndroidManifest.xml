@@ -19,9 +19,12 @@
  *
  */
 -->
-<manifest xmlns:tools="http://schemas.android.com/tools"
-	package="edu.berkeley.boinc">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="edu.berkeley.boinc">
 
-	<uses-sdk tools:overrideLibrary="android.app, android.support.test, android.support.test.rule" />
+    <uses-sdk tools:overrideLibrary="android.app, android.support.test, android.support.test.rule" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

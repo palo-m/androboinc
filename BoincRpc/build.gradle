@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 23
@@ -23,17 +24,26 @@ android {
             buildConfigField 'boolean', 'DEBUG_DATA', 'false'
             buildConfigField 'boolean', 'DEBUG_PERFORMANCE', 'false'
             debuggable true
+            testCoverageEnabled true
         }
     }
     lintOptions {
         disable 'GoogleAppIndexingWarning'
+    }
+    testOptions {
+        unitTests.all {
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+                exceptionFormat 'full'
+            }
+        }
     }
 }
 
 dependencies {
     // Unit testing dependencies
     testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.0"
+    testCompile 'org.robolectric:robolectric:3.0'
     // Android unit testing dependencies
     androidTestCompile 'com.android.support:support-annotations:23.1.1'
     androidTestCompile 'com.android.support.test:runner:0.4'
