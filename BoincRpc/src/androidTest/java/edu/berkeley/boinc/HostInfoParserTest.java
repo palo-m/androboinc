@@ -38,7 +38,7 @@ public class HostInfoParserTest {
     @Test
     public void parseNormalNoGpu() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_host_info_reply_nogpu);
-        assertThat(received.length(), is(equalTo(1264)));
+        assertThat(received.length(), is(equalTo(1263)));
         HostInfo hostInfo = null;
         try {
             hostInfo = HostInfoParser.parse(received);
@@ -75,7 +75,7 @@ public class HostInfoParserTest {
     @Test
     public void parseNormalWithGpu() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_host_info_reply_gpu);
-        assertThat(received.length(), is(equalTo(4477)));
+        assertThat(received.length(), is(equalTo(4476)));
         HostInfo hostInfo = null;
         try {
             hostInfo = HostInfoParser.parse(received);

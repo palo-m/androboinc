@@ -234,17 +234,17 @@ public class BoincClientStubWorker {
                 mOutput.flush();
                 break;
             case "get_cc_status":
-                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_cc_status_reply, 787));
+                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_cc_status_reply));
                 mOutput.print('\003');
                 mOutput.flush();
                 break;
             case "get_file_transfers":
-                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_file_transfers_reply, 11516));
+                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_file_transfers_reply));
                 mOutput.print('\003');
                 mOutput.flush();
                 break;
             case "get_host_info":
-                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_host_info_reply_gpu, 4476));
+                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_host_info_reply_gpu));
                 mOutput.print('\003');
                 mOutput.flush();
                 break;
@@ -256,22 +256,22 @@ public class BoincClientStubWorker {
                 mOutput.flush();
                 break;
             case "get_messages":
-                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_messages_reply, 8895));
+                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_messages_reply));
                 mOutput.print('\003');
                 mOutput.flush();
                 break;
             case "get_project_status":
-                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_project_status_reply, 9791));
+                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_project_status_reply));
                 mOutput.print('\003');
                 mOutput.flush();
                 break;
             case "get_results":
-                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_results_reply, 56563));
+                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_results_reply));
                 mOutput.print('\003');
                 mOutput.flush();
                 break;
             case "get_state":
-                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_state_reply, 98962));
+                mOutput.print(TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_state_reply));
                 mOutput.print('\003');
                 mOutput.flush();
                 break;

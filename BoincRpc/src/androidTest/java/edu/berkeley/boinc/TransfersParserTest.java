@@ -39,7 +39,7 @@ public class TransfersParserTest {
     @Test
     public void parseNormal() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_file_transfers_reply);
-        assertThat(received.length(), is(equalTo(11517)));
+        assertThat(received.length(), is(equalTo(11516)));
         Vector<Transfer> transfers = null;
         try {
             transfers = TransfersParser.parse(received);

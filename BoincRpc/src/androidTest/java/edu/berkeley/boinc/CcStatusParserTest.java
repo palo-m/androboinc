@@ -38,7 +38,7 @@ public class CcStatusParserTest {
     @Test
     public void parseNormal() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_cc_status_reply);
-        assertThat(received.length(), is(equalTo(788)));
+        assertThat(received.length(), is(equalTo(787)));
         CcStatus ccStatus = null;
         try {
             ccStatus = CcStatusParser.parse(received);

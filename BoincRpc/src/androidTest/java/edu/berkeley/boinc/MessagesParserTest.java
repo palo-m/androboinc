@@ -39,7 +39,7 @@ public class MessagesParserTest {
     @Test
     public void parseNormal() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_messages_reply);
-        assertThat(received.length(), is(equalTo(8896)));
+        assertThat(received.length(), is(equalTo(8957)));
         Vector<Message> messages = null;
         try {
             messages = MessagesParser.parse(received);
@@ -52,11 +52,11 @@ public class MessagesParserTest {
         }
         assertNotNull(messages);
         assertThat(messages.size(), is(equalTo(50)));
-        assertThat(messages.elementAt(0).project, is(equalTo("WUProp@Home")));
+        assertThat(messages.elementAt(0).project, is(equalTo("")));
         assertThat(messages.elementAt(0).priority, is(equalTo(1)));
         assertThat(messages.elementAt(0).seqno, is(equalTo(12692)));
         assertThat(messages.elementAt(0).timestamp, is(equalTo(1456395487L)));
-        assertThat(messages.elementAt(0).body, is(equalTo("Scheduler request completed")));
+        assertThat(messages.elementAt(0).body, is(equalTo("A new version of BOINC is available. <a href=http://boinc.berkeley.edu/download.php>Download it.</a>")));
         assertThat(messages.elementAt(1).project, is(equalTo("pogs")));
         assertThat(messages.elementAt(1).priority, is(equalTo(2)));
         assertThat(messages.elementAt(1).seqno, is(equalTo(12693)));
@@ -137,7 +137,7 @@ public class MessagesParserTest {
 
     @Test
     public void invalidData() {
-        final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_messages_reply, 8894);
+        final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_messages_reply, 8956);
         Vector<Message> messages = null;
         String errorMsg = "";
         try {

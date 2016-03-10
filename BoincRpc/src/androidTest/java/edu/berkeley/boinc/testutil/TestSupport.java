@@ -47,6 +47,10 @@ public class TestSupport {
         catch (IOException e) {
             fail("IOException");
         }
+        // Truncate that last newline
+        if (sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
         if (maxSize > 0) {
             if (sb.length() > maxSize) {
                 sb.setLength(maxSize);

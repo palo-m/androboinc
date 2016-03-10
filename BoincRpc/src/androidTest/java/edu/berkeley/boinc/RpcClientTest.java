@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import edu.berkeley.boinc.testutil.BoincClientStub;
+import edu.berkeley.boinc.testutil.NetStatsStub;
 import java.util.Vector;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -75,6 +76,21 @@ public class RpcClientTest {
     }
 
     @Test
+    public void connectionUnknownHostFailed() {
+        String errorMsg = "";
+        RpcClient rpcClient = new RpcClient();
+        try {
+            rpcClient.open("256.0.0.1", 31416);
+            fail("Successful connection unexpected, connection should fail instead");
+        }
+        catch (ConnectionFailedException e) {
+            errorMsg = e.getMessage();
+        }
+        assertFalse(rpcClient.isConnected());
+        assertThat(errorMsg, is(equalTo("Connection failed: unknown host \"256.0.0.1\"")));
+    }
+
+    @Test
     public void connectionClosed() {
         RpcClient rpcClient = new RpcClient();
         try {
@@ -90,6 +106,37 @@ public class RpcClientTest {
         assertTrue(rpcClient.isConnected());
         assertFalse(rpcClient.connectionAlive());
         rpcClient.close();
+    }
+
+    @Test
+    public void doubleConnect() {
+        RpcClient rpcClient = new RpcClient();
+        try {
+            rpcClient.open("127.0.0.1", 31416);
+            assertTrue(rpcClient.isConnected());
+            rpcClient.open("127.0.0.1", 31416);
+        }
+        catch (ConnectionFailedException e) {
+            fail("ConnectionFailedException " + e.getMessage());
+        }
+        assertTrue(rpcClient.isConnected());
+        rpcClient.close();
+    }
+
+    @Test
+    public void doubleDisconnect() {
+        RpcClient rpcClient = new RpcClient();
+        try {
+            rpcClient.open("127.0.0.1", 31416);
+        }
+        catch (ConnectionFailedException e) {
+            fail("ConnectionFailedException " + e.getMessage());
+        }
+        assertTrue(rpcClient.isConnected());
+        rpcClient.close();
+        assertFalse(rpcClient.isConnected());
+        rpcClient.close();
+        assertFalse(rpcClient.isConnected());
     }
 
     @Test
@@ -113,6 +160,29 @@ public class RpcClientTest {
         assertThat(vi.major, is(equalTo(7)));
         assertThat(vi.minor, is(equalTo(4)));
         assertThat(vi.release, is(equalTo(23)));
+        // Coverage of VersionInfo.greater_than()
+        VersionInfo viOlder = new VersionInfo();
+        viOlder.major = 6;
+        viOlder.minor = 10;
+        viOlder.release = 58;
+        assertTrue(vi.greater_than(viOlder));
+        assertFalse(viOlder.greater_than(vi));
+        viOlder.major = 7;
+        viOlder.minor = 3;
+        viOlder.release = 25;
+        assertTrue(vi.greater_than(viOlder));
+        assertFalse(viOlder.greater_than(vi));
+        viOlder.major = 7;
+        viOlder.minor = 4;
+        viOlder.release = 22;
+        assertTrue(vi.greater_than(viOlder));
+        assertFalse(viOlder.greater_than(vi));
+        VersionInfo viSame = new VersionInfo();
+        viSame.major = vi.major;
+        viSame.minor = vi.minor;
+        viSame.release = vi.release;
+        assertFalse(viSame.greater_than(vi));
+        assertFalse(vi.greater_than(viSame));
     }
 
     @Test
@@ -201,6 +271,7 @@ public class RpcClientTest {
         try {
             rpcClient.open("127.0.0.1", 31416);
             assertTrue(rpcClient.isConnected());
+            rpcClient.setMinimalSoTimeout();
             boincClient.setBehavior(BoincClientStub.Behavior.NO_REPLY);
             vi = rpcClient.exchangeVersions();
             fail("Successful version info retrieval unexpected, timeout should happen instead");
@@ -213,6 +284,8 @@ public class RpcClientTest {
         }
         assertNull(vi);
         assertThat(errorMsg, is(equalTo("Connection failed in exchangeVersions()")));
+        assertTrue(rpcClient.isConnected());
+        assertFalse(rpcClient.connectionAlive());
         rpcClient.close();
     }
 
@@ -254,6 +327,7 @@ public class RpcClientTest {
         try {
             rpcClient.open("127.0.0.1", 31416);
             assertTrue(rpcClient.isConnected());
+            rpcClient.setMinimalSoTimeout();
             boincClient.setBehavior(BoincClientStub.Behavior.TRUNCATED_DATA);
             ccStatus = rpcClient.getCcStatus();
             fail("Successful cc_status retrieval unexpected, truncated data");
@@ -403,11 +477,47 @@ public class RpcClientTest {
         rpcClient.close();
         assertNotNull(messages);
         assertThat(messages.size(), is(equalTo(50)));
-        assertThat(messages.elementAt(0).project, is(equalTo("WUProp@Home")));
+        assertThat(messages.elementAt(0).project, is(equalTo("")));
         assertThat(messages.elementAt(0).priority, is(equalTo(1)));
         assertThat(messages.elementAt(0).seqno, is(equalTo(12692)));
         assertThat(messages.elementAt(0).timestamp, is(equalTo(1456395487L)));
-        assertThat(messages.elementAt(0).body, is(equalTo("Scheduler request completed")));
+        assertThat(messages.elementAt(0).body, is(equalTo("A new version of BOINC is available. <a href=http://boinc.berkeley.edu/download.php>Download it.</a>")));
+        assertThat(messages.elementAt(1).project, is(equalTo("pogs")));
+        assertThat(messages.elementAt(1).priority, is(equalTo(2)));
+        assertThat(messages.elementAt(1).seqno, is(equalTo(12693)));
+        assertThat(messages.elementAt(1).timestamp, is(equalTo(1456397767L)));
+        assertThat(messages.elementAt(1).body, is(equalTo("Computation for task 123625.9+343405_area27054047_0 finished")));
+        assertThat(messages.elementAt(49).project, is(equalTo("World Community Grid")));
+        assertThat(messages.elementAt(49).priority, is(equalTo(3)));
+        assertThat(messages.elementAt(49).seqno, is(equalTo(12741)));
+        assertThat(messages.elementAt(49).timestamp, is(equalTo(1456410012L)));
+        assertThat(messages.elementAt(49).body, is(equalTo("Scheduler request completed")));
+    }
+
+    @Test
+    public void getMessagesPartial() {
+        RpcClient rpcClient = new RpcClient();
+        Vector<Message> messages = null;
+        try {
+            rpcClient.open("127.0.0.1", 31416);
+            assertTrue(rpcClient.isConnected());
+            messages = rpcClient.getMessages(12692);
+        }
+        catch (ConnectionFailedException e) {
+            fail("ConnectionFailedException " + e.getMessage());
+        }
+        catch (RpcClientFailedException e) {
+            fail("RpcClientFailedException " + e.getMessage());
+        }
+        assertTrue(rpcClient.isConnected());
+        rpcClient.close();
+        assertNotNull(messages);
+        assertThat(messages.size(), is(equalTo(50)));
+        assertThat(messages.elementAt(0).project, is(equalTo("")));
+        assertThat(messages.elementAt(0).priority, is(equalTo(1)));
+        assertThat(messages.elementAt(0).seqno, is(equalTo(12692)));
+        assertThat(messages.elementAt(0).timestamp, is(equalTo(1456395487L)));
+        assertThat(messages.elementAt(0).body, is(equalTo("A new version of BOINC is available. <a href=http://boinc.berkeley.edu/download.php>Download it.</a>")));
         assertThat(messages.elementAt(1).project, is(equalTo("pogs")));
         assertThat(messages.elementAt(1).priority, is(equalTo(2)));
         assertThat(messages.elementAt(1).seqno, is(equalTo(12693)));
@@ -939,6 +1049,7 @@ public class RpcClientTest {
         try {
             rpcClient.open("127.0.0.1", 31416);
             assertTrue(rpcClient.isConnected());
+            assertTrue(rpcClient.connectionAlive());
             result = rpcClient.quit();
         }
         catch (ConnectionFailedException e) {
@@ -1277,6 +1388,39 @@ public class RpcClientTest {
         rpcClient.close();
         assertFalse(result);
         assertThat(errorMsg, is(equalTo("transferOp() - unsupported operation: 3")));
+    }
+
+    @Test
+    public void useNetStats() {
+        NetStatsStub netStats = new NetStatsStub();
+        RpcClient rpcClient = new RpcClient(netStats);
+        HostInfo hostInfo = null;
+        CcState ccState = null;
+        assertFalse(netStats.isConnected());
+        try {
+            rpcClient.open("127.0.0.1", 31416);
+            assertTrue(rpcClient.isConnected());
+            assertTrue(netStats.isConnected());
+            assertThat(netStats.getBytesSent(), is(equalTo(0L)));
+            assertThat(netStats.getBytesReceived(), is(equalTo(0L)));
+            hostInfo = rpcClient.getHostInfo();
+            assertThat(netStats.getBytesSent(), is(equalTo(67L)));
+            assertThat(netStats.getBytesReceived(), is(equalTo(4477L)));
+            ccState = rpcClient.getState();
+            assertThat(netStats.getBytesSent(), is(equalTo(67L+63L)));
+            assertThat(netStats.getBytesReceived(), is(equalTo(4477L+98963L)));
+        }
+        catch (ConnectionFailedException e) {
+            fail("ConnectionFailedException " + e.getMessage());
+        }
+        catch (RpcClientFailedException e) {
+            fail("RpcClientFailedException " + e.getMessage());
+        }
+        assertTrue(rpcClient.isConnected());
+        rpcClient.close();
+        assertFalse(netStats.isConnected());
+        assertNotNull(hostInfo);
+        assertNotNull(ccState);
     }
 
     @After

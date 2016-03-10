@@ -39,7 +39,7 @@ public class ProjectsParserTest {
     @Test
     public void parseNormal() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_project_status_reply);
-        assertThat(received.length(), is(equalTo(9792)));
+        assertThat(received.length(), is(equalTo(9791)));
         Vector<Project> projects = null;
         try {
             projects = ProjectsParser.parse(received);

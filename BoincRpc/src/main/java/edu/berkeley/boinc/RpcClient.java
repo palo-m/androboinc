@@ -30,6 +30,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Vector;
 
@@ -276,7 +277,21 @@ public class RpcClient {
      * @return true if connected to BOINC core client, false if not connected
      */
     public final boolean isConnected() {
-        return (mSocket != null) ? mSocket.isConnected() : false;
+        return (mSocket != null) && mSocket.isConnected();
+    }
+
+    /**
+     * Used for testing, to avoid long waiting times when checking connection failed scenarios
+     */
+    public void setMinimalSoTimeout() {
+        if (isConnected()) {
+            try {
+                mSocket.setSoTimeout(1000);
+            }
+            catch (SocketException e) {
+                Log.w(TAG, "SocketException", e);
+            }
+        }
     }
 
     /**
@@ -371,7 +386,7 @@ public class RpcClient {
         }
 
         if (mNetStats != null) {
-            mNetStats.bytesReceived(mResult.length());
+            mNetStats.bytesReceived(mResult.length() + 1);
         }
 
         if (BuildConfig.DEBUG_DATA) {

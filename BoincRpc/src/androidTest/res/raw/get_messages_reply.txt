@@ -1,11 +1,11 @@
 <boinc_gui_rpc_reply>
 <msgs>
 <msg>
- <project>WUProp@Home</project>
+ <project></project>
  <pri>1</pri>
  <seqno>12692</seqno>
  <body>
-Scheduler request completed
+A new version of BOINC is available. <a href=http://boinc.berkeley.edu/download.php>Download it.</a>
 </body>
  <time>1456395487</time>
 </msg>

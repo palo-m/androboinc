@@ -38,7 +38,7 @@ public class CcStateParserTest {
     @Test
     public void parseNormal() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_state_reply);
-        assertThat(received.length(), is(equalTo(98963)));
+        assertThat(received.length(), is(equalTo(98962)));
         CcState ccState = null;
         try {
             ccState = CcStateParser.parse(received);

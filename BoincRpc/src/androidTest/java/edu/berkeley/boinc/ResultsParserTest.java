@@ -39,7 +39,7 @@ public class ResultsParserTest {
     @Test
     public void parseNormal() {
         final String received = TestSupport.readResource(edu.berkeley.boinc.test.R.raw.get_results_reply);
-        assertThat(received.length(), is(equalTo(56564)));
+        assertThat(received.length(), is(equalTo(56563)));
         Vector<Result> results = null;
         try {
             results = ResultsParser.parse(received);
