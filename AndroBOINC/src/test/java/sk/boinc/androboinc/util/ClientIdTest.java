@@ -19,14 +19,21 @@
 
 package sk.boinc.androboinc.util;
 
+import android.os.Parcel;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 
+@RunWith(RobolectricTestRunner.class)
+@Config(manifest=Config.NONE)
 public class ClientIdTest {
     private ClientId mClientId;
 
@@ -65,4 +72,22 @@ public class ClientIdTest {
         assertThat(password, is(equalTo("mypassword")));
     }
 
+    @Test
+    public void parcelRoundTrip() {
+        // Write data from mClientId to parcel
+        Parcel parcel = Parcel.obtain();
+        mClientId.writeToParcel(parcel, 0);
+        // Prepare parcel for reading
+        parcel.setDataPosition(0);
+        // create new object from parcel
+        ClientId clientId = ClientId.CREATOR.createFromParcel(parcel);
+        // Compare that content is the same (while objects are different)
+        assertNotSame("Objects should not be the same", clientId, mClientId);
+        assertThat(clientId, is(equalTo(mClientId)));
+        assertThat(clientId.getId(), is(equalTo(mClientId.getId())));
+        assertThat(clientId.getNickname(), is(equalTo(mClientId.getNickname())));
+        assertThat(clientId.getAddress(), is(equalTo(mClientId.getAddress())));
+        assertThat(clientId.getPort(), is(equalTo(mClientId.getPort())));
+        assertThat(clientId.getPassword(), is(equalTo(mClientId.getPassword())));
+    }
 }

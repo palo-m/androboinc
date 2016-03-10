@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'jacoco'
 
 android {
     signingConfigs {
@@ -38,11 +39,20 @@ android {
             buildConfigField 'boolean', 'DEBUG_PERFORMANCE', 'false'
             buildConfigField 'boolean', 'DEBUG_DATA', 'false'
             debuggable true
+            testCoverageEnabled true
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
         }
     }
     productFlavors {
+    }
+    testOptions {
+        unitTests.all {
+            testLogging {
+                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+                exceptionFormat 'full'
+            }
+        }
     }
 }
 
@@ -51,6 +61,7 @@ dependencies {
     debugCompile project(path: ':BoincRpc', configuration: 'debug')
     // Unit testing dependencies
     testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.0'
 }
 
 // Load signing configuration from external file
