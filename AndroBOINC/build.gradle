@@ -22,8 +22,8 @@ android {
         versionCode 10
         versionName "6.10.58.rc6"
         project.ext.set("archivesBaseName", archivesBaseName + "-" + defaultConfig.versionName);
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments (class: "sk.boinc.androboinc.suite.AndroidTestSuite")
     }
     buildTypes {
         release {
@@ -62,6 +62,11 @@ dependencies {
     // Unit testing dependencies
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'
+    // Force usage of support annotations in the test app, since it is internally used by the runner module.
+    androidTestCompile 'com.android.support:support-annotations:23.1.1'
+    androidTestCompile 'com.android.support.test:runner:0.4'
+    androidTestCompile 'com.android.support.test:rules:0.4'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
 }
 
 // Load signing configuration from external file
