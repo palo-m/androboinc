@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/* 
+ * AndroBOINC - BOINC Manager for Android
+ * Copyright (C) 2010, Pavol Michalec
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+-->
+<resources>
+	<!-- Basic application stuff -->
+	<string name="app_name">AndroBOINC</string>
+	<string name="app_desc">BOINC-Client Manager</string>
+	<string name="service_name">Client Connection</string>
+	<string name="service_desc">Verwaltet Verbindungen zu BOINC core clients</string>
+
+	<!-- Some common, generic strings -->
+	<string name="authorization">Anmeldung&#8230;</string>
+	<string name="back">Zurück</string>
+	<string name="cancel">Abbrechen</string>
+	<string name="changelog">Changelog</string>
+	<string name="close">Schließen</string>
+	<string name="connecting">Verbinde&#8230;</string>
+	<string name="disabled">Deaktiviert</string>
+	<string name="dismiss">Abbrechen</string>
+	<string name="error">Fehler</string>
+	<string name="homepage">Homepage</string>
+	<string name="license">Lizens</string>
+	<string name="license2">GPLv3</string>
+	<string name="noGpu">Keine GPU aktiv</string>
+	<string name="notConnected">Nicht verbunden</string>
+	<string name="notice">Hinweis</string>
+	<string name="ok">OK</string>
+	<string name="projectSuspendedByUser">Projekt pausiert vom Benutzer</string>
+	<string name="received">Empfangen</string>
+	<string name="reconnect">Neu verbinden</string>
+	<string name="retrievingData">Daten&#8230; werden abgerufen</string>
+	<string name="retrievingInitialData">Anfangsdaten &#8230; werden abgerufen</string>
+	<string name="seeWiki">Siehe Dokumentation</string>
+	<string name="sent">Gesendet</string>
+	<string name="shutdown">Herunterfahren</string>
+	<string name="sources">Quellen</string>
+	<string name="taskSuspendedByUser">Aufgabe vom Benutzer pausiert</string>
+	<string name="unknown">unbekannt</string>
+	<string name="upgradedTo">Aktualisiert zu </string>
+	<string name="warning">Warnung</string>
+	<string name="welcome">Willkommen</string>
+	
+	<!-- URLs/addresses -->
+	<string name="homepageUrl">https://github.com/palo-m/androboinc/wiki</string>
+	<string name="sourceCodeUrl">https://github.com/palo-m/androboinc</string>
+	<string name="wikiHowtoUrl">https://github.com/palo-m/androboinc/wiki/AndroBOINC-Setup</string>
+	<string name="licenseUrl">https://www.gnu.org/licenses/lgpl-3.0#content</string>
+	
+	<!-- Units -->
+	<string name="unitKiB">KiB</string>
+	<string name="unitMiB">MiB</string>
+	<string name="unitGiB">GiB</string>
+	<string name="unitB">B</string>
+	<string name="unitKB">KB</string>
+	<string name="unitMB">MB</string>
+	<string name="unitGB">GB</string>
+	<string name="unitBps">B/s</string>
+	<string name="unitKBps">KB/s</string>
+	<string name="unitMBps">MB/s</string>
+
+	<!-- Main Activity -->
+	<string name="projects">Projekte</string>
+	<string name="tasks">Aufgaben</string>
+	<string name="transfers">Übertragungen</string>
+	<string name="messages">Nachrichten</string>
+	<string name="closeWarning">Innerhalb von 5 Sekunden nochmal drücken zum Beenden</string>
+
+	<!-- Menu items -->
+	<string name="menuAbout">Über</string>
+	<string name="menuConnect">Verbinden</string>
+	<string name="menuDisconnect">Verbindung trennen</string>
+	<string name="menuHostInfo">Host Info</string>
+	<string name="menuManage">Client verwalten</string>
+	<string name="menuPreferences">Einstellungen</string>
+	<string name="menuRefresh">Aktualisieren</string>
+
+	<!-- About -->
+	<string name="aboutTitle">Grundlegende Informationen</string>
+	<string name="aboutText">
+		%1$s is port of BOINC Manager to Android.\n
+		\nIt is only manager, NOT the client. You must have separate BOINC client accessible
+		from network. Read the %2$s wiki if you do not know how to set it up.\n
+		\nThe security of this manager is the same as the security of the standard BOINC
+		Manager; Protect your hosts by passwords.\n
+		\nThis software is released under terms of LGPLv3 and 
+		is provided by author free of charge. 
+		If you still want to make a kind of \"donation\" to author, 
+		who is proud member of team BOINC.SK, just join team BOINC.SK 
+		in your favorite project and crunch some credits for the team. 
+		Any amount of your \"donation\" to team will be appreciated.\n
+		\nAnyway&#8230; just keep crunching!\n
+		\n\nCopyright &#169; 2010 Palo M.\n
+	</string>
+	<string name="newInstall">
+	    Willkommen zu %1$s!\n
+	    \nOffenbar hast du soeben  %1$s zum ersten Mal installiert.
+	    Wenn du nicht weißt, wie du es zum Funktionieren bringen kannst, schau im %1$s Wiki nach.\n
+	    \nDiese Meldung wird nicht nocheinmal angezeigt, aber du kannst zum %1$s Wiki
+	    jederzeit kommen, indem du den Menü-Knopf drückst und \"%2$s\" auswählst.
+	</string>
+
+	<!-- Preferences -->
+	<string name="prefCategoryUI">Benutzer-Interface</string>
+	<string name="prefScreenOrientation">Bildschirmausrichtung</string>
+	<string name="prefKeepScreenOn">Bildschirm anlassen</string>
+	<string name="prefKeepScreenOnEnabled">Bildschirm immer anlassen</string>
+	<string name="prefKeepScreenOnDisabled">Bildschirm kann bei Inaktivität ausgehen</string>
+	<string name="prefAutoConnectTitle">Automatisch verbinden</string>
+	<string name="prefAutoConnectDisabled">Beim Start nicht automatisch verbinden</string>
+	<string name="prefAutoConnectEnabled">Beim Start zum letzten Client verbinden</string>
+	<string name="prefCategoryNetworkBW">Netzwerkbandbreite</string>
+	<string name="prefAutoUpdateIntervalWiFi">über WiFi automatisch aktualisieren</string>
+	<string name="prefAutoUpdateIntervalMobile">über Mobilfunk automatisch aktualisieren</string>
+	<string name="prefAutoUpdateIntervalSummary">automatisch aktualisieren jede</string>
+	<string name="prefLimitMessagesTitle">Maximum der Nachrichtenanzahl</string>
+	<string name="prefLimitMessagesDisabled">Alle Nachrichten beim Verbinden abrufen (viele Daten)</string>
+	<string name="prefLimitMessagesEnabled">Nur die 50 letzten Nachrichten beim Verbinden abrufen (spart Bandbreite)</string>
+	<string name="prefNetworkUsageStats">Netzwerkbenutzung</string>
+	<string name="prefNetworkUsageDisabled">Es werden KEINE Statistiken gesammelt</string>
+	<string name="prefNetworkUsageNull">Empfangen: 0B, Gesendet: 0B</string>
+	<string name="prefNetworkUsageDisclaimer" formatted="false">
+	    Diese Funktion ist experimentell.
+		Die Werte sind nicht zu 100% genau.
+		Es ist nur dazu gedacht, grob zu wissen, wieviel Daten empfangen werden.
+	</string>
+	<string name="prefOptOutText">Diesen Hinweis nicht mehr anzeigen.</string>
+	<string name="prefCategoryAbout">Über</string>
+	<string name="prefAboutTitle">Über diese App</string>
+	<string name="prefChangelogSummary">Änderungsverlauf</string>
+	<string name="prefLicenseSummary">Lizenztext</string>
+
+	<!-- Network/Connection status -->
+	<string name="authFailedNoPwd">
+	    Anmeldung fehlgeschlagen.
+	    \nIn %1$s wurde kein Passwort angegeben, aber der Client benötigt eines.
+	    \nBitte das richtige Passwort einrichten.
+	</string>
+	<string name="authFailedWrongPwd">
+	    Anmeldung fehlgeschlagen.
+	    \nDas Password in %1$s entspricht nicht dem des Clients.
+	    \nBitte das richtige Passwort einrichten.
+	</string>
+	<string name="connectFailed">
+	    Verbindung zum Client fehlgeschlagen.
+	    \nMögliche Gründe:
+	    \n* kein Internetzugriff
+	    \n* Host nicht erreichbar
+     	    \n* Firewall blockiert den Zugriff
+	</string>
+	<string name="connectionDropped">
+	    Die Verbindung zum Client wurde unterbrochen.
+	    \nMögliche Gründe:
+	    \n* Client schloss die Verbindung oder stürtzte ab
+	    \n* kein Internetzugriff
+	</string>
+	<string name="networkUnavailable">Internetverbindung nicht verfügbar.</string>
+
+	<!-- Notifications -->
+	<string name="notifyConnected">%1$s verbunden</string>
+	<string name="notifyConnNoFrontend">%1$s ist immer noch verbunden, wird aber bald automatisch getrennt</string>
+	<string name="notifyDisconnected">%1$s nicht verbunden</string>
+	<string name="notifyDiscReconnect">%1$s nicht verbunden. Auswählen zum Neuverbinden.</string>
+	<string name="notifyDiscNoFrontend">Verbindung zu %1$s wegen Inaktivität getrennt. Auswählen zum Neuverbinden.</string>
+			
+	<!-- ManageClient Activity -->
+	<string name="noHostConnected">Mit keinem Host verbunden</string>
+	<string name="selectHostTitle">Aktueller Host</string>
+	<string name="selectHostNoneAvailable">Kein BOINC Client konfiguriert. Benutze den Menü-Knopf, um neue Hosts hinzuzufügen.</string>
+	<string name="manageCategoryActivity">Activität</string>
+	<string name="clientActivityRunTitle">Run Modus</string>
+	<string name="clientActivityRunDialogTitle">Run Modus</string>
+	<string name="clientActivityGpuTitle">GPU Modus</string>
+	<string name="clientActivityGpuDialogTitle">GPU Modus</string>
+	<string name="clientActivityNetworkTitle">Netzwerkaktivität</string>
+	<string name="clientActivityNetworkDialogTitle">Netzwerkaktivität</string>
+	<string name="manageCategoryAdvanced">Erweitert</string>
+	<string name="clientRunBenchTitle">CPU Benchmarks ausführen</string>
+	<string name="clientRunBenchSummary">BOINC CPU Benchmarks ausführen</string>
+	<string name="clientRunBenchNotify">CPU Benchmarks werden gestartet</string>
+  <!-- TODO -->
+	<string name="clientDoNetCommTitle">Do network communication</string>
+	<string name="clientDoNetCommSummary">Do all pending network communication</string>
+	<string name="clientDoNetCommNotify">Starting network communication</string>
+	<string name="clientShutdownTitle">Client herunterfahren</string>
+	<string name="clientShutdownSummary">Den aktuell verbundenen Core Client herunterfahren</string>
+	<string name="clientShutdownNotify">Den aktuell verbundenen Core Client herunterfahren</string>
+	<string name="warnShutdownText">Der verbunden Core Client wird demnächst ausgeschaltet. Dieser Manager kann ihn nicht mehr starten.</string>
+	
+	<!-- HostList Activity -->
+	<string name="selectHost">Host auswählen</string>
+	<string name="hostAddNew">Neuen Host hinzufügen</string>
+	<string name="hostEdit">Host bearbeiten</string>
+	<string name="hostDelete">Host löschen</string>
+	<string name="noHostDefined">Kein Host definiert</string>
+	<string name="hostOperation">Hostaufgaben</string>
+	
+	<!-- Host edit dialog -->
+	<string name="editHostNickname">Host Spitzname</string>
+	<string name="editHostAddress">Addresse</string>
+	<string name="editHostPort">Port</string>
+	<string name="editHostPassword">Passwort</string>
+	<string name="editHostHelp">Keine Ahnung, was hier rein soll?</string>
+
+	<!-- ProjectsActivity -->
+	<string name="projectCtxMenuTitle">Befehle</string>
+	<string name="projectUpdate">Aktualisieren</string>
+	<string name="projectSuspend">Pausieren</string>
+	<string name="projectResume">Fortsetzen</string>
+	<string name="projectNNW">Keine neue Arbeit</string>
+	<string name="projectANW">Neue Arbeit erlauben</string>
+	<string name="projectProperties">Einstellungen</string>
+	<string name="projectStatusActive">Aktiv</string>
+	<string name="projectStatusSuspended">Pausiert vom Benutzer</string>
+	<string name="projectStatusNNW">Wird keine neuen Aufgaben bekommen</string>
+	<string name="projectCredits">Total:%1$.0f RAC:%2$.0f Host:%3$.0f HostRAC:%4$.0f</string>
+	<string name="projectDetailedInfo">
+		&lt;b>Projekt:&lt;/b> %1$s&lt;br>\n
+		&lt;b>Account:&lt;/b> %2$s&lt;br>\n
+		&lt;b>Team:&lt;/b> %3$s&lt;br>\n
+		&lt;b>Benutzer Credit:&lt;/b> %4$.2f&lt;br>\n
+		&lt;b>Benutzer RAC:&lt;/b> %5$.2f&lt;br>\n
+		&lt;b>Host Credit:&lt;/b> %6$.2f&lt;br>\n
+		&lt;b>Host RAC:&lt;/b> %7$.2f&lt;br>\n
+		&lt;b>Ressourcenteilung:&lt;/b> %8$s&lt;br>\n
+		&lt;b>Status:&lt;/b> %9$s
+	</string>
+
+	<!-- TasksActivity -->
+	<string name="taskCtxMenuTitle">Befehle</string>
+	<string name="taskSuspend">Pausieren</string>
+	<string name="taskResume">Fortsetzen</string>
+	<string name="taskAbort">Abbrechen</string>
+	<string name="taskProperties">Einstellungen</string>
+	<string name="warnAbortTask">Bist du sicher, dass du diese Aufgabe (%1$s) abbrechen willst?</string>
+	<string name="taskDetailedInfoCommon">
+		&lt;b>Aufgabe:&lt;/b> %1$s&lt;br>\n
+		&lt;b>Projekt:&lt;/b> %2$s&lt;br>\n
+		&lt;b>Anwendung:&lt;/b> %3$s&lt;br>\n
+		&lt;b>Fortschritt:&lt;/b> %4$s&lt;br>\n
+		&lt;b>Verstrichene Zeit:&lt;/b> %5$s&lt;br>\n
+		&lt;b>Für die Fertigstellung:&lt;/b> %6$s&lt;br>\n
+		&lt;b>Report Deadline:&lt;/b> %7$s&lt;br>\n
+	</string>
+	<string name="taskDetailedInfoRun">
+		&lt;b>Virtuelle Speichergröße:&lt;/b> %1$s&lt;br>\n
+		&lt;b>Arbeitsmaterialgröße:&lt;/b> %2$s&lt;br>\n
+		&lt;b>CPU Zeit:&lt;/b> %3$s&lt;br>\n
+		&lt;b>Letzter Checkpoint (CPU Zeit):&lt;/b> %4$s&lt;br>\n
+	</string>
+	<string name="taskDetailedInfoRes">
+		&lt;b>Resources:&lt;/b> %1$s&lt;br>\n
+	</string>
+	<string name="taskDetailedInfoEnd">
+		&lt;b>Status:&lt;/b> %1$s
+	</string>
+
+	<!-- TransfersActivity -->
+	<string name="downloadFailed">Download fehlgeschlagen</string>
+	<string name="downloading">Läd herunter</string>
+	<string name="downloadPending">Download läuft</string>
+	<string name="projectBackoff">project backoff</string>
+	<string name="retryIn">Neuversuchen in</string>
+	<string name="transferAbort">Abbrechen</string>
+	<string name="transferProperties">Einstellungen</string>
+	<string name="transferRetry">Neuversuchen</string>
+	<string name="uploadFailed">Upload fehlgeschlagen</string>
+	<string name="uploading">Läd hoch</string>
+	<string name="uploadPending">Upload läuft</string>
+	<string name="warnAbortTransfer">Bist du sicher, dass die Übertragung der Datei (%1$s) abgebrochen werden soll?</string>
+	<string name="transferDetailedInfo">
+		&lt;b>Datei:&lt;/b> %1$s&lt;br>\n
+		&lt;b>Projekt:&lt;/b> %2$s&lt;br>\n
+		&lt;b>Größe:&lt;/b> %3$s&lt;br>\n
+		&lt;b>Fortschritt:&lt;/b> %4$s&lt;br>\n
+		&lt;b>Verstrichene Zeit:&lt;/b> %5$s&lt;br>\n
+		&lt;b>Geschwindigkeit:&lt;/b> %6$s&lt;br>\n
+		&lt;b>Status:&lt;/b> %7$s
+	</string>
+
+	<!-- HostInfo display -->
+	<string name="hostInfoPart1">
+		&lt;b>Domain:&lt;/b> %1$s&lt;br />
+		&lt;b>IP-Adresse:&lt;/b> %2$s&lt;br />
+		&lt;b>Cross-project ID:&lt;/b> %3$s&lt;br />
+		&lt;b>OS Name:&lt;/b> %4$s&lt;br />
+		&lt;b>OS Version:&lt;/b> %5$s&lt;br />
+		&lt;b>#CPUs:&lt;/b> %6$s&lt;br />
+		&lt;b>Hersteller:&lt;/b> %7$s&lt;br />
+		&lt;b>Modell:&lt;/b> %8$s&lt;br />
+		&lt;b>Features:&lt;/b> %9$s&lt;br />
+		&lt;b>#GPUs:&lt;/b> %10$s&lt;br />
+	</string>
+	<string name="hostInfoPart2">
+		&lt;b>MFLOPS:&lt;/b> %1$s&lt;br />
+		&lt;b>MIPS:&lt;/b> %2$s&lt;br />
+		&lt;b>Speicherbandbreite:&lt;/b> %3$s&lt;br />
+		&lt;b>berechnete Benchmarks:&lt;/b> %4$s&lt;br />
+		&lt;b>Speichergröße:&lt;/b> %5$s&lt;br />
+		&lt;b>Cachegröße:&lt;/b> %6$s&lt;br />
+		&lt;b>Swapgröße:&lt;/b> %7$s&lt;br />
+		&lt;b>Festplattengröße:&lt;/b> %8$s&lt;br />
+		&lt;b>freier Festplattenspeicher:&lt;/b> %9$s&lt;br />
+	</string>
+
+</resources>
