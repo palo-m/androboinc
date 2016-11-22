@@ -24,7 +24,7 @@
 	<string name="app_name">AndroBOINC</string>
 	<string name="app_desc">BOINC-Client Manager</string>
 	<string name="service_name">Client Connection</string>
-	<string name="service_desc">Maintains connection to BOINC core clients</string>
+	<string name="service_desc">Verwaltet Verbindungen zu BOINC core clients</string>
 
 	<!-- Some common, generic strings -->
 	<string name="authorization">Anmeldung&#8230;</string>
@@ -49,12 +49,12 @@
 	<string name="retrievingData">Daten&#8230; werden abgerufen</string>
 	<string name="retrievingInitialData">Anfangsdaten &#8230; werden abgerufen</string>
 	<string name="seeWiki">Siehe Dokumentation</string>
-	<string name="sent">GesendetSent</string>
+	<string name="sent">Gesendet</string>
 	<string name="shutdown">Herunterfahren</string>
 	<string name="sources">Quellen</string>
 	<string name="taskSuspendedByUser">Aufgabe vom Benutzer pausiert</string>
 	<string name="unknown">unbekannt</string>
-	<string name="upgradedTo">Aktualisiert zu to</string>
+	<string name="upgradedTo">Aktualisiert zu </string>
 	<string name="warning">Warnung</string>
 	<string name="welcome">Willkommen</string>
 	
@@ -135,7 +135,7 @@
 	<string name="prefLimitMessagesEnabled">Nur die 50 letzten Nachrichten beim Verbinden abrufen (spart Bandbreite)</string>
 	<string name="prefNetworkUsageStats">Netzwerkbenutzung</string>
 	<string name="prefNetworkUsageDisabled">Es werden KEINE Statistiken gesammelt</string>
-	<string name="prefNetworkUsageNull">Received: 0B, Sent: 0B</string>
+	<string name="prefNetworkUsageNull">Empfangen: 0B, Gesendet: 0B</string>
 	<string name="prefNetworkUsageDisclaimer" formatted="false">
 	    Diese Funktion ist experimentell.
 		Die Werte sind nicht zu 100% genau.
@@ -163,7 +163,7 @@
 	    \nMögliche Gründe:
 	    \n* kein Internetzugriff
 	    \n* Host nicht erreichbar
-      \n* Firewall blockiert den Zugriff
+     	    \n* Firewall blockiert den Zugriff
 	</string>
 	<string name="connectionDropped">
 	    Die Verbindung zum Client wurde unterbrochen.
@@ -260,10 +260,10 @@
 		&lt;b>Report Deadline:&lt;/b> %7$s&lt;br>\n
 	</string>
 	<string name="taskDetailedInfoRun">
-		&lt;b>Virtual memory size:&lt;/b> %1$s&lt;br>\n
-		&lt;b>Working set size:&lt;/b> %2$s&lt;br>\n
-		&lt;b>CPU time:&lt;/b> %3$s&lt;br>\n
-		&lt;b>Last checkpoint (CPU time):&lt;/b> %4$s&lt;br>\n
+		&lt;b>Virtuelle Speichergröße:&lt;/b> %1$s&lt;br>\n
+		&lt;b>Arbeitsmaterialgröße:&lt;/b> %2$s&lt;br>\n
+		&lt;b>CPU Zeit:&lt;/b> %3$s&lt;br>\n
+		&lt;b>Letzter Checkpoint (CPU Zeit):&lt;/b> %4$s&lt;br>\n
 	</string>
 	<string name="taskDetailedInfoRes">
 		&lt;b>Resources:&lt;/b> %1$s&lt;br>\n
