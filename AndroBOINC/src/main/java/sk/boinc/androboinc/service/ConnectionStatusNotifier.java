@@ -72,9 +72,14 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		Intent intent = new Intent(mContext, BoincManagerActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		Notification notification = new Notification(R.drawable.ic_stat_connected, tickerText, System.currentTimeMillis());
-		notification.setLatestEventInfo(mContext, mContext.getString(R.string.app_name), contentText, contentIntent);
-		notification.flags |= (Notification.FLAG_NO_CLEAR|Notification.FLAG_ONGOING_EVENT);
+		Notification.Builder builder = new Notification.Builder(mContext)
+				.setContentIntent(contentIntent)
+				.setSmallIcon(R.drawable.ic_stat_connected)
+				.setContentTitle(mContext.getString(R.string.app_name))
+				.setContentText(contentText)
+				.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
+				.setTicker(tickerText);
+		Notification notification = builder.build();
 		cancelDisconnected();
 		cancelConnected();
 		mNotificationManager.notify(CONNECTED_ID, notification);
@@ -101,9 +106,14 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		Intent intent = new Intent(mContext, BoincManagerActivity.class).putExtra(ClientId.TAG, host);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		Notification notification = new Notification(R.drawable.ic_stat_disconnected, tickerText, System.currentTimeMillis());
-		notification.setLatestEventInfo(mContext, mContext.getString(R.string.app_name), contentText, contentIntent);
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		Notification.Builder builder = new Notification.Builder(mContext)
+				.setContentIntent(contentIntent)
+				.setSmallIcon(R.drawable.ic_stat_connected)
+				.setContentTitle(mContext.getString(R.string.app_name))
+				.setContentText(contentText)
+				.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
+				.setTicker(tickerText);
+		Notification notification = builder.build();
 		cancelDisconnected();
 		cancelConnected();
 		mNotificationManager.notify(DISCONNECTED_ID, notification);
