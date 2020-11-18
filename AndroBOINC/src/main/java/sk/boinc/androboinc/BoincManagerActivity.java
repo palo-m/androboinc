@@ -259,7 +259,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 			// The setting is different than the old one - let's change the lock
 			mScreenAlwaysOn = screenAlwaysOn;
 			if (mScreenAlwaysOn) {
-				mWakeLock.acquire();
+				mWakeLock.acquire(10*60*1000L /*10 minutes*/);
 				if (BuildConfig.DEBUG) Log.d(TAG, "Acquired screen lock");
 			}
 			else {
