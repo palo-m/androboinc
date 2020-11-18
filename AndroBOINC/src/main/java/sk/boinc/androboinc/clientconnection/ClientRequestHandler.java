@@ -31,35 +31,35 @@ import sk.boinc.androboinc.util.ClientId;
  */
 public interface ClientRequestHandler {
 
-	public abstract ClientId getClientId();
+	ClientId getClientId();
 
-	public abstract void updateClientMode(ClientReplyReceiver callback);
+	void updateClientMode(ClientReplyReceiver callback);
 
-	public abstract void updateHostInfo(ClientReplyReceiver callback);
+	void updateHostInfo(ClientReplyReceiver callback);
 
-	public abstract void updateProjects(ClientReplyReceiver callback);
+	void updateProjects(ClientReplyReceiver callback);
 
-	public abstract void updateTasks(ClientReplyReceiver callback);
+	void updateTasks(ClientReplyReceiver callback);
 
-	public abstract void updateTransfers(ClientReplyReceiver callback);
+	void updateTransfers(ClientReplyReceiver callback);
 
-	public abstract void updateMessages(ClientReplyReceiver callback);
+	void updateMessages(ClientReplyReceiver callback);
 
-	public abstract void cancelScheduledUpdates(ClientReplyReceiver callback);
+	void cancelScheduledUpdates(ClientReplyReceiver callback);
 
-	public abstract void runBenchmarks();
+	void runBenchmarks();
 
-	public abstract void setRunMode(ClientReplyReceiver callback, int mode);
+	void setRunMode(ClientReplyReceiver callback, int mode);
 
-	public abstract void setNetworkMode(ClientReplyReceiver callback, int mode);
+	void setNetworkMode(ClientReplyReceiver callback, int mode);
 
-	public abstract void setGpuMode(ClientReplyReceiver callback, int mode);
+	void setGpuMode(ClientReplyReceiver callback, int mode);
 
-	public abstract void shutdownCore();
+	void shutdownCore();
 
-	public abstract void doNetworkCommunication();
+	void doNetworkCommunication();
 	
-	public enum ProjectOp {
+	enum ProjectOp {
 		UPDATE(1),  // RpcClient.PROJECT_UPDATE
 		SUSPEND(2), // RpcClient.PROJECT_SUSPEND
 		RESUME(3),  // RpcClient.PROJECT_RESUME
@@ -73,9 +73,9 @@ public interface ClientRequestHandler {
 			return mOpCode;
 		}
 	}
-	public abstract void projectOperation(ClientReplyReceiver callback, ProjectOp operation, String projectUrl);
+	void projectOperation(ClientReplyReceiver callback, ProjectOp operation, String projectUrl);
 
-	public enum TaskOp {
+	enum TaskOp {
 		SUSPEND(1),  // RpcClient.RESULT_SUSPEND
 		RESUME(2),   // RpcClient.RESULT_RESUME
 		ABORT(3);    // RpcClient.RESULT_ABORT
@@ -87,9 +87,9 @@ public interface ClientRequestHandler {
 			return mOpCode;
 		}
 	}
-	public abstract void taskOperation(ClientReplyReceiver callback, TaskOp operation, String projectUrl, String taskName);
+	void taskOperation(ClientReplyReceiver callback, TaskOp operation, String projectUrl, String taskName);
 
-	public enum TransferOp {
+	enum TransferOp {
 		RETRY(1),  // RpcClient.TRANSFER_RETRY
 		ABORT(2);  // RpcClient.TRANSFER_ABORT
 		private int mOpCode;
@@ -100,5 +100,5 @@ public interface ClientRequestHandler {
 			return mOpCode;
 		}
 	}
-	public abstract void transferOperation(ClientReplyReceiver callback, TransferOp operation, String projectUrl, String fileName);
+	void transferOperation(ClientReplyReceiver callback, TransferOp operation, String projectUrl, String fileName);
 }

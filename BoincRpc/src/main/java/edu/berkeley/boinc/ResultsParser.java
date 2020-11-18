@@ -29,7 +29,7 @@ import java.util.Vector;
 public class ResultsParser extends BaseParser {
     private static final String TAG = "ResultsParser";
 
-    private Vector<Result> mResults = new Vector<Result>();
+    private Vector<Result> mResults = new Vector<>();
     private Result mResult = null;
     private boolean mInActiveTask = false;
 

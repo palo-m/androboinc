@@ -82,7 +82,7 @@ public class RpcClient {
      * Private classes - Helpers
      */
 
-    private class Auth1Parser extends DefaultHandler {
+    private static class Auth1Parser extends DefaultHandler {
         private StringBuilder mResult = null;
         private String mCurrentElement = null;
         private boolean mNonceParsed = false;
@@ -109,7 +109,7 @@ public class RpcClient {
         }
     }
 
-    private class Auth2Parser extends DefaultHandler {
+    private static class Auth2Parser extends DefaultHandler {
         private StringBuilder mResult = null;
         private boolean mParsed = false;
 
@@ -135,7 +135,7 @@ public class RpcClient {
      * Helper methods
      */
 
-    private static final String modeName(int mode) {
+    private static String modeName(int mode) {
         switch (mode) {
         case 1: return "<always/>";
         case 2: return "<auto/>";
@@ -307,13 +307,10 @@ public class RpcClient {
             // We just get the status via socket and do not parse reply
             sendRequest("<get_cc_status/>\n");
             String result = receiveReply();
-            if (result.length() == 0) {
-                // End of stream reached and no data were received in reply
-                // We assume that socket is closed on the other side,
-                // most probably client shut down
-                return false;
-            }
-            return true;
+            // End of stream reached and no data were received in reply
+            // We assume that socket is closed on the other side,
+            // most probably client shut down
+            return result.length() != 0;
         }
         catch (IOException e) {
             if (BuildConfig.DEBUG) Log.d(TAG, "connectionAlive(): disconnected", e);
@@ -432,8 +429,7 @@ public class RpcClient {
         mRequest.append("</release>\n</exchange_versions>\n");
         try {
             sendRequest(mRequest.toString());
-            VersionInfo versionInfo = VersionInfoParser.parse(receiveReply());
-            return versionInfo;
+            return VersionInfoParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in exchangeVersions()", e);
@@ -454,8 +450,7 @@ public class RpcClient {
     public CcStatus getCcStatus() throws RpcClientFailedException {
         try {
             sendRequest("<get_cc_status/>\n");
-            CcStatus ccStatus = CcStatusParser.parse(receiveReply());
-            return ccStatus;
+            return CcStatusParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getCcStatus()", e);
@@ -476,8 +471,7 @@ public class RpcClient {
     public Vector<Transfer> getFileTransfers() throws RpcClientFailedException {
         try {
             sendRequest("<get_file_transfers/>\n");
-            Vector<Transfer> transfers = TransfersParser.parse(receiveReply());
-            return transfers;
+            return TransfersParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getFileTransfers()", e);
@@ -498,8 +492,7 @@ public class RpcClient {
     public HostInfo getHostInfo() throws RpcClientFailedException {
         try {
             sendRequest("<get_host_info/>\n");
-            HostInfo hostInfo = HostInfoParser.parse(receiveReply());
-            return hostInfo;
+            return HostInfoParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getHostInfo()", e);
@@ -552,8 +545,7 @@ public class RpcClient {
                     "</get_messages>\n";
             }
             sendRequest(request);
-            Vector<Message> messages = MessagesParser.parse(receiveReply());
-            return messages;
+            return MessagesParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getMessages()", e);
@@ -574,8 +566,7 @@ public class RpcClient {
     public Vector<Project> getProjectStatus() throws RpcClientFailedException {
         try {
             sendRequest("<get_project_status/>\n");
-            Vector<Project> projects = ProjectsParser.parse(receiveReply());
-            return projects;
+            return ProjectsParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getProjectStatus()", e);
@@ -600,8 +591,7 @@ public class RpcClient {
             "</get_results>\n";
         try {
             sendRequest(request);
-            Vector<Result> results = ResultsParser.parse(receiveReply());
-            return results;
+            return ResultsParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getActiveResults()", e);
@@ -622,8 +612,7 @@ public class RpcClient {
     public Vector<Result> getResults() throws RpcClientFailedException {
         try {
             sendRequest("<get_results/>\n");
-            Vector<Result> results = ResultsParser.parse(receiveReply());
-            return results;
+            return ResultsParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getResults()", e);
@@ -644,8 +633,7 @@ public class RpcClient {
     public CcState getState() throws RpcClientFailedException {
         try {
             sendRequest("<get_state/>\n");
-            CcState result = CcStateParser.parse(receiveReply());
-            return result;
+            return CcStateParser.parse(receiveReply());
         }
         catch (IOException e) {
             throw new ConnectionFailedException("Connection failed in getState()", e);

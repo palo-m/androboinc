@@ -64,76 +64,70 @@
 		android:textAppearance="?android:attr/textAppearanceSmall" />
 
 	<!-- Progress indicator -->
-	<RelativeLayout	android:id="@+id/taskProgress"
-		android:layout_width="150dip"
+	<RelativeLayout
+		android:id="@+id/taskProgress"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/taskProjectName"
-		android:layout_marginTop="3dip"
-		android:layout_centerHorizontal="true">
+		android:layout_toRightOf="@+id/taskProgressText"
+		android:layout_alignParentLeft="true"
+		android:layout_marginLeft="5dip"
+		android:layout_marginTop="3dip">
+
 		<ProgressBar
 			android:id="@+id/taskProgressRunning"
 			style="?android:attr/progressBarStyleHorizontal"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:progressDrawable="@drawable/progress_green"
-			android:visibility="invisible"
 			android:max="100"
 			android:progress="10"
-			android:secondaryProgress="100" />
+			android:progressDrawable="@drawable/progress_green"
+			android:secondaryProgress="100"
+			android:visibility="invisible" />
+
 		<ProgressBar
 			android:id="@+id/taskProgressSuspended"
 			style="?android:attr/progressBarStyleHorizontal"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:progressDrawable="@drawable/progress_red"
-			android:visibility="gone"
 			android:max="100"
 			android:progress="10"
-			android:secondaryProgress="100" />
+			android:progressDrawable="@drawable/progress_red"
+			android:secondaryProgress="100"
+			android:visibility="gone" />
+
 		<ProgressBar
 			android:id="@+id/taskProgressWaiting"
 			style="?android:attr/progressBarStyleHorizontal"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:progressDrawable="@drawable/progress_yellow"
-			android:visibility="gone"
 			android:max="100"
 			android:progress="10"
-			android:secondaryProgress="100" />
+			android:progressDrawable="@drawable/progress_yellow"
+			android:secondaryProgress="100"
+			android:visibility="gone" />
+
 		<ProgressBar
 			android:id="@+id/taskProgressFinished"
 			style="?android:attr/progressBarStyleHorizontal"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:progressDrawable="@drawable/progress_blue"
-			android:visibility="gone"
 			android:max="100"
 			android:progress="10"
-			android:secondaryProgress="100" />
-		<TextView
-			android:id="@+id/taskProgressText"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_centerInParent="true"
-			android:lines="1"
-			android:text="99.999%"
-			android:textAppearance="?android:attr/textAppearanceSmallInverse" />
+			android:progressDrawable="@drawable/progress_blue"
+			android:secondaryProgress="100"
+			android:visibility="gone" />
 	</RelativeLayout>
 
-	<!-- Elapsed time -->
 	<TextView
-		android:id="@+id/taskElapsed"
+		android:id="@+id/taskProgressText"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_toLeftOf="@+id/taskProgress"
-		android:layout_below="@+id/taskProjectName"
-		android:layout_alignLeft="@+id/taskAppName"
-		android:layout_marginTop="3dip"
-		android:layout_marginRight="5dip"
-		android:gravity="right"
+		android:layout_below="@+id/taskProgress"
+		android:layout_alignParentLeft="true"
+		android:layout_marginLeft="5dip"
 		android:lines="1"
-		android:text="000:00:00"
+		android:text="99.999%"
 		android:textAppearance="?android:attr/textAppearanceSmall" />
 
 	<!-- Remaining time -->
@@ -141,11 +135,36 @@
 		android:id="@+id/taskRemaining"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_toRightOf="@+id/taskProgress"
-		android:layout_alignTop="@+id/taskElapsed"
-		android:layout_alignRight="@+id/taskAppName"
-		android:layout_marginLeft="3dip"
-		android:gravity="right"
+		android:layout_below="@+id/taskProgress"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="5dip"
+		android:gravity="center"
+		android:lines="1"
+		android:text="000:00:00"
+		android:textAppearance="?android:attr/textAppearanceSmall" />
+
+	<!-- Divider -->
+	<TextView
+		android:id="@+id/taskElapsedRemainingDivider"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/taskProgress"
+		android:layout_toLeftOf="@+id/taskRemaining"
+		android:layout_alignBottom="@+id/taskRemaining"
+		android:gravity="center"
+		android:lines="1"
+		android:text="/"
+		android:textAppearance="?android:attr/textAppearanceSmall" />
+
+	<!-- Elapsed time -->
+	<TextView
+		android:id="@+id/taskElapsed"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/taskProgress"
+		android:layout_toLeftOf="@+id/taskElapsedRemainingDivider"
+		android:layout_alignBottom="@+id/taskRemaining"
+		android:gravity="center"
 		android:lines="1"
 		android:text="000:00:00"
 		android:textAppearance="?android:attr/textAppearanceSmall" />

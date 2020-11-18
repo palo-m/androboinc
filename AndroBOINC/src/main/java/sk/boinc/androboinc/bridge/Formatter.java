@@ -36,14 +36,12 @@ import android.content.res.Resources;
  * reusing of objects could prevent some garbage collection.
  */
 public class Formatter {
-	private final Context mContext;
 	private Resources mResources = null;
 	private StringBuilder mSb = new StringBuilder();
 	private SimpleDateFormat mDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public Formatter(Context context) {
-		mContext = context;
-		mResources = mContext.getResources();
+		mResources = context.getResources();
 	}
 
 	public void cleanup() {
@@ -66,7 +64,7 @@ public class Formatter {
 		return mDateFormatter.format(date).toString();
 	}
 
-	public static final String formatElapsedTime(long seconds) {
+	public static String formatElapsedTime(long seconds) {
 		long hours = seconds / 3600;
 		int remain = (int)(seconds % 3600);
 		int minutes = remain / 60;

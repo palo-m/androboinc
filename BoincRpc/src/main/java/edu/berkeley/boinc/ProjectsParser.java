@@ -29,7 +29,7 @@ import java.util.Vector;
 public class ProjectsParser extends BaseParser {
     private static final String TAG = "ProjectsParser";
 
-    private Vector<Project> mProjects = new Vector<Project>();
+    private Vector<Project> mProjects = new Vector<>();
     private Project mProject = null;
     private GuiUrl mGuiUrl = null;
 

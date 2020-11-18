@@ -35,9 +35,9 @@ public class BoincClientStubWorker {
     private static final int READ_BUF_SIZE = 8192;
 
     private Socket mSocket;
-    private PrintWriter mOutput;
-    private BufferedReader mInput;
-    private StringBuilder mStringBuilder = new StringBuilder();
+    private final PrintWriter mOutput;
+    private final BufferedReader mInput;
+    private final StringBuilder mStringBuilder = new StringBuilder();
     private boolean mProcessing = false;
     private Behavior mBehavior = Behavior.DEFAULT;
     private String mPassword = "";
@@ -173,42 +173,36 @@ public class BoincClientStubWorker {
             // Authorization part 1
             if (!mAuthorized) {
                 final float nonce = System.currentTimeMillis() / 1000;
-                mNonceHash = Md5.hash(Float.toString(nonce) + mPassword);
+                mNonceHash = Md5.hash(nonce + mPassword);
                 mOutput.println("<boinc_gui_rpc_reply>");
                 mOutput.print("<nonce>");
                 mOutput.print(nonce);
                 mOutput.println("</nonce>");
-                mOutput.print("</boinc_gui_rpc_reply>");
-                mOutput.print('\003');
-                mOutput.flush();
             }
             else {
                 mOutput.println("<boinc_gui_rpc_reply>");
                 mOutput.println("<authorized/>");
-                mOutput.print("</boinc_gui_rpc_reply>");
-                mOutput.print('\003');
-                mOutput.flush();
             }
+            mOutput.print("</boinc_gui_rpc_reply>");
+            mOutput.print('\003');
+            mOutput.flush();
             return;
         }
         else if (detectedRequest.startsWith("auth2:")) {
             // Authorization part 2
-            final String nonceHash = detectedRequest.substring(6, detectedRequest.length());
+            final String nonceHash = detectedRequest.substring(6);
             if (nonceHash.equals(mNonceHash)) {
                 mAuthorized = true;
                 mOutput.println("<boinc_gui_rpc_reply>");
                 mOutput.println("<authorized/>");
-                mOutput.print("</boinc_gui_rpc_reply>");
-                mOutput.print('\003');
-                mOutput.flush();
             }
             else {
                 mOutput.println("<boinc_gui_rpc_reply>");
                 mOutput.println("<unauthorized/>");
-                mOutput.print("</boinc_gui_rpc_reply>");
-                mOutput.print('\003');
-                mOutput.flush();
             }
+            mOutput.print("</boinc_gui_rpc_reply>");
+            mOutput.print('\003');
+            mOutput.flush();
             return;
         }
         else if (!mAuthorized) {

@@ -81,7 +81,7 @@ public class ProjectsActivity extends ListActivity implements ClientReplyReceive
 	private boolean mViewUpdatesAllowed = false;
 	private boolean mViewDirty = false;
 
-	private Vector<ProjectInfo> mProjs = new Vector<ProjectInfo>();
+	private Vector<ProjectInfo> mProjs = new Vector<>();
 	private int mPosition = 0;
 
 	private class SavedState {
@@ -271,8 +271,7 @@ public class ProjectsActivity extends ListActivity implements ClientReplyReceive
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		final SavedState savedState = new SavedState();
-		return savedState;
+		return new SavedState();
 	}
 
 	@Override

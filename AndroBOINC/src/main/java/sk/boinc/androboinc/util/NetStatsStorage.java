@@ -24,8 +24,8 @@ package sk.boinc.androboinc.util;
  * network statistics data.
  */
 public interface NetStatsStorage {
-	public static final String NET_STATS_FILE = "NetworkStats";
-	public static final String NET_STATS_WARNING = "warningDisabled";
-	public static final String NET_STATS_TOTAL_RCVD = "totalReceived";
-	public static final String NET_STATS_TOTAL_SENT = "totalSent";
+	String NET_STATS_FILE = "NetworkStats";
+	String NET_STATS_WARNING = "warningDisabled";
+	String NET_STATS_TOTAL_RCVD = "totalReceived";
+	String NET_STATS_TOTAL_SENT = "totalSent";
 }

@@ -29,7 +29,7 @@ import java.util.Vector;
 public class AppsParser extends BaseParser {
     private static final String TAG = "AppsParser";
 
-    private Vector<App> mApps = new Vector<App>();
+    private Vector<App> mApps = new Vector<>();
     private App mApp = null;
 
     public final Vector<App> getApps() {

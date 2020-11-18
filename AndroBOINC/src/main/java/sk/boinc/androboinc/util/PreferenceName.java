@@ -24,14 +24,14 @@ package sk.boinc.androboinc.util;
  * in file preferences.xml (res/xml directory)
  */
 public interface PreferenceName {
-	public static final String SCREEN_ORIENTATION = "screenOrientation";
-	public static final String LOCK_SCREEN_ON = "lockScreenOn";
-	public static final String AUTO_CONNECT = "autoConnect";
-	public static final String AUTO_CONNECT_HOST = "autoConnectHost";
-	public static final String AUTO_UPDATE_WIFI = "autoUpdateIntervalWiFi";
-	public static final String AUTO_UPDATE_MOBILE = "autoUpdateIntervalMobile";
-	public static final String COLLECT_STATS = "trackNetworkUsage";
-	public static final String UPGRADE_INFO_SHOWN_VERSION = "upgradeInfoShownVersion";
-	public static final String LAST_ACTIVE_TAB = "lastActiveTab";
-	public static final String LIMIT_MESSAGES = "limitMessages";
+	String SCREEN_ORIENTATION = "screenOrientation";
+	String LOCK_SCREEN_ON = "lockScreenOn";
+	String AUTO_CONNECT = "autoConnect";
+	String AUTO_CONNECT_HOST = "autoConnectHost";
+	String AUTO_UPDATE_WIFI = "autoUpdateIntervalWiFi";
+	String AUTO_UPDATE_MOBILE = "autoUpdateIntervalMobile";
+	String COLLECT_STATS = "trackNetworkUsage";
+	String UPGRADE_INFO_SHOWN_VERSION = "upgradeInfoShownVersion";
+	String LAST_ACTIVE_TAB = "lastActiveTab";
+	String LIMIT_MESSAGES = "limitMessages";
 }

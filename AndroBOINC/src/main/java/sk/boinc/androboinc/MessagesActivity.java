@@ -63,7 +63,7 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 	private boolean mViewUpdatesAllowed = false;
 	private boolean mViewDirty = false;
 
-	private Vector<MessageInfo> mMessages = new Vector<MessageInfo>();
+	private Vector<MessageInfo> mMessages = new Vector<>();
 
 
 	private class SavedState {
@@ -238,8 +238,7 @@ public class MessagesActivity extends ListActivity implements ClientReplyReceive
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		final SavedState savedState = new SavedState();
-		return savedState;
+		return new SavedState();
 	}
 
 	@Override
