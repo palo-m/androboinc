@@ -23,10 +23,10 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:gravity="center_vertical|center_horizontal"
-	android:padding="6dip">
+	android:padding="10dip">
 	<TextView
 		android:id="@+id/dialogText"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:textSize="12sp"
 		android:text="Error: No text to display" />
