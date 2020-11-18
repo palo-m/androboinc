@@ -36,12 +36,12 @@ public interface ClientReplyReceiver {
 	 * 
 	 * @param requestHandler - the handler which can be used for requests from now on
 	 */
-	public abstract void clientConnected(ClientRequestHandler requestHandler);
+    void clientConnected(ClientRequestHandler requestHandler);
 
 	/**
 	 * Indicates that the network connection was disconnected
 	 */
-	public abstract void clientDisconnected();
+    void clientDisconnected();
 
 	/**
 	 * Notifies about current run-mode, network-mode and GPU-mode of a client
@@ -49,7 +49,7 @@ public interface ClientReplyReceiver {
 	 * @param modeInfo - the data about client
 	 * @return true if further updates should be sent, false otherwise
 	 */
-	public abstract boolean updatedClientMode(ModeInfo modeInfo);
+    boolean updatedClientMode(ModeInfo modeInfo);
 
 	/**
 	 * Notifies about currently retrieved host information
@@ -57,7 +57,7 @@ public interface ClientReplyReceiver {
 	 * @param hostInfo - the data about client
 	 * @return true if further updates should be sent, false otherwise
 	 */
-	public abstract boolean updatedHostInfo(HostInfo hostInfo);
+    boolean updatedHostInfo(HostInfo hostInfo);
 
 	/**
 	 * Notifies about the latest retrieved projects of a client
@@ -65,7 +65,7 @@ public interface ClientReplyReceiver {
 	 * @param projects - the list of projects
 	 * @return true if further updates should be sent, false otherwise
 	 */
-	public abstract boolean updatedProjects(Vector<ProjectInfo> projects);
+    boolean updatedProjects(Vector<ProjectInfo> projects);
 
 	/**
 	 * Notifies about the latest retrieved tasks of a client
@@ -73,7 +73,7 @@ public interface ClientReplyReceiver {
 	 * @param tasks - the list of tasks
 	 * @return true if further updates should be sent, false otherwise
 	 */
-	public abstract boolean updatedTasks(Vector<TaskInfo> tasks);
+    boolean updatedTasks(Vector<TaskInfo> tasks);
 
 	/**
 	 * Notifies about the latest retrieved transfers of a client
@@ -81,7 +81,7 @@ public interface ClientReplyReceiver {
 	 * @param transfers - the list of transfers
 	 * @return true if further updates should be sent, false otherwise
 	 */
-	public abstract boolean updatedTransfers(Vector<TransferInfo> transfers);
+    boolean updatedTransfers(Vector<TransferInfo> transfers);
 
 	/**
 	 * Notifies about the latest retrieved messages of a client
@@ -89,6 +89,6 @@ public interface ClientReplyReceiver {
 	 * @param messages - the list of messages
 	 * @return true if further updates should be sent, false otherwise
 	 */
-	public abstract boolean updatedMessages(Vector<MessageInfo> messages);
+    boolean updatedMessages(Vector<MessageInfo> messages);
 
 }

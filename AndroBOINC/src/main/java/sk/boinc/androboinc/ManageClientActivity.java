@@ -341,8 +341,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		final SavedState savedState = new SavedState();
-		return savedState;
+		return new SavedState();
 	}
 
 	@Override

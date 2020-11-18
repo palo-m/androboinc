@@ -166,7 +166,7 @@ public class TaskInfoCreator {
 				);
 	}
 
-	private static final String formatTaskState(int state, int activeTaskState, final Resources resources) {
+	private static String formatTaskState(int state, int activeTaskState, final Resources resources) {
 		String result = resources.getString(R.string.unknown); // init for case something goes wrong
 		String[] states = resources.getStringArray(R.array.resultStates);
 		if (state < states.length) {

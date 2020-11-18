@@ -34,7 +34,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 
@@ -55,8 +54,8 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	private Runnable mDeferredConnect = null;
 	private VersionInfo mClientVersion = null;
 	private ClientId mClientId = null;
-	private Set<ClientReplyReceiver> mDataReceivers = new HashSet<ClientReplyReceiver>();
-	private Set<ConnectionManagerCallback> mStatusObservers = new HashSet<ConnectionManagerCallback>();
+	private Set<ClientReplyReceiver> mDataReceivers = new HashSet<>();
+	private Set<ConnectionManagerCallback> mStatusObservers = new HashSet<>();
 	private boolean mConnectivityAvailable = true;
 
 	/**
@@ -89,9 +88,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 			// We cannot wait for callback from bridge anymore,
 			// so we will notify disconnection autonomously while real disconnect
 			// is still in progress (no more notification afterwards)
-			Iterator<ConnectionManagerCallback> it = mStatusObservers.iterator();
-			while (it.hasNext()) {
-				ConnectionManagerCallback observer = it.next();
+			for (ConnectionManagerCallback observer : mStatusObservers) {
 				observer.clientDisconnected(mClientId, DisconnectCause.NORMAL);
 			}
 			mStatusObservers.clear();
@@ -214,9 +211,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 		mClientBridge = new ClientBridge(this, mContext, mNetStats);
 		// Propagate all current data receivers to bridge, so they will receive
 		// connected status and data
-		Iterator<ClientReplyReceiver> it = mDataReceivers.iterator();
-		while (it.hasNext()) {
-			ClientReplyReceiver receiver = it.next();
+		for (ClientReplyReceiver receiver : mDataReceivers) {
 			mClientBridge.registerDataReceiver(receiver);
 		}
 		// Finally, initiate connection to remote client
@@ -244,9 +239,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 	public void bridgeConnectionProgress(ProgressInd progress) {
 		// Just propagate progress indicator to observers
 		if (BuildConfig.DEBUG) Log.d(TAG, "bridgeConnectionProgress()");
-		Iterator<ConnectionManagerCallback> it = mStatusObservers.iterator();
-		while (it.hasNext()) {
-			ConnectionManagerCallback observer = it.next();
+		for (ConnectionManagerCallback observer : mStatusObservers) {
 			observer.clientConnectionProgress(progress);
 		}		
 	}
@@ -263,9 +256,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 		}
 		mClientId = clientId;
 		mClientVersion = clientVersion;
-		Iterator<ConnectionManagerCallback> it = mStatusObservers.iterator();
-		while (it.hasNext()) {
-			ConnectionManagerCallback observer = it.next();
+		for (ConnectionManagerCallback observer : mStatusObservers) {
 			observer.clientConnected(mClientId, mClientVersion);
 		}		
 		if (mNotifier != null) {
@@ -285,9 +276,7 @@ public class BridgeManager implements ConnectionManager, ClientBridgeCallback, C
 		}
 		if (clientId != null) {
 			// Notify observers only if there was connection attempt before
-			Iterator<ConnectionManagerCallback> it = mStatusObservers.iterator();
-			while (it.hasNext()) {
-				ConnectionManagerCallback observer = it.next();
+			for (ConnectionManagerCallback observer : mStatusObservers) {
 				observer.clientDisconnected(clientId, cause);
 			}
 			if (mNotifier != null) {

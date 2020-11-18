@@ -35,7 +35,7 @@ public interface ConnectionManagerCallback {
 	/**
 	 * The indicator of the ongoing network operation
 	 */
-	public static enum ProgressInd {
+	enum ProgressInd {
 		/**
 		 * No indication
 		 */
@@ -70,7 +70,7 @@ public interface ConnectionManagerCallback {
 	/**
 	 * The reason of client disconnection
 	 */
-	public static enum DisconnectCause {
+	enum DisconnectCause {
 		/**
 		 * Expected disconnect (e.g. requested by user)
 		 */
@@ -110,7 +110,7 @@ public interface ConnectionManagerCallback {
 	 * 
 	 * @param progress - the indication about currently executed operation
 	 */
-	public abstract void clientConnectionProgress(ProgressInd progress);
+	void clientConnectionProgress(ProgressInd progress);
 
 	/**
 	 * Indicates that client is connected.
@@ -126,7 +126,7 @@ public interface ConnectionManagerCallback {
 	 * @param clientId - identity of connected client
 	 * @param clientVersion - the BOINC version of connected client
 	 */
-	public abstract void clientConnected(ClientId clientId, VersionInfo clientVersion);
+	void clientConnected(ClientId clientId, VersionInfo clientVersion);
 
 	/**
 	 * Indicates that the client was disconnected.
@@ -151,6 +151,6 @@ public interface ConnectionManagerCallback {
 	 * <li>{@link DisconnectCauseOLD#CONNECTION_DROP CONNECTION_DROP} in case of unsolicited disconnect</li>
 	 * </ul>
 	 */
-	public abstract void clientDisconnected(ClientId clientId, DisconnectCause cause);
+	void clientDisconnected(ClientId clientId, DisconnectCause cause);
 
 }

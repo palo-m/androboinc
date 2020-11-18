@@ -25,14 +25,14 @@ import sk.boinc.androboinc.util.ClientId;
 
 public interface StatusNotifier {
 
-	public void connected(ClientId host);
+	void connected(ClientId host);
 
-	public void connectionNoFrontend(ClientId host);
+	void connectionNoFrontend(ClientId host);
 
-	public void disconnected(ClientId host, DisconnectCause cause);
+	void disconnected(ClientId host, DisconnectCause cause);
 
-	public void disconnectedNoFrontend(ClientId host);
+	void disconnectedNoFrontend(ClientId host);
 	
-	public void cancelDisconnected();
+	void cancelDisconnected();
 
 }

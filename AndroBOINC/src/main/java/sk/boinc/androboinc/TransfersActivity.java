@@ -78,7 +78,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 	private boolean mViewUpdatesAllowed = false;
 	private boolean mViewDirty = false;
 
-	private Vector<TransferInfo> mTransfers = new Vector<TransferInfo>();
+	private Vector<TransferInfo> mTransfers = new Vector<>();
 	private int mPosition = 0;
 
 
@@ -286,8 +286,7 @@ public class TransfersActivity extends ListActivity implements ClientReplyReceiv
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		final SavedState savedState = new SavedState();
-		return savedState;
+		return new SavedState();
 	}
 
 	@Override

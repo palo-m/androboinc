@@ -20,7 +20,7 @@
 package sk.boinc.androboinc.clientconnection;
 
 public interface ConnectivityListener {
-	public abstract void onConnectivityAvailable(int connectivityType);
-	public abstract void onConnectivityUnavailable();
-	public abstract void onConnectivityChangedType(int connectivityType);
+	void onConnectivityAvailable(int connectivityType);
+	void onConnectivityUnavailable();
+	void onConnectivityChangedType(int connectivityType);
 }

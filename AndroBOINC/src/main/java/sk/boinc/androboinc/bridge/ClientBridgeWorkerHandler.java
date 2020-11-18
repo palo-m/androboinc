@@ -76,16 +76,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private boolean mConnectionClosed = false;
 	private DisconnectCause mDisconnectCause = DisconnectCause.NORMAL;
 
-	private Set<ClientReplyReceiver> mUpdateCancel = new HashSet<ClientReplyReceiver>();
+	private final Set<ClientReplyReceiver> mUpdateCancel = new HashSet<>();
 
 	private VersionInfo mClientVersion = null;
-	private Map<String, ProjectInfo> mProjects = new HashMap<String, ProjectInfo>();
-	private Map<String, App> mApps = new HashMap<String, App>();
-	private Map<String, Workunit> mWorkunits = new HashMap<String, Workunit>();
-	private Map<String, TaskInfo> mTasks = new HashMap<String, TaskInfo>();
-	private Set<String> mActiveTasks = new HashSet<String>();
-	private Vector<TransferInfo> mTransfers = new Vector<TransferInfo>();
-	private SortedMap<Integer, MessageInfo> mMessages = new TreeMap<Integer, MessageInfo>();
+	private Map<String, ProjectInfo> mProjects = new HashMap<>();
+	private Map<String, App> mApps = new HashMap<>();
+	private Map<String, Workunit> mWorkunits = new HashMap<>();
+	private Map<String, TaskInfo> mTasks = new HashMap<>();
+	private Set<String> mActiveTasks = new HashSet<>();
+	private Vector<TransferInfo> mTransfers = new Vector<>();
+	private SortedMap<Integer, MessageInfo> mMessages = new TreeMap<>();
 	private boolean mInitialStateRetrieved = false;
 	private boolean mGpuPresent = false;
 
@@ -757,9 +757,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 
 	private void dataSetApps(Vector<App> apps) {
 		mApps.clear();
-		Iterator<App> ai = apps.iterator();
-		while (ai.hasNext()) {
-			App app = ai.next();
+		for (App app : apps) {
 			mApps.put(app.name, app);
 		}
 	}
@@ -770,15 +768,11 @@ public class ClientBridgeWorkerHandler extends Handler {
 		mActiveTasks.clear();
 		// First, parse workunits, to create auxiliary map of workunits
 		mWorkunits.clear();
-		Iterator<Workunit> wi = workunits.iterator();
-		while (wi.hasNext()) {
-			Workunit wu = wi.next();
+		for (Workunit wu : workunits) {
 			mWorkunits.put(wu.name, wu);
 		}
 		// Then, parse results to set the tasks data
-		Iterator<Result> ri = results.iterator();
-		while (ri.hasNext()) {
-			Result result = ri.next();
+		for (Result result : results) {
 			ProjectInfo pi = mProjects.get(result.project_url);
 			if (pi == null) {
 				Log.w(TAG, "No project info for WU=" + result.name + " (project_url: " + result.project_url + "), skipping WU");
@@ -807,15 +801,12 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private void dataSetTransfers(Vector<Transfer> transfers) {
 		if (BuildConfig.DEBUG) Log.d(TAG, "dataSetTransfers(): Begin update");
 		mTransfers.clear();
-		Iterator<Transfer> ti = transfers.iterator();
-		while (ti.hasNext()) {
-			Transfer transfer = ti.next();
+		for (Transfer transfer : transfers) {
 			String projectName;
 			ProjectInfo proj = mProjects.get(transfer.project_url);
 			if (proj != null) {
 				projectName = proj.project;
-			}
-			else {
+			} else {
 				Log.w(TAG, "No project for WU=" + transfer.name + " (project_url: " + transfer.project_url + "), setting dummy");
 				projectName = "???";
 			}
@@ -828,17 +819,16 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private boolean dataUpdateTasks(Vector<Result> results) {
 		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateTasks(): Begin update");
 		// Auxiliary set, to know which tasks were updated and which not
-		Set<String> oldTaskNames = new HashSet<String>(mTasks.keySet());
+		Set<String> oldTaskNames = new HashSet<>(mTasks.keySet());
 		mActiveTasks.clear(); // We will build new record of active tasks
 		// Parse results to set the tasks data
-		Iterator<Result> ri = results.iterator();
-		while (ri.hasNext()) {
-			Result result = ri.next();
-			TaskInfo task = (TaskInfo)mTasks.get(result.name);
+		for (Result result : results) {
+			TaskInfo task = (TaskInfo) mTasks.get(result.name);
 			if (task == null) {
 				// Maybe new workunit wad downloaded meanwhile, so we have
 				// its result part, but not workunit part
-				if (BuildConfig.DEBUG) Log.d(TAG, "Task not found while trying dataUpdateTasks() - needs full updateCcState() update");
+				if (BuildConfig.DEBUG)
+					Log.d(TAG, "Task not found while trying dataUpdateTasks() - needs full updateCcState() update");
 				return false;
 			}
 			task = TaskInfoCreator.update(task, result, mFormatter);
@@ -856,9 +846,7 @@ public class ClientBridgeWorkerHandler extends Handler {
 		// We should remove them now
 		if (oldTaskNames.size() > 0) {
 			if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateTasks(): " + oldTaskNames.size() + " obsolete tasks detected");
-			Iterator<String> it = oldTaskNames.iterator();
-			while (it.hasNext()) {
-				String obsoleteName = it.next();
+			for (String obsoleteName : oldTaskNames) {
 				mTasks.remove(obsoleteName);
 				if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateTasks(): removed " + obsoleteName);
 			}
@@ -870,28 +858,26 @@ public class ClientBridgeWorkerHandler extends Handler {
 	private void dataUpdateMessages(Vector<Message> messages) {
 		if (messages == null) return;
 		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateMessages(): Begin update");
-		Iterator<Message> mi = messages.iterator();
-		while (mi.hasNext()) {
-			edu.berkeley.boinc.Message msg = mi.next();
+		for (Message msg : messages) {
 			MessageInfo message = MessageInfoCreator.create(msg, mFormatter);
 			mMessages.put(msg.seqno, message);
 		}
 		if (BuildConfig.DEBUG) Log.d(TAG, "dataUpdateMessages(): End update");
 	}
 
-	private final Vector<ProjectInfo> getProjects() {
-		return new Vector<ProjectInfo>(mProjects.values());
+	private Vector<ProjectInfo> getProjects() {
+		return new Vector<>(mProjects.values());
 	}
 
-	private final Vector<TaskInfo> getTasks() {
-		return new Vector<TaskInfo>(mTasks.values());
+	private Vector<TaskInfo> getTasks() {
+		return new Vector<>(mTasks.values());
 	}
 
-	private final Vector<TransferInfo> getTransfers() {
-		return new Vector<TransferInfo>(mTransfers);
+	private Vector<TransferInfo> getTransfers() {
+		return new Vector<>(mTransfers);
 	}
 
-	private final Vector<MessageInfo> getMessages() {
-		return new Vector<MessageInfo>(mMessages.values());
+	private Vector<MessageInfo> getMessages() {
+		return new Vector<>(mMessages.values());
 	}
 }

@@ -29,7 +29,7 @@ import java.util.Vector;
 public class WorkunitsParser extends BaseParser {
     private static final String TAG = "WorkunitsParser";
 
-    private Vector<Workunit> mWorkunits = new Vector<Workunit>();
+    private Vector<Workunit> mWorkunits = new Vector<>();
     private Workunit mWorkunit = null;
 
     public final Vector<Workunit> getWorkunits() throws AuthorizationFailedException {

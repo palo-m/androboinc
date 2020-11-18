@@ -373,8 +373,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		final SavedState savedState = new SavedState();
-		return savedState;
+		return new SavedState();
 	}
 
 	@Override

@@ -83,7 +83,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 	private boolean mViewUpdatesAllowed = false;
 	private boolean mViewDirty = false;
 
-	private Vector<TaskInfo> mTasks = new Vector<TaskInfo>();
+	private Vector<TaskInfo> mTasks = new Vector<>();
 	private int mPosition = 0;
 
 	private StringBuilder mSb = new StringBuilder(SB_INIT_CAPACITY);
@@ -316,8 +316,7 @@ public class TasksActivity extends ListActivity implements ClientReplyReceiver {
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		final SavedState savedState = new SavedState();
-		return savedState;
+		return new SavedState();
 	}
 
 	@Override

@@ -25,9 +25,9 @@ import java.util.Vector;
 public class CcState {
     public VersionInfo version_info;
     public HostInfo host_info;
-    public Vector<Project> projects = new Vector<Project>();
-    public Vector<App> apps = new Vector<App>();
+    public Vector<Project> projects = new Vector<>();
+    public Vector<App> apps = new Vector<>();
 //	public Vector<AppVersion> app_versions = new Vector<AppVersion>();
-    public Vector<Workunit> workunits = new Vector<Workunit>();
-    public Vector<Result> results = new Vector<Result>();
+    public Vector<Workunit> workunits = new Vector<>();
+    public Vector<Result> results = new Vector<>();
 }

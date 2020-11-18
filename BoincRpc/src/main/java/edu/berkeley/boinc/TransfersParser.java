@@ -29,7 +29,7 @@ import java.util.Vector;
 public class TransfersParser extends BaseParser {
     private static final String TAG = "TransfersParser";
 
-    private Vector<Transfer> mTransfers = new Vector<Transfer>();
+    private Vector<Transfer> mTransfers = new Vector<>();
     private Transfer mTransfer = null;
 
     public final Vector<Transfer> getTransfers() throws AuthorizationFailedException {

@@ -30,7 +30,7 @@ public class Project {
     public String  user_name = "";
     public String  team_name = "";
     public int     hostid = 0;
-    public Vector<GuiUrl> gui_urls = new Vector<GuiUrl>();
+    public Vector<GuiUrl> gui_urls = new Vector<>();
     public double  user_total_credit = 0;
     public double  user_expavg_credit = 0;
 
