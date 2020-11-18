@@ -19,6 +19,34 @@
 
 package sk.boinc.androboinc;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceActivity;
+import android.text.Html;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Window;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Vector;
+
 import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
 import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
 import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback;
@@ -32,33 +60,6 @@ import sk.boinc.androboinc.clientconnection.VersionInfo;
 import sk.boinc.androboinc.service.ConnectionManagerService;
 import sk.boinc.androboinc.util.ClientId;
 import sk.boinc.androboinc.util.ScreenOrientationHandler;
-import hal.android.workarounds.FixedProgressDialog;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.DialogInterface.OnCancelListener;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.text.Html;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.Window;
-import android.widget.TextView;
-import android.widget.Toast;
-import java.util.Vector;
 
 
 public class ManageClientActivity extends PreferenceActivity implements ConnectionManagerCallback, ClientReplyReceiver {
@@ -353,7 +354,7 @@ public class ManageClientActivity extends PreferenceActivity implements Connecti
 			if ( (mConnectProgressIndicator == ProgressInd.NONE) || !mDialogsAllowed ) {
 				return null;
 			}
-			progressDialog = new FixedProgressDialog(this);
+			progressDialog = new ProgressDialog(this);
 			progressDialog.setIndeterminate(true);
 			progressDialog.setCancelable(true);
 			progressDialog.setOnCancelListener(new OnCancelListener() {

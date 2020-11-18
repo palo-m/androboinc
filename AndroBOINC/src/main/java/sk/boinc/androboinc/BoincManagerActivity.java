@@ -19,23 +19,6 @@
 
 package sk.boinc.androboinc;
 
-import sk.boinc.androboinc.BoincManagerApplication.AppStatus;
-import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
-import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
-import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback;
-import sk.boinc.androboinc.clientconnection.HostInfo;
-import sk.boinc.androboinc.clientconnection.MessageInfo;
-import sk.boinc.androboinc.clientconnection.ModeInfo;
-import sk.boinc.androboinc.clientconnection.ProjectInfo;
-import sk.boinc.androboinc.clientconnection.TaskInfo;
-import sk.boinc.androboinc.clientconnection.TransferInfo;
-import sk.boinc.androboinc.clientconnection.VersionInfo;
-import sk.boinc.androboinc.service.ConnectionManagerService;
-import sk.boinc.androboinc.util.ClientId;
-import sk.boinc.androboinc.util.HostListDbAdapter;
-import sk.boinc.androboinc.util.PreferenceName;
-import sk.boinc.androboinc.util.ScreenOrientationHandler;
-import hal.android.workarounds.FixedProgressDialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -43,10 +26,10 @@ import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,7 +49,25 @@ import android.view.Window;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.Vector;
+
+import sk.boinc.androboinc.BoincManagerApplication.AppStatus;
+import sk.boinc.androboinc.clientconnection.ClientReplyReceiver;
+import sk.boinc.androboinc.clientconnection.ClientRequestHandler;
+import sk.boinc.androboinc.clientconnection.ConnectionManagerCallback;
+import sk.boinc.androboinc.clientconnection.HostInfo;
+import sk.boinc.androboinc.clientconnection.MessageInfo;
+import sk.boinc.androboinc.clientconnection.ModeInfo;
+import sk.boinc.androboinc.clientconnection.ProjectInfo;
+import sk.boinc.androboinc.clientconnection.TaskInfo;
+import sk.boinc.androboinc.clientconnection.TransferInfo;
+import sk.boinc.androboinc.clientconnection.VersionInfo;
+import sk.boinc.androboinc.service.ConnectionManagerService;
+import sk.boinc.androboinc.util.ClientId;
+import sk.boinc.androboinc.util.HostListDbAdapter;
+import sk.boinc.androboinc.util.PreferenceName;
+import sk.boinc.androboinc.util.ScreenOrientationHandler;
 
 
 public class BoincManagerActivity extends TabActivity implements ConnectionManagerCallback, ClientReplyReceiver {
@@ -456,7 +457,7 @@ public class BoincManagerActivity extends TabActivity implements ConnectionManag
 		switch (id) {
 		case DIALOG_CONNECT_PROGRESS:
 			if (BuildConfig.DEBUG) Log.d(TAG, "onCreateDialog(DIALOG_CONNECT_PROGRESS)");
-			ProgressDialog dialog = new FixedProgressDialog(this);
+			ProgressDialog dialog = new ProgressDialog(this);
             dialog.setIndeterminate(true);
 			dialog.setCancelable(true);
 			dialog.setOnCancelListener(new OnCancelListener() {
