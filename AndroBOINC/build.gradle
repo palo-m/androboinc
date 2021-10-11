@@ -14,14 +14,14 @@ android {
             keyPassword   "android"
         }
     }
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion 31
+    buildToolsVersion "31.0.0"
     defaultConfig {
         applicationId "sk.boinc.androboinc"
         minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 10
-        versionName "6.10.58.rc6"
+        targetSdkVersion 31
+        versionCode 11
+        versionName "6.10.58.rc6+211011"
         project.ext.set("archivesBaseName", archivesBaseName + "-" + defaultConfig.versionName)
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         testInstrumentationRunnerArguments (class: "sk.boinc.androboinc.suite.AndroidTestSuite")
@@ -65,11 +65,11 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.4'
 
     // Force usage of support annotations in the test app, since it is internally used by the runner module.
-    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test:rules:1.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation "androidx.core:core-ktx:1.3.2"
+    androidTestImplementation 'androidx.annotation:annotation:1.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
