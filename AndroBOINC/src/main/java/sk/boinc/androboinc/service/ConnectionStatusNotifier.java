@@ -19,6 +19,8 @@
 
 package sk.boinc.androboinc.service;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import sk.boinc.androboinc.BuildConfig;
 import sk.boinc.androboinc.BoincManagerActivity;
 import sk.boinc.androboinc.R;
@@ -45,16 +47,16 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 	private static final int DISCONNECTED_ID = 2;
 
 	private final Context mContext;
-	private NotificationManager mNotificationManager;
+	private final NotificationManager mNotificationManager;
 	private boolean mConnected = false;
 	private boolean mDisconnected = false;
-	private Handler mHandler = new Handler();
+	private final Handler mHandler = new Handler();
 	private Runnable mDelayedTrigger = null;
 
 
 	public ConnectionStatusNotifier(Context context) {
 		if (context == null) throw new NullPointerException();
-		if (BuildConfig.DEBUG) Log.d(TAG, "ConnectionStatusNotifier(context=" + context.toString() + ")");
+		if (BuildConfig.DEBUG) Log.d(TAG, "ConnectionStatusNotifier(context=" + context + ")");
 		mContext = context;
 		mNotificationManager = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		// Cancel possible old notifications
@@ -68,10 +70,16 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		// We will keep disconnected notification
 	}
 
+	@SuppressLint("UnspecifiedImmutableFlag")
 	private void notifyConnected(String contentText, String tickerText) {
 		Intent intent = new Intent(mContext, BoincManagerActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		PendingIntent contentIntent;
+		if(Build.VERSION.SDK_INT >= 23){
+			contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+		}else{
+			contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		}
 		Notification.Builder builder = new Notification.Builder(mContext)
 				.setContentIntent(contentIntent)
 				.setSmallIcon(R.drawable.ic_stat_connected)
@@ -101,11 +109,17 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		if (BuildConfig.DEBUG) Log.d(TAG, "Shown connectedNoFrontend notification");
 	}
 
+	@SuppressLint("UnspecifiedImmutableFlag")
 	private void notifyDisconnected(ClientId host, String contentText, boolean autoCancel) {
 		String tickerText = String.format(mContext.getString(R.string.notifyDisconnected), host.getNickname());
 		Intent intent = new Intent(mContext, BoincManagerActivity.class).putExtra(ClientId.TAG, host);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		PendingIntent contentIntent;
+		if(Build.VERSION.SDK_INT >= 23){
+			contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+		}else{
+			contentIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		}
 		Notification.Builder builder = new Notification.Builder(mContext)
 				.setContentIntent(contentIntent)
 				.setSmallIcon(R.drawable.ic_stat_connected)
@@ -119,13 +133,10 @@ public class ConnectionStatusNotifier implements StatusNotifier {
 		mNotificationManager.notify(DISCONNECTED_ID, notification);
 		mDisconnected = true;
 		if (autoCancel) {
-			mDelayedTrigger = new Runnable() {
-				@Override
-				public void run() {
-					if (BuildConfig.DEBUG) Log.d(TAG, "Auto-cancelling disconnected notification (normal disconnect)");
-					mDelayedTrigger = null;
-					cancelDisconnected();
-				}
+			mDelayedTrigger = () -> {
+				if (BuildConfig.DEBUG) Log.d(TAG, "Auto-cancelling disconnected notification (normal disconnect)");
+				mDelayedTrigger = null;
+				cancelDisconnected();
 			};
 			mHandler.postDelayed(mDelayedTrigger, 10000);
 		}
