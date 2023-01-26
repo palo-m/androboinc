@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'jacoco'
 
 android {
@@ -13,16 +14,16 @@ android {
             keyPassword   "android"
         }
     }
-    compileSdkVersion 8
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 33
+    buildToolsVersion "33.0.1"
     defaultConfig {
         applicationId "sk.boinc.androboinc"
-        minSdkVersion 3
-        targetSdkVersion 8
-        versionCode 10
-        versionName "6.10.58.rc6"
-        project.ext.set("archivesBaseName", archivesBaseName + "-" + defaultConfig.versionName);
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion 16
+        targetSdkVersion 33
+        versionCode 12
+        versionName "6.10.58.rc6+230126"
+        project.ext.set("archivesBaseName", archivesBaseName + "-" + defaultConfig.versionName)
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         testInstrumentationRunnerArguments (class: "sk.boinc.androboinc.suite.AndroidTestSuite")
     }
     buildTypes {
@@ -57,21 +58,22 @@ android {
 }
 
 dependencies {
-    releaseCompile project(path: ':BoincRpc', configuration: 'release')
-    debugCompile project(path: ':BoincRpc', configuration: 'debug')
+    implementation project(':BoincRpc')
+
     // Unit testing dependencies
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0'
+    testImplementation 'androidx.test:rules:1.5.0'
+    testImplementation 'org.robolectric:robolectric:4.9.2'
+    testImplementation 'androidx.test.ext:junit:1.1.5'
+    testImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
     // Force usage of support annotations in the test app, since it is internally used by the runner module.
-    androidTestCompile 'com.android.support:support-annotations:23.1.1'
-    androidTestCompile 'com.android.support.test:runner:0.4'
-    androidTestCompile 'com.android.support.test:rules:0.4'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    implementation "androidx.core:core-ktx:1.9.0"
+    implementation 'androidx.annotation:annotation:1.5.0'
 }
 
 // Load signing configuration from external file
 // if it exists and contains valid data
-def Properties props = new Properties()
+Properties props = new Properties()
 def propFile = file('signing.properties')
 if (propFile.canRead()) {
     props.load(new FileInputStream(propFile))
@@ -90,4 +92,7 @@ if (propFile.canRead()) {
 }
 else {
     android.buildTypes.release.signingConfig = null
+}
+repositories {
+    mavenCentral()
 }

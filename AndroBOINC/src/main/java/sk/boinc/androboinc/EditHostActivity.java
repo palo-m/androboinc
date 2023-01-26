@@ -99,9 +99,9 @@ public class EditHostActivity extends Activity {
 		
 		// Input filter is needed to remove/replace characters 
 		// which are causing troubles during DB-access
-		List<InputFilter> inputFilters = new ArrayList<InputFilter>(Arrays.asList(mNickname.getFilters()));
+		List<InputFilter> inputFilters = new ArrayList<>(Arrays.asList(mNickname.getFilters()));
 		inputFilters.add(new NameInputFilter());
-		mNickname.setFilters(inputFilters.toArray(new InputFilter[inputFilters.size()]));
+		mNickname.setFilters(inputFilters.toArray(new InputFilter[0]));
 
 		Button cancelButton = (Button)findViewById(R.id.editHostCancel);
 		cancelButton.setOnClickListener(new View.OnClickListener() {

@@ -33,7 +33,7 @@ import java.util.Vector;
 public class MessagesParser extends BaseParser {
     private static final String TAG = "MessagesParser";
 
-    private Vector<Message> mMessages = new Vector<Message>();
+    private Vector<Message> mMessages = new Vector<>();
     private Message mMessage = null;
 
     public final Vector<Message> getMessages() throws AuthorizationFailedException {

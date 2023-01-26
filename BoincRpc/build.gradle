@@ -1,17 +1,15 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'jacoco'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
-    publishNonDefault true
+    compileSdkVersion 33
+    buildToolsVersion "33.0.1"
 
     defaultConfig {
-        minSdkVersion 3
-        targetSdkVersion 23
-        versionCode 10
-        versionName "6.10.58"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion 16
+        targetSdkVersion 33
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
@@ -23,14 +21,10 @@ android {
         debug {
             buildConfigField 'boolean', 'DEBUG_DATA', 'false'
             buildConfigField 'boolean', 'DEBUG_PERFORMANCE', 'false'
-            debuggable true
             testCoverageEnabled true
         }
     }
-    lintOptions {
-        disable 'GoogleAppIndexingWarning'
-    }
-    testOptions {
+	testOptions {
         unitTests.all {
             testLogging {
                 events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
@@ -38,14 +32,23 @@ android {
             }
         }
     }
+	lint {
+		disable 'GoogleAppIndexingWarning'
+	}
 }
 
 dependencies {
+    
     // Unit testing dependencies
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0'
+    testImplementation 'androidx.test:rules:1.5.0'
+    testImplementation 'org.robolectric:robolectric:4.9.2'
+    testImplementation 'androidx.test.ext:junit:1.1.5'
+    
     // Android unit testing dependencies
-    androidTestCompile 'com.android.support:support-annotations:23.1.1'
-    androidTestCompile 'com.android.support.test:runner:0.4'
-    androidTestCompile 'com.android.support.test:rules:0.4'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.annotation:annotation:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+}
+repositories {
+    mavenCentral()
 }

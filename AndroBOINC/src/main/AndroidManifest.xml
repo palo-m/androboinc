@@ -20,7 +20,8 @@
  */
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="sk.boinc.androboinc"
+		xmlns:tools="http://schemas.android.com/tools"
+		package="sk.boinc.androboinc"
 	android:installLocation="auto">
 
 	<supports-screens
@@ -31,15 +32,19 @@
 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 
 	<application
 		android:name="BoincManagerApplication"
 		android:label="@string/app_name"
 		android:description="@string/app_desc"
-		android:icon="@drawable/ic_launcher">
+		android:icon="@drawable/ic_launcher"
+			android:allowBackup="true"
+			tools:ignore="AllowBackup">
 
-		<activity android:name=".BoincManagerActivity">
+		<activity android:name=".BoincManagerActivity"
+				android:exported="true">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />

@@ -21,8 +21,8 @@ package edu.berkeley.boinc;
 
 
 public interface NetStats {
-    public abstract void connectionOpened();
-    public abstract void bytesReceived(int numBytes);
-    public abstract void bytesTransferred(int numBytes);
-    public abstract void connectionClosed();
+    void connectionOpened();
+    void bytesReceived(int numBytes);
+    void bytesTransferred(int numBytes);
+    void connectionClosed();
 }

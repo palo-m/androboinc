@@ -49,7 +49,7 @@ public interface ConnectionManager {
 	 * @param receiver - the new receiver of client data since now
 	 * @see #unregisterDataReceiver(ClientReplyReceiver)
 	 */
-	public abstract void registerDataReceiver(ClientReplyReceiver receiver);
+    void registerDataReceiver(ClientReplyReceiver receiver);
 
 	/**
 	 * Stops sending of data from connected client.
@@ -57,7 +57,7 @@ public interface ConnectionManager {
 	 * @param receiver - former receiver of data
 	 * @see #registerDataReceiver(ClientReplyReceiver)
 	 */
-	public abstract void unregisterDataReceiver(ClientReplyReceiver receiver);
+    void unregisterDataReceiver(ClientReplyReceiver receiver);
 
 	/**
 	 * Starts sending of updates about status of connected client.
@@ -66,7 +66,7 @@ public interface ConnectionManager {
 	 * @param observer - the new observer of client status
 	 * @see #unregisterStatusObserver
 	 */
-	public abstract void registerStatusObserver(ConnectionManagerCallback observer);
+    void registerStatusObserver(ConnectionManagerCallback observer);
 
 	/**
 	 * Stops sending of updates about status of connected client.
@@ -74,14 +74,14 @@ public interface ConnectionManager {
 	 * @param observer - former observer of client status
 	 * @see #registerStatusObserver
 	 */
-	public abstract void unregisterStatusObserver(ConnectionManagerCallback observer);
+    void unregisterStatusObserver(ConnectionManagerCallback observer);
 
 	/**
 	 * Retrieves ID of currently connected client
 	 * 
 	 * @return ID of connected client or {@code null} if no client is connected
 	 */
-	public abstract ClientId getClientId();
+    ClientId getClientId();
 
 	/**
 	 * Connect to the specified client and optionally retrieve the full initial data from it.
@@ -92,7 +92,7 @@ public interface ConnectionManager {
 	 *        after successful connect
 	 * @see ConnectionManagerCallback#clientConnected(VersionInfo)
 	 */
-	public abstract void connect(ConnectionManagerCallback callback, ClientId host, boolean retrieveInitialData);
+    void connect(ConnectionManagerCallback callback, ClientId host, boolean retrieveInitialData);
 
 	/**
 	 * Disconnect the currently connected client.
@@ -100,6 +100,6 @@ public interface ConnectionManager {
 	 * @param callback - used for result of operation. Cannot be {@code null}.
 	 * @see ConnectionManagerCallback#clientDisconnected(DisconnectCauseOLD)
 	 */
-	public abstract void disconnect(ConnectionManagerCallback callback);
+    void disconnect(ConnectionManagerCallback callback);
 
 }

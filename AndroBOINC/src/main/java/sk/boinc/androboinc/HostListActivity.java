@@ -55,7 +55,7 @@ public class HostListActivity extends ListActivity {
 	private HostListDbAdapter mDbHelper = null;
 	private Cursor mHostCursor = null;
 
-	private class HostListAdapter extends CursorAdapter {
+	private static class HostListAdapter extends CursorAdapter {
 
 		public HostListAdapter(Context context, Cursor c) {
 			super(context, c);

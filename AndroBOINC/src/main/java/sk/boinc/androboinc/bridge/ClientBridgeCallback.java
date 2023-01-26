@@ -32,7 +32,7 @@ public interface ClientBridgeCallback {
 	 * 
 	 * @param progress - progress indicator
 	 */
-	public abstract void bridgeConnectionProgress(ProgressInd progress);
+    void bridgeConnectionProgress(ProgressInd progress);
 
 	/**
 	 * Indicates that client has been connected
@@ -40,7 +40,7 @@ public interface ClientBridgeCallback {
 	 * @param clientId - the identity of connected client
 	 * @param clientVersion - BOINC version of the connected client
 	 */
-	public abstract void bridgeConnected(ClientId clientId, VersionInfo clientVersion);
+    void bridgeConnected(ClientId clientId, VersionInfo clientVersion);
 
 	/**
 	 * Indicates that client has been disconnected
@@ -48,6 +48,6 @@ public interface ClientBridgeCallback {
 	 * @param clientId - the identity of client which disconnected
 	 * @param cause - disconnect reason
 	 */
-	public abstract void bridgeDisconnected(ClientId clientId, DisconnectCause cause);
+    void bridgeDisconnected(ClientId clientId, DisconnectCause cause);
 
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /* 
  * AndroBOINC - BOINC Manager for Android
  * Copyright (C) 2010, Pavol Michalec
@@ -19,132 +18,126 @@
  * 
  */
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dip" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:padding="10dip">
+	
+	
+	<TextView
+			android:id="@+id/editHostNicknameTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentTop="true"
+			android:text="@string/editHostNickname"
+			tools:ignore="RtlHardcoded" />
+	
+	<EditText
+			android:id="@+id/editHostNickname"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/editHostNicknameTitle"
+			android:inputType="textNoSuggestions|textUri"
+			tools:ignore="LabelFor,SpeakableTextPresentCheck"
+			android:autofillHints="" />
+	
+	
+	<TextView
+			android:id="@+id/editHostAddressTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/editHostNickname"
+			android:text="@string/editHostAddress" />
+	
+	<EditText
+			android:id="@+id/editHostAddress"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/editHostAddressTitle"
+			android:inputType="textNoSuggestions|textUri"
+			android:autofillHints=""
+			tools:ignore="LabelFor" />
+	
+	
+	<TextView
+			android:id="@+id/editHostPortTitle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/editHostAddress"
+			android:text="@string/editHostPort" />
+	
+	<EditText
+			android:id="@+id/editHostPort"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/editHostPortTitle"
+			android:digits="0123456789"
+			android:inputType="number"
+			android:lines="1"
+			android:maxLength="5"
+			android:width="70sp"
+			android:autofillHints=""
+			tools:ignore="LabelFor" />
+	
+	<TextView
+			android:id="@+id/editHostPasswordTitle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/editHostPort"
+			android:text="@string/editHostPassword" />
+	
+	<EditText
+			android:id="@+id/editHostPassword"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/editHostPasswordTitle"
+			android:inputType="textPassword"
+			android:autofillHints=""
+			tools:ignore="LabelFor" />
+	
+	<Button
+			android:id="@+id/editHostWiki"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/editHostPassword"
+			android:text="@string/seeWiki"
+			tools:ignore="RtlHardcoded" />
+	
+	<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toLeftOf="@id/editHostWiki"
+			android:layout_alignBaseline="@id/editHostWiki"
+			android:text="@string/editHostHelp"
+			tools:ignore="RtlHardcoded" />
+	
+	<LinearLayout
+			android:id="@+id/editHostOKCancelButtons"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:orientation="horizontal">
+		
+		<Button
+				android:id="@+id/editHostCancel"
+				android:layout_width="0dp"
+				android:layout_weight="1"
+				android:layout_height="wrap_content"
+				android:text="@string/cancel"
+				style="?android:attr/buttonBarButtonStyle" />
+		
+		<Button
+				android:id="@+id/editHostOk"
+				android:layout_width="0dp"
+				android:layout_weight="1"
+				android:layout_height="wrap_content"
+				android:text="@string/ok"
+				style="?android:attr/buttonBarButtonStyle" />
+	</LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="5dip"
-            android:text="@string/editHostNickname" />
-
-        <EditText
-            android:id="@+id/editHostNickname"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/editbox_background"
-            android:inputType="textNoSuggestions|textUri" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="5dip"
-            android:text="@string/editHostAddress" />
-
-        <EditText
-            android:id="@+id/editHostAddress"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/editbox_background"
-            android:inputType="textNoSuggestions|textUri" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="5dip"
-            android:text="@string/editHostPort" />
-
-        <EditText
-            android:id="@+id/editHostPort"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/editbox_background"
-            android:digits="0123456789"
-            android:inputType="number"
-            android:lines="1"
-            android:maxLength="5"
-            android:width="70sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="5dip"
-            android:text="@string/editHostPassword" />
-
-        <EditText
-            android:id="@+id/editHostPassword"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/editbox_background"
-            android:inputType="textPassword" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/editHostCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/cancel" />
-
-        <Button
-            android:id="@+id/editHostOk"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:text="@string/ok" />
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_gravity="bottom"
-        android:layout_weight="1.0"
-        android:orientation="vertical" >
-    </TextView>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dip"
-        android:paddingLeft="5dip"
-        android:text="@string/editHostHelp" />
-
-    <Button
-        android:id="@+id/editHostWiki"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/seeWiki" />
-
-</LinearLayout>
+</RelativeLayout>

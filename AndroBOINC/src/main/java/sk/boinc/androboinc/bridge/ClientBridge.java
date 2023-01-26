@@ -38,7 +38,6 @@ import android.content.Context;
 import android.os.ConditionVariable;
 import android.util.Log;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
@@ -115,20 +114,17 @@ public class ClientBridge implements ClientRequestHandler {
 			if (mCallback != null) {
 				mCallback.bridgeConnected(mClientId, clientVersion);
 			}
-			Iterator<ClientReplyReceiver> it = mReceivers.iterator();
-			while (it.hasNext()) {
-				ClientReplyReceiver receiver = it.next();
+			for (ClientReplyReceiver receiver : mReceivers) {
 				receiver.clientConnected(ClientBridge.this);
 			}
 		}
 
 		public void notifyDisconnected() {
 			mConnected = false;
-			Iterator<ClientReplyReceiver> it = mReceivers.iterator();
-			while (it.hasNext()) {
-				ClientReplyReceiver receiver = it.next();
+			for (ClientReplyReceiver receiver : mReceivers) {
 				receiver.clientDisconnected();
-				if (BuildConfig.DEBUG) Log.d(TAG, "Detached receiver: " + receiver.toString()); // see below clearing of all receivers
+				if (BuildConfig.DEBUG)
+					Log.d(TAG, "Detached receiver: " + receiver.toString()); // see below clearing of all receivers
 			}
 			mReceivers.clear();
 		}
@@ -137,9 +133,7 @@ public class ClientBridge implements ClientRequestHandler {
 			if (callback == null) {
 				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
-				while (it.hasNext()) {
-					ClientReplyReceiver receiver = it.next();
+				for (ClientReplyReceiver receiver : mReceivers) {
 					receiver.updatedClientMode(modeInfo);
 				}
 				return;
@@ -166,9 +160,7 @@ public class ClientBridge implements ClientRequestHandler {
 			if (callback == null) {
 				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
-				while (it.hasNext()) {
-					ClientReplyReceiver receiver = it.next();
+				for (ClientReplyReceiver receiver : mReceivers) {
 					receiver.updatedProjects(projects);
 				}
 				return;
@@ -187,9 +179,7 @@ public class ClientBridge implements ClientRequestHandler {
 			if (callback == null) {
 				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
-				while (it.hasNext()) {
-					ClientReplyReceiver receiver = it.next();
+				for (ClientReplyReceiver receiver : mReceivers) {
 					receiver.updatedTasks(tasks);
 				}
 				return;
@@ -208,9 +198,7 @@ public class ClientBridge implements ClientRequestHandler {
 			if (callback == null) {
 				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
-				while (it.hasNext()) {
-					ClientReplyReceiver receiver = it.next();
+				for (ClientReplyReceiver receiver : mReceivers) {
 					receiver.updatedTransfers(transfers);
 				}
 				return;
@@ -229,9 +217,7 @@ public class ClientBridge implements ClientRequestHandler {
 			if (callback == null) {
 				// No specific callback - broadcast to all receivers
 				// This is used for early notification after connect
-				Iterator<ClientReplyReceiver> it = mReceivers.iterator();
-				while (it.hasNext()) {
-					ClientReplyReceiver receiver = it.next();
+				for (ClientReplyReceiver receiver : mReceivers) {
 					receiver.updatedMessages(messages);
 				}
 				return;
@@ -249,7 +235,7 @@ public class ClientBridge implements ClientRequestHandler {
 
 	private final BridgeReply mBridgeReply = new BridgeReply();
 
-	private Set<ClientReplyReceiver> mReceivers = new HashSet<ClientReplyReceiver>();
+	private Set<ClientReplyReceiver> mReceivers = new HashSet<>();
 	private boolean mConnected = false;
 
 	private ClientBridgeCallback mCallback;

@@ -66,7 +66,6 @@ public class ScreenOrientationHandler implements OnSharedPreferenceChangeListene
 		if (mChosenOrientation != mActivity.getRequestedOrientation()) {
 			if (BuildConfig.DEBUG) Log.d(TAG, "Changing orientation for " + mActivity.toString());
 			// mChosenOrientation can have only allowed values (see above)
-			//noinspection AndroidLintWrongConstant
 			mActivity.setRequestedOrientation(mChosenOrientation);
 		}
 	}

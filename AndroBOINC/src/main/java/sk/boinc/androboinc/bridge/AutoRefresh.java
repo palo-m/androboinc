@@ -34,7 +34,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 
@@ -89,7 +88,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 		 * @param requestHandler - the handler to be called when message arrives
 		 */
 		RefreshHandler(final AutoRefresh requestHandler) {
-			mAutoRefresh = new WeakReference<AutoRefresh>(requestHandler);
+			mAutoRefresh = new WeakReference<>(requestHandler);
 		}
 
 		@Override
@@ -143,7 +142,7 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 	private RefreshHandler mRefreshHandler;
 	private Context mContext = null;
 	private ClientRequestHandler mClientBridge;
-	private Set<UpdateRequest> mScheduledUpdates = new HashSet<UpdateRequest>();
+	private Set<UpdateRequest> mScheduledUpdates = new HashSet<>();
 	private int mConnectionType = ConnectivityManager.TYPE_MOBILE;
 	private int mAutoRefresh = 0;
 
@@ -228,26 +227,24 @@ public class AutoRefresh implements OnSharedPreferenceChangeListener {
 	}
 
 	public void unscheduleAutomaticRefresh(final ClientReplyReceiver callback) {
-		Iterator<UpdateRequest> it = mScheduledUpdates.iterator();
-		while (it.hasNext()) {
+		for (UpdateRequest req : mScheduledUpdates) {
 			// Found pending auto-update; remove its schedule now
-			UpdateRequest req = it.next();
 			if (req.callback == callback) {
 				mRefreshHandler.removeMessages(RUN_UPDATE, req);
 				mScheduledUpdates.remove(req);
-				if (BuildConfig.DEBUG) Log.d(TAG, "unscheduleAutomaticRefresh(): Removed schedule for entry (" + req.callback.toString() + "," + req.requestType.toString() + ")");
+				if (BuildConfig.DEBUG)
+					Log.d(TAG, "unscheduleAutomaticRefresh(): Removed schedule for entry (" + req.callback.toString() + "," + req.requestType.toString() + ")");
 			}
 		}
 	}
 
 	private void removeAutomaticRefresh(UpdateRequest request) {
-		Iterator<UpdateRequest> it = mScheduledUpdates.iterator();
-		while (it.hasNext()) {
-			UpdateRequest req = it.next();
+		for (UpdateRequest req : mScheduledUpdates) {
 			if (req.equals(request)) {
 				// The same request - retrieve the original object, as it was the one
 				// which was used for posting the delayed message
-				if (BuildConfig.DEBUG) Log.d(TAG, "mRefreshHandler.hasMessages(RUN_UPDATE, req)=" + mRefreshHandler.hasMessages(RUN_UPDATE, req));
+				if (BuildConfig.DEBUG)
+					Log.d(TAG, "mRefreshHandler.hasMessages(RUN_UPDATE, req)=" + mRefreshHandler.hasMessages(RUN_UPDATE, req));
 				mRefreshHandler.removeMessages(RUN_UPDATE, req);
 				mScheduledUpdates.remove(req);
 				break;
